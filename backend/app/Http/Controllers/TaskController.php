@@ -24,13 +24,18 @@ class TaskController extends Controller
             'level' => 'required|integer|in:1,2,3',
             'status' => 'required|string',
             'user_id' => 'required|exists:users,id',
-            'project' => 'required|string',
-            'department' => 'required|string',
+            'related_personnel' => 'nullable|string|max:255',
+            'project' => 'required|string|max:255',
+            'item' => 'nullable|string|max:255',
+            'department' => 'required|string|max:255',
             'work' => 'required|string|max:255',
             'points' => 'required|numeric|min:0.5|max:21',
             'release_date' => 'nullable|date',
             'start_date' => 'nullable|date',
             'expected_finish_date' => 'nullable|date',
+            'actual_finish_date' => 'nullable|date',
+            'output_url' => 'nullable|string|max:255',
+            'memo' => 'nullable|string',
         ]);
 
         $task = Task::create($validated);

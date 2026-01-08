@@ -14,7 +14,9 @@ class Task extends Model
         'level',
         'status',
         'user_id',
+        'related_personnel',
         'project',
+        'item',
         'department',
         'work',
         'points',
@@ -23,6 +25,7 @@ class Task extends Model
         'expected_finish_date',
         'actual_finish_date',
         'output_url',
+        'memo',
     ];
 
     public function assignee()
