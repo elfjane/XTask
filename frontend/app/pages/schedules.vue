@@ -1,12 +1,12 @@
 <template>
   <div class="page">
     <div class="header">
-      <h1>Schedules</h1>
-      <button @click="showCreateModal = true" class="btn-primary">Add Schedule</button>
+      <h1>{{ $t('schedules.title') }}</h1>
+      <button @click="showCreateModal = true" class="btn-primary">{{ $t('schedules.addSchedule') }}</button>
     </div>
 
-    <div v-if="pending" class="loading">Loading schedules...</div>
-    <div v-else-if="error" class="error">Failed to load schedules: {{ error.message }}</div>
+    <div v-if="pending" class="loading">{{ $t('common.loggingIn') ? $t('login.loggingIn') : 'Loading...' }}</div>
+    <div v-else-if="error" class="error">{{ error.message }}</div>
     
     <div v-else class="content-wrapper">
       <!-- Desktop View (Table) -->
@@ -14,29 +14,29 @@
         <table class="schedule-table">
           <thead>
             <tr>
-              <th>IDX</th>
-              <th>狀態</th>
-              <th>Confirm</th>
-              <th>Deadline</th>
-              <th>Week</th>
-              <th>預定開始日期</th>
-              <th>預定結束日期</th>
-              <th>預定天數</th>
-              <th>實際開始日期</th>
-              <th>實際完成日期</th>
-              <th>實際天數</th>
-              <th>Project</th>
-              <th>Schedule Title</th>
-              <th>Memo</th>
+              <th>{{ $t('schedules.idx') }}</th>
+              <th>{{ $t('schedules.status') }}</th>
+              <th>{{ $t('schedules.confirm') }}</th>
+              <th>{{ $t('schedules.deadline') }}</th>
+              <th>{{ $t('schedules.week') }}</th>
+              <th>{{ $t('schedules.scheduledStart') }}</th>
+              <th>{{ $t('schedules.scheduledEnd') }}</th>
+              <th>{{ $t('schedules.scheduledDays') }}</th>
+              <th>{{ $t('schedules.actualStart') }}</th>
+              <th>{{ $t('schedules.actualFinish') }}</th>
+              <th>{{ $t('schedules.actualDays') }}</th>
+              <th>{{ $t('schedules.project') }}</th>
+              <th>{{ $t('schedules.scheduleTitle') }}</th>
+              <th>{{ $t('schedules.memo') }}</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="item in schedules" :key="item.id">
               <td>{{ item.id }}</td>
               <td>
-                <span :class="['status-badge', item.status]">{{ item.status }}</span>
+                <span :class="['status-badge', item.status]">{{ $t(`schedules.${item.status}`) }}</span>
               </td>
-              <td>{{ item.confirm }}</td>
+              <td>{{ $t(`schedules.${item.confirm.toLowerCase()}`) }}</td>
               <td>{{ item.deadline }}</td>
               <td>{{ getWeekDay(item.deadline) }}</td>
               <td>{{ item.scheduled_start }}</td>
@@ -58,18 +58,18 @@
         <div v-for="item in schedules" :key="item.id" class="card">
           <div class="card-header">
             <span class="idx">#{{ item.id }}</span>
-            <span :class="['status', item.status]">{{ item.status }}</span>
+            <span :class="['status', item.status]">{{ $t(`schedules.${item.status}`) }}</span>
           </div>
           <div class="card-body">
             <h2 class="project-title">{{ item.project }} - {{ item.title }}</h2>
             <div class="info-grid">
-              <div class="info-item"><strong>Confirm:</strong> {{ item.confirm }}</div>
-              <div class="info-item"><strong>Deadline:</strong> {{ item.deadline }}</div>
+              <div class="info-item"><strong>{{ $t('schedules.confirm') }}:</strong> {{ $t(`schedules.${item.confirm.toLowerCase()}`) }}</div>
+              <div class="info-item"><strong>{{ $t('schedules.deadline') }}:</strong> {{ item.deadline }}</div>
               <div class="info-item"><strong>Target:</strong> {{ item.scheduled_start }} ~ {{ item.scheduled_end }}</div>
-              <div class="info-item" v-if="item.actual_start"><strong>Actual:</strong> {{ item.actual_start }} ~ {{ item.actual_finish }}</div>
+              <div v-if="item.actual_start" class="info-item"><strong>Actual:</strong> {{ item.actual_start }} ~ {{ item.actual_finish }}</div>
             </div>
             <div v-if="item.memo" class="memo-box">
-              <strong>Memo:</strong> {{ item.memo }}
+              <strong>{{ $t('schedules.memo') }}:</strong> {{ item.memo }}
             </div>
           </div>
         </div>
@@ -81,45 +81,45 @@
     </div>
 
     <!-- Create Modal -->
-    <BaseModal v-model="showCreateModal" title="Add New Schedule">
+    <BaseModal v-model="showCreateModal" :title="$t('schedules.addSchedule')">
       <form @submit.prevent="handleCreate" class="modal-form">
         <div class="form-grid">
-          <BaseInput v-model="form.project" label="Project" placeholder="E.g. XTask" />
-          <BaseInput v-model="form.title" label="Title" placeholder="Schedule title" />
+          <BaseInput v-model="form.project" :label="$t('schedules.project')" placeholder="E.g. XTask" />
+          <BaseInput v-model="form.title" :label="$t('schedules.scheduleTitle')" placeholder="Schedule title" />
           <BaseInput 
             v-model="form.status" 
-            label="Status" 
+            :label="$t('schedules.status')" 
             type="select" 
             :options="[
-              { label: 'Working', value: 'working' },
-              { label: 'Finish', value: 'finish' },
-              { label: 'In Progress', value: 'in_progress' },
-              { label: 'Fail', value: 'fail' }
+              { label: $t('schedules.working'), value: 'working' },
+              { label: $t('schedules.finish'), value: 'finish' },
+              { label: $t('schedules.in_progress'), value: 'in_progress' },
+              { label: $t('schedules.fail'), value: 'fail' }
             ]" 
           />
           <BaseInput 
             v-model="form.confirm" 
-            label="Confirmation" 
+            :label="$t('schedules.confirm')" 
             type="select" 
             :options="[
-              { label: 'Tentatively', value: 'Tentatively' },
-              { label: 'Confirmed', value: 'Confirmed' }
+              { label: $t('schedules.tentatively'), value: 'Tentatively' },
+              { label: $t('schedules.confirmed'), value: 'Confirmed' }
             ]" 
           />
-          <BaseInput v-model="form.deadline" label="Deadline" type="date" />
-          <BaseInput v-model="form.scheduled_start" label="Target Start" type="date" />
-          <BaseInput v-model="form.scheduled_end" label="Target End" type="date" />
-          <BaseInput v-model="form.actual_start" label="Actual Start" type="date" />
-          <BaseInput v-model="form.actual_finish" label="Actual Finish" type="date" />
+          <BaseInput v-model="form.deadline" :label="$t('schedules.deadline')" type="date" />
+          <BaseInput v-model="form.scheduled_start" :label="$t('schedules.scheduledStart')" type="date" />
+          <BaseInput v-model="form.scheduled_end" :label="$t('schedules.scheduledEnd')" type="date" />
+          <BaseInput v-model="form.actual_start" :label="$t('schedules.actualStart')" type="date" />
+          <BaseInput v-model="form.actual_finish" :label="$t('schedules.actualFinish')" type="date" />
           <div class="full-width">
-            <BaseInput v-model="form.memo" label="Memo" type="textarea" placeholder="Add some remarks..." />
+            <BaseInput v-model="form.memo" :label="$t('schedules.memo')" type="textarea" placeholder="Add some remarks..." />
           </div>
         </div>
       </form>
       <template #footer>
-        <button @click="showCreateModal = false" class="btn-secondary">Cancel</button>
+        <button @click="showCreateModal = false" class="btn-secondary">{{ $t('schedules.cancel') }}</button>
         <button @click="handleCreate" :disabled="creating" class="btn-primary">
-          {{ creating ? 'Creating...' : 'Create Schedule' }}
+          {{ creating ? $t('schedules.creating') : $t('schedules.create') }}
         </button>
       </template>
     </BaseModal>

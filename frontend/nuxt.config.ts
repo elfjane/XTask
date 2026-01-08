@@ -5,6 +5,10 @@ export default defineNuxtConfig({
   future: {
     compatibilityVersion: 4,
   },
+  app: {
+    pageTransition: { name: 'page', mode: 'out-in' },
+    layoutTransition: { name: 'layout', mode: 'out-in' }
+  },
   i18n: {
     locales: [
       { code: 'en', iso: 'en-US', file: 'en.json', name: 'English', icon: '🇺🇸' },

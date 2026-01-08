@@ -29,5 +29,32 @@
         "signIn": "Sign In",
         "loggingIn": "Logging in...",
         "testCreds": "Test credentials:"
+    },
+    "schedules": {
+        "title": "Schedules",
+        "addSchedule": "Add Schedule",
+        "idx": "IDX",
+        "status": "Status",
+        "confirm": "Confirm",
+        "deadline": "Deadline",
+        "week": "Week",
+        "scheduledStart": "Target Start",
+        "scheduledEnd": "Target End",
+        "scheduledDays": "Target Days",
+        "actualStart": "Actual Start",
+        "actualFinish": "Actual Finish",
+        "actualDays": "Actual Days",
+        "project": "Project",
+        "scheduleTitle": "Schedule Title",
+        "memo": "Memo",
+        "working": "Working",
+        "finish": "Finish",
+        "in_progress": "In Progress",
+        "fail": "Fail",
+        "tentatively": "Tentatively",
+        "confirmed": "Confirmed",
+        "cancel": "Cancel",
+        "create": "Create Schedule",
+        "creating": "Creating..."
     }
 }

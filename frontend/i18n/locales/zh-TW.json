@@ -29,5 +29,32 @@
         "signIn": "登入",
         "loggingIn": "登入中...",
         "testCreds": "測試帳號："
+    },
+    "schedules": {
+        "title": "排程",
+        "addSchedule": "新增排程",
+        "idx": "編號",
+        "status": "狀態",
+        "confirm": "確認",
+        "deadline": "截止日期",
+        "week": "週",
+        "scheduledStart": "預定開始日期",
+        "scheduledEnd": "預定結束日期",
+        "scheduledDays": "預定天數",
+        "actualStart": "實際開始日期",
+        "actualFinish": "實際完成日期",
+        "actualDays": "實際天數",
+        "project": "專案",
+        "scheduleTitle": "排程標題",
+        "memo": "備註",
+        "working": "執行中",
+        "finish": "完成",
+        "in_progress": "進行中",
+        "fail": "失敗",
+        "tentatively": "暫定",
+        "confirmed": "已確認",
+        "cancel": "取消",
+        "create": "建立排程",
+        "creating": "建立中..."
     }
 }
