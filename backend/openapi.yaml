@@ -90,6 +90,58 @@ security:
   - SanctumToken: []
 
 paths:
+  /register:
+    post:
+      summary: Register a new user account
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password, password_confirmation]
+              properties:
+                name: 
+                  type: string
+                  minLength: 1
+                  maxLength: 255
+                email: 
+                  type: string
+                  format: email
+                password: 
+                  type: string
+                  minLength: 8
+                password_confirmation: 
+                  type: string
+                  minLength: 8
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token: { type: string }
+                  user: { $ref: '#/components/schemas/User' }
+        '403':
+          description: Registration is disabled
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: { type: string, example: 'Registration is temporarily disabled.' }
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: { type: string }
+                  errors: { type: object }
+
   /login:
     post:
       summary: Login with email and password

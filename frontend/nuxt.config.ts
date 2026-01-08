@@ -26,6 +26,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       // API base URL if needed, but we use relative /api with proxy
+      allowRegistration: process.env.NUXT_PUBLIC_ALLOW_REGISTRATION || 'false'
     }
   },
   routeRules: {

@@ -28,7 +28,23 @@
         "password": "Password",
         "signIn": "Sign In",
         "loggingIn": "Logging in...",
-        "testCreds": "Test credentials:"
+        "testCreds": "Test credentials:",
+        "noAccount": "Don't have an account?",
+        "register": "Register",
+        "registrationDisabled": "Registration is temporarily disabled"
+    },
+    "register": {
+        "title": "Create Account",
+        "subtitle": "Register to start using XTask",
+        "name": "Name",
+        "email": "Email",
+        "password": "Password",
+        "confirmPassword": "Confirm Password",
+        "signUp": "Sign Up",
+        "registering": "Registering...",
+        "haveAccount": "Already have an account?",
+        "login": "Login",
+        "registrationDisabled": "Registration is temporarily disabled. Please contact the administrator."
     },
     "schedules": {
         "title": "Schedules",

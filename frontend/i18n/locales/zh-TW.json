@@ -28,7 +28,23 @@
         "password": "密碼",
         "signIn": "登入",
         "loggingIn": "登入中...",
-        "testCreds": "測試帳號："
+        "testCreds": "測試帳號：",
+        "noAccount": "還沒有帳號？",
+        "register": "註冊",
+        "registrationDisabled": "註冊功能暫時關閉"
+    },
+    "register": {
+        "title": "建立帳號",
+        "subtitle": "註冊以開始使用 XTask",
+        "name": "姓名",
+        "email": "電子郵件",
+        "password": "密碼",
+        "confirmPassword": "確認密碼",
+        "signUp": "註冊",
+        "registering": "註冊中...",
+        "haveAccount": "已經有帳號了？",
+        "login": "登入",
+        "registrationDisabled": "註冊功能暫時關閉，請聯繫管理員。"
     },
     "schedules": {
         "title": "排程",

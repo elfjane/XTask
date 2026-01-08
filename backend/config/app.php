@@ -69,6 +69,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Allow Registration
+    |--------------------------------------------------------------------------
+    |
+    | This value determines whether new user registration is allowed.
+    | When set to false, the registration endpoint will return a 403 error.
+    |
+    */
+
+    'allow_registration' => env('ALLOW_REGISTRATION', false),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Locale Configuration
     |--------------------------------------------------------------------------
     |

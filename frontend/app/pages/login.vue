@@ -37,6 +37,10 @@
           {{ loading ? $t('login.loggingIn') : $t('login.signIn') }}
         </button>
       </form>
+
+      <div v-if="allowRegistration" class="register-link">
+        <p>{{ $t('login.noAccount') }} <NuxtLink to="/register">{{ $t('login.register') }}</NuxtLink></p>
+      </div>
       
       <div class="test-creds">
         <p>{{ $t('login.testCreds') }}</p>
@@ -50,6 +54,9 @@
 definePageMeta({
   layout: false
 })
+
+const config = useRuntimeConfig()
+const allowRegistration = computed(() => config.public.allowRegistration === 'true' || config.public.allowRegistration === true)
 
 const { loginWithEmail, isAuthenticated } = useAuth()
 const email = ref('')
@@ -174,6 +181,25 @@ input:focus {
   background: #a0aec0;
   cursor: not-allowed;
   transform: none;
+}
+
+.register-link {
+  margin-top: 1.5rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #4a5568;
+}
+
+.register-link a {
+  color: #667eea;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.register-link a:hover {
+  color: #5a67d8;
+  text-decoration: underline;
 }
 
 .test-creds {
