@@ -1,89 +1,87 @@
 <template>
-  <div class="register-page">
-    <div class="register-card">
-      <h1>{{ $t('register.title') }}</h1>
-      <p class="subtitle">{{ $t('register.subtitle') }}</p>
+  <div class="register-card">
+    <h1>{{ $t('register.title') }}</h1>
+    <p class="subtitle">{{ $t('register.subtitle') }}</p>
+    
+    <div v-if="!allowRegistration" class="warning-message">
+      {{ $t('register.registrationDisabled') }}
+    </div>
+
+    <form v-else @submit.prevent="handleRegister" class="register-form">
+      <div class="form-group">
+        <label for="name">{{ $t('register.name') }}</label>
+        <input 
+          id="name" 
+          v-model="name" 
+          type="text" 
+          :placeholder="$t('register.name')"
+          required
+          :disabled="loading"
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="email">{{ $t('register.email') }}</label>
+        <input 
+          id="email" 
+          v-model="email" 
+          type="email" 
+          placeholder="your@email.com" 
+          required
+          :disabled="loading"
+        >
+      </div>
       
-      <div v-if="!allowRegistration" class="warning-message">
-        {{ $t('register.registrationDisabled') }}
+      <div class="form-group">
+        <label for="password">{{ $t('register.password') }}</label>
+        <input 
+          id="password" 
+          v-model="password" 
+          type="password" 
+          placeholder="••••••••" 
+          required
+          minlength="8"
+          :disabled="loading"
+        >
       </div>
 
-      <form v-else @submit.prevent="handleRegister" class="register-form">
-        <div class="form-group">
-          <label for="name">{{ $t('register.name') }}</label>
-          <input 
-            id="name" 
-            v-model="name" 
-            type="text" 
-            :placeholder="$t('register.name')"
-            required
-            :disabled="loading"
-          >
-        </div>
-
-        <div class="form-group">
-          <label for="email">{{ $t('register.email') }}</label>
-          <input 
-            id="email" 
-            v-model="email" 
-            type="email" 
-            placeholder="your@email.com" 
-            required
-            :disabled="loading"
-          >
-        </div>
-        
-        <div class="form-group">
-          <label for="password">{{ $t('register.password') }}</label>
-          <input 
-            id="password" 
-            v-model="password" 
-            type="password" 
-            placeholder="••••••••" 
-            required
-            minlength="8"
-            :disabled="loading"
-          >
-        </div>
-
-        <div class="form-group">
-          <label for="password_confirmation">{{ $t('register.confirmPassword') }}</label>
-          <input 
-            id="password_confirmation" 
-            v-model="passwordConfirmation" 
-            type="password" 
-            placeholder="••••••••" 
-            required
-            minlength="8"
-            :disabled="loading"
-          >
-        </div>
-
-        <div v-if="error" class="error-message">
-          {{ error }}
-        </div>
-
-        <button type="submit" class="register-btn" :disabled="loading">
-          {{ loading ? $t('register.registering') : $t('register.signUp') }}
-        </button>
-      </form>
-
-      <div class="login-link">
-        <p>{{ $t('register.haveAccount') }} <NuxtLink to="/login">{{ $t('register.login') }}</NuxtLink></p>
+      <div class="form-group">
+        <label for="password_confirmation">{{ $t('register.confirmPassword') }}</label>
+        <input 
+          id="password_confirmation" 
+          v-model="passwordConfirmation" 
+          type="password" 
+          placeholder="••••••••" 
+          required
+          minlength="8"
+          :disabled="loading"
+        >
       </div>
+
+      <div v-if="error" class="error-message">
+        {{ error }}
+      </div>
+
+      <button type="submit" class="register-btn" :disabled="loading">
+        {{ loading ? $t('register.registering') : $t('register.signUp') }}
+      </button>
+    </form>
+
+    <div class="login-link">
+      <p>{{ $t('register.haveAccount') }} <NuxtLink to="/login">{{ $t('register.login') }}</NuxtLink></p>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 definePageMeta({
-  layout: false
+  layout: 'auth'
 })
 
 const config = useRuntimeConfig()
-const allowRegistration = computed(() => config.public.allowRegistration === 'true' || config.public.allowRegistration === true)
+const allowRegistration = computed(() => String(config.public.allowRegistration) === 'true')
 
-const { isAuthenticated } = useAuth()
+const { isAuthenticated, register } = useAuth()
 const name = ref('')
 const email = ref('')
 const password = ref('')
@@ -108,20 +106,7 @@ const handleRegister = async () => {
   error.value = ''
   
   try {
-    const data = await $fetch<any>('/api/register', {
-      method: 'POST',
-      body: { 
-        name: name.value,
-        email: email.value, 
-        password: password.value,
-        password_confirmation: passwordConfirmation.value
-      }
-    })
-    
-    // Auto login after registration
-    const token = useCookie('auth-token', { maxAge: 60 * 60 * 24 * 7 })
-    token.value = data.token
-    
+    await register(name.value, email.value, password.value, passwordConfirmation.value)
     navigateTo('/')
   } catch (err: any) {
     if (err.status === 403) {
@@ -140,16 +125,6 @@ const handleRegister = async () => {
 </script>
 
 <style scoped>
-.register-page {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  font-family: 'Inter', sans-serif;
-  padding: 2rem 1rem;
-}
-
 .register-card {
   background: white;
   padding: 3rem;

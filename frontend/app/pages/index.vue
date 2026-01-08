@@ -7,6 +7,7 @@
         <div class="actions">
           <NuxtLink to="/tasks" class="btn-primary">{{ $t('common.getStarted') }}</NuxtLink>
           <NuxtLink to="/schedules" class="btn-outline">{{ $t('common.viewSchedules') }}</NuxtLink>
+          <NuxtLink to="/tasks" class="btn-outline">{{ $t('common.viewTasks') }}</NuxtLink>
         </div>
       </div>
       <div class="hero-image">

@@ -9,6 +9,12 @@
 
 <script setup lang="ts">
 // Main entry point
+const { fetchMe, token } = useAuth()
+
+// Fetch user data if token exists (e.g. on page refresh)
+if (token.value) {
+  await fetchMe()
+}
 </script>
 
 <style>

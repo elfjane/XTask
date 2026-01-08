@@ -1,62 +1,60 @@
 <template>
-  <div class="login-page">
-    <div class="login-card">
-      <h1>{{ $t('login.title') }}</h1>
-      <p class="subtitle">{{ $t('login.subtitle') }}</p>
-      
-      <form @submit.prevent="handleLogin" class="login-form">
-        <div class="form-group">
-          <label for="email">{{ $t('login.email') }}</label>
-          <input 
-            id="email" 
-            v-model="email" 
-            type="email" 
-            placeholder="admin@example.com" 
-            required
-            :disabled="loading"
-          >
-        </div>
-        
-        <div class="form-group">
-          <label for="password">{{ $t('login.password') }}</label>
-          <input 
-            id="password" 
-            v-model="password" 
-            type="password" 
-            placeholder="••••••••" 
-            required
-            :disabled="loading"
-          >
-        </div>
-
-        <div v-if="error" class="error-message">
-          {{ error }}
-        </div>
-
-        <button type="submit" class="login-btn" :disabled="loading">
-          {{ loading ? $t('login.loggingIn') : $t('login.signIn') }}
-        </button>
-      </form>
-
-      <div v-if="allowRegistration" class="register-link">
-        <p>{{ $t('login.noAccount') }} <NuxtLink to="/register">{{ $t('login.register') }}</NuxtLink></p>
+  <div class="login-card">
+    <h1>{{ $t('login.title') }}</h1>
+    <p class="subtitle">{{ $t('login.subtitle') }}</p>
+    
+    <form @submit.prevent="handleLogin" class="login-form">
+      <div class="form-group">
+        <label for="email">{{ $t('login.email') }}</label>
+        <input 
+          id="email" 
+          v-model="email" 
+          type="email" 
+          placeholder="admin@example.com" 
+          required
+          :disabled="loading"
+        >
       </div>
       
-      <div class="test-creds">
-        <p>{{ $t('login.testCreds') }}</p>
-        <code>admin@example.com / password</code>
+      <div class="form-group">
+        <label for="password">{{ $t('login.password') }}</label>
+        <input 
+          id="password" 
+          v-model="password" 
+          type="password" 
+          placeholder="••••••••" 
+          required
+          :disabled="loading"
+        >
       </div>
+
+      <div v-if="error" class="error-message">
+        {{ error }}
+      </div>
+
+      <button type="submit" class="login-btn" :disabled="loading">
+        {{ loading ? $t('login.loggingIn') : $t('login.signIn') }}
+      </button>
+    </form>
+
+    <div v-if="allowRegistration" class="register-link">
+      <p>{{ $t('login.noAccount') }} <NuxtLink to="/register">{{ $t('login.register') }}</NuxtLink></p>
+    </div>
+    
+    <div class="test-creds">
+      <p>{{ $t('login.testCreds') }}</p>
+      <code>admin@example.com / password</code>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 definePageMeta({
-  layout: false
+  layout: 'auth'
 })
 
 const config = useRuntimeConfig()
-const allowRegistration = computed(() => config.public.allowRegistration === 'true' || config.public.allowRegistration === true)
+const allowRegistration = computed(() => String(config.public.allowRegistration) === 'true')
 
 const { loginWithEmail, isAuthenticated } = useAuth()
 const email = ref('')
@@ -86,15 +84,6 @@ const handleLogin = async () => {
 </script>
 
 <style scoped>
-.login-page {
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  font-family: 'Inter', sans-serif;
-}
-
 .login-card {
   background: white;
   padding: 3rem;

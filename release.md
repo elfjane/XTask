@@ -14,8 +14,11 @@ All notable changes to the XTask project will be documented in this file.
   - Added conditional registration link on login page based on environment variable.
   - Implemented error handling for backend registration disabled scenario.
   - Updated `useAuth` composable to support registration.
+  - **Fix**: Updated auth middleware to check token existence (`isAuthenticated`) instead of user object to prevent premature redirects.
+  - **Fix**: Added global user fetch in `app.vue` to restore user session on page reload.
 - **i18n**: Added registration-related translations for English and Traditional Chinese.
 - **Documentation**: Updated `.env.example` files for both frontend and backend.
+
 
 
 ## [2026-01-08 17:00] - Backend Stability & Unit Tests
