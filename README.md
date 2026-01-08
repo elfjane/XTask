@@ -1,0 +1,37 @@
+# XTask - Project Management System
+
+XTask is a comprehensive project management application designed for cross-platform support (PC, Tablet, Mobile). It helps teams stay organized by tracking tasks, schedules, and collaborator remarks.
+
+## Technology Stack
+
+- **Frontend**: Nuxt 4, Vue 3, Vanilla CSS
+- **Backend**: Laravel 12.x, PHP 8.x
+- **Database**: MySQL/SQLite
+- **Authentication**: Firebase Integration (planned/in-progress) + Laravel Auth
+
+## Project Structure
+
+```text
+XTask/
+├── frontend/    # Nuxt 4 Application
+│   └── app/     # Core application source (Pages, Components, etc.)
+└── backend/     # Laravel API
+```
+
+## Getting Started
+
+### Frontend
+1. Navigate to `/frontend`
+2. Run `npm install`
+3. Run `npm run dev`
+
+### Backend
+1. Navigate to `/backend`
+2. Run `composer install`
+3. Run `php artisan migrate`
+4. Run `php artisan serve`
+
+## Features
+- **Schedules**: Responsive view (Table for PC, Cards for Mobile).
+- **Task Tracking**: Detailed task management with status and priority.
+- **Multi-language Support**: i18n integrated for English and Traditional Chinese.

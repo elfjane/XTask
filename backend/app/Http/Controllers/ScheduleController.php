@@ -28,6 +28,9 @@ class ScheduleController extends Controller
             'deadline' => 'nullable|date',
             'scheduled_start' => 'nullable|date',
             'scheduled_end' => 'nullable|date',
+            'actual_start' => 'nullable|date',
+            'actual_finish' => 'nullable|date',
+            'memo' => 'nullable|string',
         ]);
 
         $schedule = Schedule::create($validated);

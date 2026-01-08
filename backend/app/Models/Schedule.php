@@ -19,6 +19,7 @@ class Schedule extends Model
         'scheduled_end',
         'actual_start',
         'actual_finish',
+        'memo',
     ];
 
     public function memos()
