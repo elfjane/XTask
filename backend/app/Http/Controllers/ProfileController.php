@@ -25,6 +25,6 @@ class ProfileController extends Controller
             return response()->json(['error' => 'User not found'], 404);
 
         $user->update($request->only(['name', 'title', 'department', 'photo_url']));
-        return response()->json(['message' => 'Profile updated']);
+        return response()->json($user);
     }
 }

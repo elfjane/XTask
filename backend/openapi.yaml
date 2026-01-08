@@ -9,7 +9,7 @@ servers:
 
 components:
   securitySchemes:
-    FirebaseIDToken:
+    SanctumToken:
       type: http
       scheme: bearer
       bearerFormat: JWT
@@ -19,8 +19,8 @@ components:
       type: object
       properties:
         id: { type: integer }
-        firebase_uid: { type: string }
         name: { type: string }
+        email: { type: string }
         title: { type: string }
         department: { type: string }
         photo_url: { type: string }
@@ -39,6 +39,7 @@ components:
         scheduled_end: { type: string, format: date }
         actual_start: { type: string, format: date }
         actual_finish: { type: string, format: date }
+        memo: { type: string }
         memos:
           type: array
           items:
@@ -58,12 +59,11 @@ components:
         id: { type: integer }
         level: { type: integer, enum: [1, 2, 3], description: '1: Ordinary, 2: Important, 3: Priority' }
         status: { type: string, enum: [working, in progress, cancelled, idle, waiting qa, finished, miss] }
+        user_id: { type: integer }
         assignee: { $ref: '#/components/schemas/User' }
-        collaborators:
-          type: array
-          items:
-            $ref: '#/components/schemas/User'
+        related_personnel: { type: string }
         project: { type: string }
+        item: { type: string }
         department: { type: string }
         work: { type: string, maxLength: 255 }
         points: { type: number, minimum: 0.5, maximum: 21 }
@@ -72,6 +72,7 @@ components:
         expected_finish_date: { type: string, format: date }
         actual_finish_date: { type: string, format: date }
         output_url: { type: string }
+        memo: { type: string }
         remarks:
           type: array
           items:
@@ -86,12 +87,54 @@ components:
         created_at: { type: string, format: date-time }
 
 security:
-  - FirebaseIDToken: []
+  - SanctumToken: []
 
 paths:
+  /login:
+    post:
+      summary: Login with email and password
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string }
+                password: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token: { type: string }
+                  user: { $ref: '#/components/schemas/User' }
+
+  /logout:
+    post:
+      summary: Logout the current user
+      responses:
+        '200':
+          description: OK
+
   /me:
     get:
       summary: Get current authenticated user
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /profile:
+    get:
+      summary: Show current user profile
       responses:
         '200':
           description: OK
@@ -114,6 +157,10 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
 
   /schedules:
     get:
@@ -129,9 +176,18 @@ paths:
                   $ref: '#/components/schemas/Schedule'
     post:
       summary: Create schedule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Schedule'
       responses:
         '201':
           description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Schedule'
 
   /tasks:
     get:
@@ -147,6 +203,28 @@ paths:
                   $ref: '#/components/schemas/Task'
     post:
       summary: Create task
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Task'
       responses:
         '201':
           description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+
+  /users:
+    get:
+      summary: List all users
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
