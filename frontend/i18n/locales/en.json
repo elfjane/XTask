@@ -103,5 +103,17 @@
         "waiting_qa": "Waiting QA",
         "miss": "Miss",
         "cancelled": "Cancelled"
+    },
+    "profile": {
+        "title": "Profile Settings",
+        "personalInfo": "Personal Information",
+        "updateInfo": "Update Information",
+        "updating": "Updating...",
+        "changePassword": "Change Password",
+        "currentPassword": "Current Password",
+        "newPassword": "New Password",
+        "confirmNewPassword": "Confirm New Password",
+        "updatePassword": "Update Password",
+        "successMessage": "Profile updated successfully"
     }
 }

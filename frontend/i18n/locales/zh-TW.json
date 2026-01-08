@@ -103,5 +103,17 @@
         "waiting_qa": "待測試",
         "miss": "未達成",
         "cancelled": "已取消"
+    },
+    "profile": {
+        "title": "個人設定",
+        "personalInfo": "個人資訊",
+        "updateInfo": "更新資訊",
+        "updating": "更新中...",
+        "changePassword": "變更密碼",
+        "currentPassword": "目前密碼",
+        "newPassword": "新密碼",
+        "confirmNewPassword": "確認新密碼",
+        "updatePassword": "更新密碼",
+        "successMessage": "個人資料更新成功"
     }
 }

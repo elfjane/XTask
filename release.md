@@ -16,7 +16,15 @@ All notable changes to the XTask project will be documented in this file.
   - Updated `useAuth` composable to support registration.
   - **Fix**: Updated auth middleware to check token existence (`isAuthenticated`) instead of user object to prevent premature redirects.
   - **Fix**: Added global user fetch in `app.vue` to restore user session on page reload.
-- **i18n**: Added registration-related translations for English and Traditional Chinese.
+  - **Fix**: Resolves state synchronization issue after registration (auto-login).
+  - **Fix**: Fixed layout transition issues on auth pages using dedicated `auth` layout.
+- **Dashboard**: Added "View Tasks" button to the main dashboard action area.
+- **Profile**: Implemented User Profile page (`/profile`).
+  - View and edit personal information (Name, Email).
+  - Change password functionality with current password validation.
+  - Backend: Enhanced `ProfileController` to support email uniqueness check and password update.
+- **i18n**: Added registration and profile related translations for English and Traditional Chinese.
+- **Tests**: Added comprehensive Feature tests for Profile update functionality.
 - **Documentation**: Updated `.env.example` files for both frontend and backend.
 
 
