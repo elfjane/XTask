@@ -131,7 +131,7 @@ definePageMeta({
   middleware: 'auth'
 })
 
-const { getToken } = useAuth()
+const { token } = useAuth()
 const showCreateModal = ref(false)
 const creating = ref(false)
 
@@ -163,30 +163,21 @@ interface Schedule {
 }
 
 const { data: schedules, pending, error, refresh } = await useFetch<Schedule[]>('/api/schedules', {
-  async onRequest({ options }) {
-    const token = await getToken()
-    if (token) {
-      options.headers = options.headers || {}
-      if (Array.isArray(options.headers)) {
-        options.headers.push(['Authorization', `Bearer ${token}`])
-      } else if (options.headers instanceof Headers) {
-        options.headers.set('Authorization', `Bearer ${token}`)
-      } else {
-        options.headers.Authorization = `Bearer ${token}`
-      }
-    }
+  headers: {
+    Authorization: `Bearer ${token.value}`,
+    Accept: 'application/json'
   }
 })
 
 const handleCreate = async () => {
   creating.value = true
   try {
-    const token = await getToken()
     await $fetch('/api/schedules', {
       method: 'POST',
       body: form,
       headers: {
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${token.value}`,
+        Accept: 'application/json'
       }
     })
     showCreateModal.value = false

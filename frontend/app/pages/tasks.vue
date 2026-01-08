@@ -227,8 +227,11 @@ const userOptions = computed(() => {
 })
 
 watch(userOptions, (options) => {
-  if (options.length > 0 && !form.user_id) {
-    form.user_id = options[0].value
+  if (options && options.length > 0 && !form.user_id) {
+    const firstOption = options[0]
+    if (firstOption) {
+      form.user_id = firstOption.value
+    }
   }
 }, { immediate: true })
 
