@@ -2,11 +2,11 @@
   <div class="dashboard">
     <div class="hero">
       <div class="hero-content">
-        <h1>Welcome to <span class="accent">XTask</span></h1>
-        <p>Your ultimate project management assistant. Stay organized, track progress, and collaborate seamlessly.</p>
+        <h1>{{ $t('common.welcome') }} <span class="accent">XTask</span></h1>
+        <p>{{ $t('hero.subtitle') }}</p>
         <div class="actions">
-          <NuxtLink to="/tasks" class="btn-primary">Get Started</NuxtLink>
-          <NuxtLink to="/schedules" class="btn-outline">View Schedules</NuxtLink>
+          <NuxtLink to="/tasks" class="btn-primary">{{ $t('common.getStarted') }}</NuxtLink>
+          <NuxtLink to="/schedules" class="btn-outline">{{ $t('common.viewSchedules') }}</NuxtLink>
         </div>
       </div>
       <div class="hero-image">
@@ -17,18 +17,18 @@
     <div class="features-grid">
       <div class="feature-card">
         <div class="icon-box purple">📅</div>
-        <h3>Smart Scheduling</h3>
-        <p>Keep track of all your projects with our intuitive schedule management system.</p>
+        <h3>{{ $t('features.smartScheduling') }}</h3>
+        <p>{{ $t('features.smartSchedulingDesc') }}</p>
       </div>
       <div class="feature-card">
         <div class="icon-box orange">✅</div>
-        <h3>Task Tracking</h3>
-        <p>Break down your projects into manageable tasks and monitor progress in real-time.</p>
+        <h3>{{ $t('features.taskTracking') }}</h3>
+        <p>{{ $t('features.taskTrackingDesc') }}</p>
       </div>
       <div class="feature-card">
         <div class="icon-box blue">👥</div>
-        <h3>Team Collaboration</h3>
-        <p>Assign tasks to team members and keep everyone on the same page with remarks.</p>
+        <h3>{{ $t('features.collaboration') }}</h3>
+        <p>{{ $t('features.collaborationDesc') }}</p>
       </div>
     </div>
   </div>

@@ -1,0 +1,33 @@
+{
+    "common": {
+        "schedules": "排程",
+        "tasks": "任務",
+        "profile": "個人資料",
+        "logout": "登出",
+        "login": "登入",
+        "welcome": "歡迎來到",
+        "getStarted": "立即開始",
+        "viewSchedules": "查看排程"
+    },
+    "hero": {
+        "title": "Welcome to XTask",
+        "subtitle": "您的終極專案管理助手。保持組織、追蹤進度並無縫協作。"
+    },
+    "features": {
+        "smartScheduling": "智能排程",
+        "smartSchedulingDesc": "透過我們直觀的排程管理系統輕鬆掌握所有專案。",
+        "taskTracking": "任務追蹤",
+        "taskTrackingDesc": "將您的專案分解為易於管理的任務，並進行即時進度監控。",
+        "collaboration": "團隊協作",
+        "collaborationDesc": "將任務分配給團隊成員，並透過備註讓大家保持步調一致。"
+    },
+    "login": {
+        "title": "XTask 登入",
+        "subtitle": "使用您的憑據存取工作區",
+        "email": "電子郵件",
+        "password": "密碼",
+        "signIn": "登入",
+        "loggingIn": "登入中...",
+        "testCreds": "測試帳號："
+    }
+}

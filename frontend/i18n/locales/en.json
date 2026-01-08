@@ -1,0 +1,33 @@
+{
+    "common": {
+        "schedules": "Schedules",
+        "tasks": "Tasks",
+        "profile": "Profile",
+        "logout": "Logout",
+        "login": "Login",
+        "welcome": "Welcome to",
+        "getStarted": "Get Started",
+        "viewSchedules": "View Schedules"
+    },
+    "hero": {
+        "title": "Welcome to XTask",
+        "subtitle": "Your ultimate project management assistant. Stay organized, track progress, and collaborate seamlessly."
+    },
+    "features": {
+        "smartScheduling": "Smart Scheduling",
+        "smartSchedulingDesc": "Keep track of all your projects with our intuitive schedule management system.",
+        "taskTracking": "Task Tracking",
+        "taskTrackingDesc": "Break down your projects into manageable tasks and monitor progress in real-time.",
+        "collaboration": "Team Collaboration",
+        "collaborationDesc": "Assign tasks to team members and keep everyone on the same page with remarks."
+    },
+    "login": {
+        "title": "XTask Login",
+        "subtitle": "Use your credentials to access your workspace",
+        "email": "Email",
+        "password": "Password",
+        "signIn": "Sign In",
+        "loggingIn": "Logging in...",
+        "testCreds": "Test credentials:"
+    }
+}

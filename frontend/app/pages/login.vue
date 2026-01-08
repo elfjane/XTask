@@ -1,12 +1,12 @@
 <template>
   <div class="login-page">
     <div class="login-card">
-      <h1>XTask Login</h1>
-      <p class="subtitle">Use your credentials to access your workspace</p>
+      <h1>{{ $t('login.title') }}</h1>
+      <p class="subtitle">{{ $t('login.subtitle') }}</p>
       
       <form @submit.prevent="handleLogin" class="login-form">
         <div class="form-group">
-          <label for="email">Email</label>
+          <label for="email">{{ $t('login.email') }}</label>
           <input 
             id="email" 
             v-model="email" 
@@ -18,7 +18,7 @@
         </div>
         
         <div class="form-group">
-          <label for="password">Password</label>
+          <label for="password">{{ $t('login.password') }}</label>
           <input 
             id="password" 
             v-model="password" 
@@ -34,12 +34,12 @@
         </div>
 
         <button type="submit" class="login-btn" :disabled="loading">
-          {{ loading ? 'Logging in...' : 'Sign In' }}
+          {{ loading ? $t('login.loggingIn') : $t('login.signIn') }}
         </button>
       </form>
       
       <div class="test-creds">
-        <p>Test credentials:</p>
+        <p>{{ $t('login.testCreds') }}</p>
         <code>admin@example.com / password</code>
       </div>
     </div>

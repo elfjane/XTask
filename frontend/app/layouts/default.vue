@@ -5,9 +5,30 @@
         <NuxtLink to="/" class="brand">XTask</NuxtLink>
         <div class="nav-links">
           <template v-if="user">
-            <NuxtLink to="/schedules">Schedules</NuxtLink>
-            <NuxtLink to="/tasks">Tasks</NuxtLink>
+            <NuxtLink to="/schedules">{{ $t('common.schedules') }}</NuxtLink>
+            <NuxtLink to="/tasks">{{ $t('common.tasks') }}</NuxtLink>
             
+            <!-- Language Switcher -->
+            <div class="lang-switcher" v-click-outside="closeLangDropdown">
+              <button @click="toggleLangDropdown" class="lang-trigger">
+                <span class="flag-icon">{{ currentLocale.icon }}</span>
+              </button>
+              <Transition name="dropdown">
+                <div v-if="isLangDropdownOpen" class="lang-dropdown">
+                  <button 
+                    v-for="locale in locales" 
+                    :key="locale.code" 
+                    @click="changeLanguage(locale.code)"
+                    class="lang-item"
+                    :class="{ active: currentLocale.code === locale.code }"
+                  >
+                    <span class="icon">{{ locale.icon }}</span> {{ locale.name }}
+                  </button>
+                </div>
+              </Transition>
+            </div>
+
+            <!-- User Menu -->
             <div class="user-menu-root" v-click-outside="closeDropdown">
               <button @click="toggleDropdown" class="avatar-trigger">
                 <img :src="user.photo_url || 'https://ui-avatars.com/api/?name=' + user.name" :alt="user.name" class="avatar-small" />
@@ -25,10 +46,10 @@
                   <div class="dropdown-divider"></div>
                   <div class="dropdown-items">
                     <NuxtLink to="/profile" class="dropdown-item" @click="closeDropdown">
-                      <span class="icon">👤</span> 個人資料
+                      <span class="icon">👤</span> {{ $t('common.profile') }}
                     </NuxtLink>
                     <button @click="handleLogout" class="dropdown-item logout">
-                      <span class="icon">🚪</span> 登出
+                      <span class="icon">🚪</span> {{ $t('common.logout') }}
                     </button>
                   </div>
                 </div>
@@ -36,7 +57,7 @@
             </div>
           </template>
           <template v-else>
-            <NuxtLink to="/login" class="login-link">Login</NuxtLink>
+            <NuxtLink to="/login" class="login-link">{{ $t('common.login') }}</NuxtLink>
           </template>
         </div>
       </div>
@@ -50,14 +71,33 @@
 
 <script setup lang="ts">
 const { user, logout } = useAuth()
-const isDropdownOpen = ref(false)
+const { locale, locales, setLocale } = useI18n()
 
+// User Dropdown
+const isDropdownOpen = ref(false)
 const toggleDropdown = () => {
   isDropdownOpen.value = !isDropdownOpen.value
 }
-
 const closeDropdown = () => {
   isDropdownOpen.value = false
+}
+
+// Language Dropdown
+const isLangDropdownOpen = ref(false)
+const toggleLangDropdown = () => {
+  isLangDropdownOpen.value = !isLangDropdownOpen.value
+}
+const closeLangDropdown = () => {
+  isLangDropdownOpen.value = false
+}
+
+const currentLocale = computed(() => {
+  return locales.value.find((l: any) => l.code === locale.value) || locales.value[0]
+})
+
+const changeLanguage = (code: string) => {
+  setLocale(code)
+  closeLangDropdown()
 }
 
 const handleLogout = async () => {
@@ -65,7 +105,7 @@ const handleLogout = async () => {
   await logout()
 }
 
-// Simple click-outside directive or manual listener
+// Simple click-outside directive
 const vClickOutside = {
   mounted(el: any, binding: any) {
     el.clickOutsideEvent = (event: Event) => {
@@ -116,7 +156,7 @@ const vClickOutside = {
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 2rem;
+  gap: 1.5rem;
 }
 
 .nav-links a {
@@ -138,6 +178,72 @@ const vClickOutside = {
   font-weight: 600;
 }
 
+/* Language Switcher */
+.lang-switcher {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.lang-trigger {
+  background: #f8f9fa;
+  border: 1px solid #eee;
+  padding: 6px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s;
+  font-size: 1.2rem;
+}
+
+.lang-trigger:hover {
+  background: #f0f2f5;
+  border-color: #ddd;
+  transform: translateY(-1px);
+}
+
+.lang-dropdown {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  width: 160px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  border: 1px solid rgba(0,0,0,0.05);
+  padding: 0.5rem;
+  z-index: 1000;
+}
+
+.lang-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  background: none;
+  border-radius: 8px;
+  color: #444;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  gap: 10px;
+}
+
+.lang-item:hover {
+  background: #f5f7ff;
+  color: #764ba2;
+}
+
+.lang-item.active {
+  background: #f5f7ff;
+  color: #764ba2;
+  font-weight: 700;
+}
+
+/* User Menu */
 .user-menu-root {
   position: relative;
   display: flex;
@@ -188,7 +294,7 @@ const vClickOutside = {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  background: linear-gradient(to bottom, #f8f9ff, #white);
+  background: linear-gradient(to bottom, #f8f9ff, white);
 }
 
 .avatar-large {
