@@ -19,7 +19,9 @@ All notable changes to the XTask project will be documented in this file.
   - **Account Management**: Implemented User List, Create, and Edit pages. Added "Freeze" account functionality.
   - **Resource Management**: Implemented Project and Department management with Add/Edit modals.
   - **i18n**: Added full Chinese/English translations for the Admin interface.
-  - **Navigation**: Added "Management" button to the main header for admin users.
+  - **UI/UX**: Centered navigation links (Schedules, Tasks) in the header with active indicators.
+  - **Navigation**: Relocated "Management" button to user dropdown for a cleaner header.
+  - **Layout**: Synchronized Admin layout branding and container width (1920px) with the main application.
   - **i18n**: Moved language switcher from header to Personal Settings (`/profile`) page.
 
 ## [2026-01-08 17:30] - User Registration Feature with Toggle Control

@@ -44,7 +44,7 @@
 }
 
 .container {
-  max-width: 1400px;
+  max-width: 1920px;
   margin: 0 auto;
   padding: 0 1.5rem;
   display: flex; /* For header flex behavior, sidebar/main handled by grid below */
@@ -56,9 +56,12 @@
 }
 
 .brand {
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   font-weight: 800;
-  color: #2d3748;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   text-decoration: none;
 }
 

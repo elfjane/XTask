@@ -2,14 +2,19 @@
   <div class="layout">
     <nav class="navbar">
       <div class="container">
-        <NuxtLink to="/" class="brand">XTask</NuxtLink>
-        <div class="nav-links">
-          <template v-if="user">
-            <NuxtLink to="/schedules">{{ $t('common.schedules') }}</NuxtLink>
-            <NuxtLink to="/tasks">{{ $t('common.tasks') }}</NuxtLink>
-            <NuxtLink v-if="user?.role === 'admin'" to="/admin" class="nav-item">{{ $t('common.management') }}</NuxtLink>
-            
+        <div class="navbar-left">
+          <NuxtLink to="/" class="brand">XTask</NuxtLink>
+        </div>
 
+        <div class="navbar-center">
+          <template v-if="user">
+            <NuxtLink to="/schedules" class="nav-link">{{ $t('common.schedules') }}</NuxtLink>
+            <NuxtLink to="/tasks" class="nav-link">{{ $t('common.tasks') }}</NuxtLink>
+          </template>
+        </div>
+
+        <div class="navbar-right">
+          <template v-if="user">
             <!-- User Menu -->
             <div class="user-menu-root" v-click-outside="closeDropdown">
               <button @click="toggleDropdown" class="avatar-trigger">
@@ -29,6 +34,9 @@
                   <div class="dropdown-items">
                     <NuxtLink to="/profile" class="dropdown-item" @click="closeDropdown">
                       <span class="icon">👤</span> {{ $t('common.profile') }}
+                    </NuxtLink>                    
+                    <NuxtLink v-if="user?.role === 'admin'" to="/admin" class="dropdown-item" @click="closeDropdown">
+                      <span class="icon">⚙️</span> {{ $t('common.management') }}
                     </NuxtLink>
                     <button @click="handleLogout" class="dropdown-item logout">
                       <span class="icon">🚪</span> {{ $t('common.logout') }}
@@ -109,31 +117,67 @@ const vClickOutside = {
   align-items: center;
 }
 
+.navbar-left, .navbar-right {
+  flex: 1;
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-center {
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1.5rem;
+}
+
 .brand {
   font-size: 1.5rem;
   font-weight: 800;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  background-clip: text;
   text-decoration: none;
 }
 
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-}
-
-.nav-links a {
+.nav-link {
   text-decoration: none;
   color: #666;
-  font-weight: 500;
+  font-weight: 600;
+  font-size: 1rem;
   transition: all 0.2s;
+  padding: 0.5rem 0;
+  position: relative;
 }
 
-.nav-links a:hover, .nav-links a.router-link-active {
+.nav-link:after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: #764ba2;
+  transition: width 0.3s;
+}
+
+.nav-link:hover, .nav-link.router-link-active {
   color: #764ba2;
 }
+
+.nav-link.router-link-active:after {
+  width: 100%;
+}
+
 
 .login-link {
   background: #764ba2;
