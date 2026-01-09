@@ -1,5 +1,3 @@
-import { toRaw } from 'vue'
-
 export const useAuth = () => {
     const user = useState<any>('auth-user', () => null)
     const token = useCookie('auth-token', { maxAge: 60 * 60 * 24 * 7 }) // 1 week
@@ -67,7 +65,7 @@ export const useAuth = () => {
             const data = await $fetch<any>(`${apiBase}/api/me`, {
                 headers: { Authorization: `Bearer ${token.value}` }
             })
-            user.value = toRaw(data)
+            user.value = JSON.parse(JSON.stringify(data))
         } catch (err) {
             console.error('Fetch me failed:', err)
             token.value = null

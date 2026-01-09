@@ -1,44 +1,46 @@
 <template>
-  <div class="page-header">
-    <h1 class="page-title">{{ $t('admin.projects') }}</h1>
-    <button @click="openModal()" class="btn btn-primary">{{ $t('admin.add') }}</button>
-  </div>
+  <div class="admin-page-container">
+    <div class="page-header">
+      <h1 class="page-title">{{ $t('admin.projects') }}</h1>
+      <button @click="openModal()" class="btn btn-primary">{{ $t('admin.add') }}</button>
+    </div>
 
-  <div class="card">
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="item in items" :key="item.id">
-          <td>{{ item.id }}</td>
-          <td>{{ item.name }}</td>
-          <td class="actions-cell">
-            <button @click="openModal(item)" class="btn-icon">✏️</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+    <div class="card">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in items" :key="item.id">
+            <td>{{ item.id }}</td>
+            <td>{{ item.name }}</td>
+            <td class="actions-cell">
+              <button @click="openModal(item)" class="btn-icon">✏️</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-  <!-- Modal -->
-  <div v-if="showModal" class="modal-overlay">
-    <div class="modal">
-      <h2>{{ editingItem ? $t('admin.edit') : $t('admin.add') }}</h2>
-      <form @submit.prevent="submitForm">
-        <div class="form-group">
-          <label>Name</label>
-          <input v-model="form.name" type="text" required class="form-control" />
-        </div>
-        <div class="modal-actions">
-          <button type="button" @click="closeModal" class="btn btn-secondary">Cancel</button>
-          <button type="submit" class="btn btn-primary">Save</button>
-        </div>
-      </form>
+    <!-- Modal -->
+    <div v-if="showModal" class="modal-overlay">
+      <div class="modal">
+        <h2>{{ editingItem ? $t('admin.edit') : $t('admin.add') }}</h2>
+        <form @submit.prevent="submitForm">
+          <div class="form-group">
+            <label>Name</label>
+            <input v-model="form.name" type="text" required class="form-control" />
+          </div>
+          <div class="modal-actions">
+            <button type="button" @click="closeModal" class="btn btn-secondary">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save</button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </template>

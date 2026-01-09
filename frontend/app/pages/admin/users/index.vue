@@ -1,69 +1,71 @@
 <template>
-  <div class="page-header">
-    <h1 class="page-title">{{ $t('admin.users') }}</h1>
-    <NuxtLink to="/admin/users/create" class="btn btn-primary">{{ $t('admin.addUser') }}</NuxtLink>
-  </div>
+  <div class="admin-page-container">
+    <div class="page-header">
+      <h1 class="page-title">{{ $t('admin.users') }}</h1>
+      <NuxtLink to="/admin/users/create" class="btn btn-primary">{{ $t('admin.addUser') }}</NuxtLink>
+    </div>
 
-  <div v-if="loading" class="loading-state">
-    <div class="spinner"></div>
-    <p>Loading users...</p>
-  </div>
+    <div v-if="loading" class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading users...</p>
+    </div>
 
-  <div v-else-if="error" class="error-state">
-    <p>{{ error }}</p>
-    <button @click="fetchUsers" class="btn btn-secondary">Retry</button>
-  </div>
+    <div v-else-if="error" class="error-state">
+      <p>{{ error }}</p>
+      <button @click="fetchUsers" class="btn btn-secondary">Retry</button>
+    </div>
 
-  <div v-else class="card">
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>{{ $t('common.name') }}</th>
-          <th>Employee ID</th>
-          <th>Photo</th>
-          <th>Account</th>
-          <th>Role</th>
-          <th>Projects</th>
-          <th>Department</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="user in users" :key="user.id" :class="{ 'inactive-row': !user.is_active }">
-          <td>{{ user.id }}</td>
-          <td>{{ user.name }}</td>
-          <td>{{ user.employee_id || '-' }}</td>
-          <td>
-            <img :src="user.photo_url || 'https://ui-avatars.com/api/?name=' + user.name" class="avatar-cell" />
-          </td>
-          <td>{{ user.email }}</td>
-          <td>
-            <span class="badge" :class="user.role === 'admin' ? 'badge-purple' : 'badge-gray'">
-              {{ user.role }}
-            </span>
-          </td>
-          <td>
-            <div class="tags">
-              <span v-for="p in user.projects" :key="p.id" class="tag">{{ p.name }}</span>
-            </div>
-          </td>
-          <td>{{ user.department?.name || '-' }}</td>
-          <td class="actions-cell">
-            <NuxtLink :to="'/admin/users/' + user.id" class="btn-icon" :title="$t('admin.edit')">✏️</NuxtLink>
-            <button 
-              v-if="user.is_active" 
-              @click="confirmFreeze(user)" 
-              class="btn-icon text-red" 
-              :title="$t('admin.freeze')"
-            >
-              ❄️
-            </button>
-            <span v-else class="text-gray text-small">{{ $t('admin.freeze') }}d</span>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div v-else class="card">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>{{ $t('common.name') }}</th>
+            <th>Employee ID</th>
+            <th>Photo</th>
+            <th>Account</th>
+            <th>Role</th>
+            <th>Projects</th>
+            <th>Department</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="user in users" :key="user.id" :class="{ 'inactive-row': !user.is_active }">
+            <td>{{ user.id }}</td>
+            <td>{{ user.name }}</td>
+            <td>{{ user.employee_id || '-' }}</td>
+            <td>
+              <img :src="user.photo_url || 'https://ui-avatars.com/api/?name=' + user.name" class="avatar-cell" />
+            </td>
+            <td>{{ user.email }}</td>
+            <td>
+              <span class="badge" :class="user.role === 'admin' ? 'badge-purple' : 'badge-gray'">
+                {{ user.role }}
+              </span>
+            </td>
+            <td>
+              <div class="tags">
+                <span v-for="p in user.projects" :key="p.id" class="tag">{{ p.name }}</span>
+              </div>
+            </td>
+            <td>{{ user.department?.name || '-' }}</td>
+            <td class="actions-cell">
+              <NuxtLink :to="'/admin/users/' + user.id" class="btn-icon" :title="$t('admin.edit')">✏️</NuxtLink>
+              <button 
+                v-if="user.is_active" 
+                @click="confirmFreeze(user)" 
+                class="btn-icon text-red" 
+                :title="$t('admin.freeze')"
+              >
+                ❄️
+              </button>
+              <span v-else class="text-gray text-small">{{ $t('admin.freeze') }}d</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
 

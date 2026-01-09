@@ -106,6 +106,27 @@
           </form>
         </div>
       </div>
+
+      <!-- Language Settings Card -->
+      <div class="card language-card">
+        <div class="card-header">
+          <h2>{{ $t('common.language') || 'Language' }}</h2>
+        </div>
+        <div class="card-body">
+          <div class="language-options">
+            <button 
+              v-for="loc in locales" 
+              :key="loc.code" 
+              @click="setLocale(loc.code)"
+              class="lang-btn"
+              :class="{ active: locale === loc.code }"
+            >
+              <span class="flag">{{ loc.icon }}</span>
+              <span class="name">{{ loc.name }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -117,7 +138,7 @@ definePageMeta({
   middleware: 'auth'
 })
 
-const { t } = useI18n()
+const { t, locale, locales, setLocale } = useI18n()
 const { user, fetchMe, token } = useAuth()
 
 
@@ -361,5 +382,48 @@ label {
   text-align: center;
   margin-top: 1rem;
   font-size: 0.9rem;
+}
+
+.language-options {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.lang-btn {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+}
+
+.lang-btn:hover {
+  border-color: #667eea;
+  background: #f8fafc;
+}
+
+.lang-btn.active {
+  border-color: #667eea;
+  background: #ebf4ff;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+}
+
+.lang-btn .flag {
+  font-size: 1.5rem;
+}
+
+.lang-btn .name {
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.lang-btn.active .name {
+  color: #667eea;
 }
 </style>

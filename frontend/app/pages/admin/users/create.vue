@@ -1,81 +1,83 @@
 <template>
-  <div class="page-header">
-    <h1 class="page-title">{{ $t('admin.addUser') }}</h1>
-    <NuxtLink to="/admin/users" class="btn btn-secondary">Back</NuxtLink>
-  </div>
+  <div class="admin-page-container">
+    <div class="page-header">
+      <h1 class="page-title">{{ $t('admin.addUser') }}</h1>
+      <NuxtLink to="/admin/users" class="btn btn-secondary">Back</NuxtLink>
+    </div>
 
-  <div class="card form-card">
-    <form @submit.prevent="submitForm">
-      <!-- Name -->
-      <div class="form-group">
-        <label>Name <span class="required">*</span></label>
-        <input v-model="form.name" type="text" required class="form-control" />
-      </div>
-
-      <!-- Email -->
-      <div class="form-group">
-        <label>Account (Email) <span class="required">*</span></label>
-        <input v-model="form.email" type="email" required class="form-control" />
-      </div>
-
-      <!-- Password -->
-      <div class="form-group">
-        <label>Password <span class="required">*</span></label>
-        <input v-model="form.password" type="password" required class="form-control" minlength="8" />
-      </div>
-
-      <!-- Employee ID -->
-      <div class="form-group">
-        <label>Employee ID</label>
-        <input v-model="form.employee_id" type="text" class="form-control" />
-      </div>
-
-      <!-- Photo URL -->
-      <div class="form-group">
-        <label>Photo URL</label>
-        <input v-model="form.photo_url" type="text" class="form-control" placeholder="https://..." />
-      </div>
-
-      <!-- Role -->
-      <div class="form-group">
-        <label>Role <span class="required">*</span></label>
-        <select v-model="form.role" required class="form-control">
-          <option value="user">User</option>
-          <option value="admin">Admin</option>
-        </select>
-      </div>
-
-      <!-- Department -->
-      <div class="form-group">
-        <label>Department <span class="required">*</span></label>
-        <select v-model="form.department_id" required class="form-control">
-          <option value="" disabled>Select Department</option>
-          <option v-for="dept in departments" :key="dept.id" :value="dept.id">
-            {{ dept.name }}
-          </option>
-        </select>
-      </div>
-
-      <!-- Projects -->
-      <div class="form-group">
-        <label>Projects <span class="required">*</span></label>
-        <div class="checkbox-group">
-          <label v-for="proj in projects" :key="proj.id" class="checkbox-label">
-            <input type="checkbox" :value="proj.id" v-model="form.projects" />
-            {{ proj.name }}
-          </label>
+    <div class="card form-card">
+      <form @submit.prevent="submitForm">
+        <!-- Name -->
+        <div class="form-group">
+          <label>Name <span class="required">*</span></label>
+          <input v-model="form.name" type="text" required class="form-control" />
         </div>
-      </div>
 
-      <div class="form-actions">
-        <button type="submit" class="btn btn-primary" :disabled="loading">
-          {{ loading ? 'Saving...' : 'Create Account' }}
-        </button>
+        <!-- Email -->
+        <div class="form-group">
+          <label>Account (Email) <span class="required">*</span></label>
+          <input v-model="form.email" type="email" required class="form-control" />
+        </div>
+
+        <!-- Password -->
+        <div class="form-group">
+          <label>Password <span class="required">*</span></label>
+          <input v-model="form.password" type="password" required class="form-control" minlength="8" />
+        </div>
+
+        <!-- Employee ID -->
+        <div class="form-group">
+          <label>Employee ID</label>
+          <input v-model="form.employee_id" type="text" class="form-control" />
+        </div>
+
+        <!-- Photo URL -->
+        <div class="form-group">
+          <label>Photo URL</label>
+          <input v-model="form.photo_url" type="text" class="form-control" placeholder="https://..." />
+        </div>
+
+        <!-- Role -->
+        <div class="form-group">
+          <label>Role <span class="required">*</span></label>
+          <select v-model="form.role" required class="form-control">
+            <option value="user">User</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+
+        <!-- Department -->
+        <div class="form-group">
+          <label>Department <span class="required">*</span></label>
+          <select v-model="form.department_id" required class="form-control">
+            <option value="" disabled>Select Department</option>
+            <option v-for="dept in departments" :key="dept.id" :value="dept.id">
+              {{ dept.name }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Projects -->
+        <div class="form-group">
+          <label>Projects <span class="required">*</span></label>
+          <div class="checkbox-group">
+            <label v-for="proj in projects" :key="proj.id" class="checkbox-label">
+              <input type="checkbox" :value="proj.id" v-model="form.projects" />
+              {{ proj.name }}
+            </label>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" :disabled="loading">
+            {{ loading ? 'Saving...' : 'Create Account' }}
+          </button>
+        </div>
+      </form>
+      
+      <div v-if="error" class="error-msg">
+        {{ error }}
       </div>
-    </form>
-    
-    <div v-if="error" class="error-msg">
-      {{ error }}
     </div>
   </div>
 </template>
