@@ -71,7 +71,7 @@
     },
     "schedules": {
         "title": "排程",
-        "addSchedule": "新增排程",
+        "addSchedule": "添加排程",
         "idx": "編號",
         "status": "狀態",
         "confirm": "確認",
@@ -80,15 +80,13 @@
         "scheduledStart": "預定開始日期",
         "scheduledEnd": "預定結束日期",
         "scheduledDays": "預定天數",
-        "actualStart": "實際開始日期",
-        "actualFinish": "實際完成日期",
-        "actualDays": "實際天數",
         "project": "專案",
         "scheduleTitle": "排程標題",
         "memo": "備註",
+        "addMemoPlaceHolder": "添加備註...",
         "working": "執行中",
         "finish": "完成",
-        "in_progress": "進行中",
+        "in_progress": "未執行",
         "fail": "失敗",
         "tentatively": "暫定",
         "confirmed": "已確認",
@@ -98,7 +96,7 @@
     },
     "tasks": {
         "title": "任務",
-        "addTask": "新增任務",
+        "addTask": "添加任務",
         "idx": "編號",
         "level": "類別",
         "status": "狀態",
@@ -124,7 +122,10 @@
         "idle": "閒置",
         "waiting_qa": "待測試",
         "miss": "未達成",
-        "cancelled": "已取消"
+        "cancelled": "已取消",
+        "working": "執行中",
+        "in_progress": "未執行",
+        "finished": "已完成"
     },
     "profile": {
         "title": "個人設定",

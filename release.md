@@ -1,6 +1,26 @@
 # Release Notes
 
 All notable changes to the XTask project will be documented in this file.
+    
+## [2026-01-09 16:50] - Schedule & Task Feature Enhancements
+- **Backend**:
+  - Created `ScheduleMemoController` to support message board style remarks for schedules.
+  - Added `POST /api/schedules/{schedule}/memos` endpoint.
+  - Added `POST /api/tasks/{task}/remarks` endpoint and `TaskRemarkController`.
+  - Added `PUT /api/tasks/{task}` endpoint to allow updating tasks (e.g., changing assignee).
+  - Added `GET /api/projects` endpoint and `ProjectController` for listing projects.
+  - Added `GET /api/departments` endpoint and `DepartmentController` for listing departments.
+  - Updated `ScheduleController@store` to default status to `in_progress` ("未執行").
+  - Updated `TaskController@store` to default `status` to `in progress` ("未執行") and `level` to `1` ("一般").
+  - Updated `openapi.yaml` and added comprehensive tests (`ScheduleMemoApiTest`, `TaskApiTest`).
+- **Frontend**:
+  - Updated `schedules.vue` to remove "Actual Start", "Actual Finish", and "Status" from the creation form.
+  - Updated `tasks.vue` to remove "Status" and "Category" (Level) from the creation form, using backend defaults.
+  - **Task Assignee**: Implemented inline assignee editing by clicking on the assignee cell in the task table.
+  - **Project/Department**: Changed "Project" to select menu and added "Department" selection with intelligent auto-population based on selected assignee.
+  - **Remarks Board**: Replaced simple Task "Memo" with an interactive message board mirroring the schedule feature.
+  - **Fix**: Synchronized `en.json` and `zh-TW.json` with all missing status and board translations.
+  - **UI**: Fixed vertical alignment of assignee information in the task table.
 
 ## [2026-01-09 14:15] - Role-Based Access Control (RBAC) System
 - **Backend**:

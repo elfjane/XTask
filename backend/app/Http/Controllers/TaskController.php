@@ -34,8 +34,8 @@ class TaskController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'level' => 'required|integer|in:1,2,3',
-            'status' => 'required|string',
+            'level' => 'nullable|integer|in:1,2,3',
+            'status' => 'nullable|string',
             'user_id' => 'required|exists:users,id',
             'related_personnel' => 'nullable|string|max:255',
             'project' => 'required|string|max:255',
@@ -51,10 +51,32 @@ class TaskController extends Controller
             'memo' => 'nullable|string',
         ]);
 
+        $validated['level'] = $validated['level'] ?? 1;
+        $validated['status'] = $validated['status'] ?? 'in progress';
+
         \Illuminate\Support\Facades\Gate::authorize('create', Task::class);
 
         $task = Task::create($validated);
 
         return response()->json($task, 201);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, Task $task)
+    {
+        \Illuminate\Support\Facades\Gate::authorize('update', $task);
+
+        $validated = $request->validate([
+            'user_id' => 'sometimes|required|exists:users,id',
+            'status' => 'sometimes|required|string',
+            'department' => 'sometimes|required|string|max:255',
+            // Allow other fields if needed
+        ]);
+
+        $task->update($validated);
+
+        return response()->json($task->load(['assignee', 'remarks']));
     }
 }

@@ -6,7 +6,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\ScheduleMemoController;
+use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\TaskRemarkController;
 
 Route::post('register', [AuthController::class, 'register'])->name('register');
 Route::post('login', [AuthController::class, 'login'])->name('login');
@@ -21,8 +25,12 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::apiResource('schedules', ScheduleController::class)->only(['index', 'store']);
-    Route::apiResource('tasks', TaskController::class)->only(['index', 'store']);
+    Route::post('schedules/{schedule}/memos', [ScheduleMemoController::class, 'store']);
+    Route::apiResource('tasks', TaskController::class)->only(['index', 'store', 'update']);
+    Route::post('tasks/{task}/remarks', [TaskRemarkController::class, 'store']);
     Route::apiResource('users', \App\Http\Controllers\UserController::class)->only(['index']);
+    Route::get('projects', [ProjectController::class, 'index']);
+    Route::get('departments', [DepartmentController::class, 'index']);
 });
 
 Route::middleware(['auth:sanctum', 'check.role:admin,manager,auditor'])->prefix('admin')->group(function () {

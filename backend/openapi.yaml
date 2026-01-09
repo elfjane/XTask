@@ -15,6 +15,22 @@ components:
       bearerFormat: JWT
 
   schemas:
+    Department:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+
+    Project:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+
     User:
       type: object
       properties:
@@ -57,8 +73,8 @@ components:
       type: object
       properties:
         id: { type: integer }
-        level: { type: integer, enum: [1, 2, 3], description: '1: Ordinary, 2: Important, 3: Priority' }
-        status: { type: string, enum: [working, in progress, cancelled, idle, waiting qa, finished, miss] }
+        level: { type: integer, enum: [1, 2, 3], default: 1, description: '1: Ordinary (Default), 2: Important, 3: Priority' }
+        status: { type: string, enum: [working, in progress, cancelled, idle, waiting qa, finished, miss], default: 'in progress', description: "Default: 'in progress' (未執行)" }
         user_id: { type: integer }
         assignee: { $ref: '#/components/schemas/User' }
         related_personnel: { type: string }
@@ -241,6 +257,31 @@ paths:
               schema:
                 $ref: '#/components/schemas/Schedule'
 
+  /schedules/{schedule}/memos:
+    post:
+      summary: Add a memo to a schedule
+      parameters:
+        - name: schedule
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [content]
+              properties:
+                content: { type: string }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Memo'
+
   /tasks:
     get:
       summary: List tasks
@@ -267,6 +308,85 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Task'
+
+    put:
+      summary: Update task
+      parameters:
+        - name: task
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id: { type: integer }
+                status: { type: string }
+                department: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+
+  /tasks/{task}/remarks:
+    post:
+      summary: Add a remark to a task
+      parameters:
+        - name: task
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [content]
+              properties:
+                content: { type: string }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Remark'
+
+  /departments:
+    get:
+      summary: List all departments
+      security:
+        - SanctumToken: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Department'
+
+  /projects:
+    get:
+      summary: List all projects
+      security:
+        - sanctum: []
+      responses:
+        '200':
+          description: A list of projects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Project'
 
   /users:
     get:

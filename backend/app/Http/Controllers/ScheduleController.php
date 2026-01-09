@@ -24,15 +24,15 @@ class ScheduleController extends Controller
         $validated = $request->validate([
             'project' => 'required|string',
             'title' => 'required|string',
-            'status' => 'required|string|in:working,finish,in_progress,fail',
+            'status' => 'nullable|string|in:working,finish,in_progress,fail',
             'confirm' => 'required|string|in:Tentatively,Confirmed',
             'deadline' => 'nullable|date',
             'scheduled_start' => 'nullable|date',
             'scheduled_end' => 'nullable|date',
-            'actual_start' => 'nullable|date',
-            'actual_finish' => 'nullable|date',
             'memo' => 'nullable|string',
         ]);
+
+        $validated['status'] = $validated['status'] ?? 'in_progress';
 
         \Illuminate\Support\Facades\Gate::authorize('create', Schedule::class);
 

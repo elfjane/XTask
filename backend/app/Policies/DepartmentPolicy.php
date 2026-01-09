@@ -18,7 +18,7 @@ class DepartmentPolicy
 
     public function viewAny(User $user): bool
     {
-        return $user->isAuditor() || $user->isManager();
+        return true;
     }
 
     public function view(User $user, Department $department): bool
