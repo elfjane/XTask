@@ -161,6 +161,8 @@ definePageMeta({
 })
 
 const { token } = useAuth()
+const config = useRuntimeConfig()
+const apiBase = (config.public.apiBase as string) || ''
 const showCreateModal = ref(false)
 const creating = ref(false)
 const createError = ref('')
@@ -207,14 +209,14 @@ interface Task {
   };
 }
 
-const { data: tasks, pending, error, refresh } = await useFetch<Task[]>('/api/tasks', {
+const { data: tasks, pending, error, refresh } = await useFetch<Task[]>(`${apiBase}/api/tasks`, {
   headers: {
     Authorization: `Bearer ${token.value}`,
     Accept: 'application/json'
   }
 })
 
-const { data: users } = await useFetch<any[]>('/api/users', {
+const { data: users } = await useFetch<any[]>(`${apiBase}/api/users`, {
   headers: {
     Authorization: `Bearer ${token.value}`,
     Accept: 'application/json'
@@ -239,7 +241,7 @@ const handleCreate = async () => {
   creating.value = true
   createError.value = ''
   try {
-    await $fetch('/api/tasks', {
+    await $fetch(`${apiBase}/api/tasks`, {
       method: 'POST',
       body: form,
       headers: {

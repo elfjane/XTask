@@ -8,7 +8,21 @@
         "welcome": "Welcome to",
         "getStarted": "Get Started",
         "viewSchedules": "View Schedules",
-        "viewTasks": "View Tasks"
+        "viewTasks": "View Tasks",
+        "management": "Management",
+        "name": "Name"
+    },
+    "admin": {
+        "users": "User Management",
+        "projects": "Project Management",
+        "departments": "Department Management",
+        "addUser": "Add User",
+        "editUser": "Edit User",
+        "freeze": "Freeze",
+        "freezeConfirm": "Are you sure you want to freeze this account? They will no longer be able to login.",
+        "add": "Add",
+        "edit": "Edit",
+        "delete": "Delete"
     },
     "hero": {
         "title": "Welcome to XTask",

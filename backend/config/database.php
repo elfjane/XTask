@@ -49,11 +49,19 @@ return [
             'password' => env('DB_PASSWORD', ''),
             'unix_socket' => env('DB_SOCKET', ''),
             'charset' => env('DB_CHARSET', 'utf8mb4'),
-            'collation' => env('DB_COLLATION', 'utf8mb4_0900_ai_ci'),
+            'collation' => env('DB_COLLATION', 'utf8mb4_general_ci'),
             'prefix' => '',
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
+            'modes' => [
+                'ONLY_FULL_GROUP_BY',
+                'STRICT_TRANS_TABLES',
+                'NO_ZERO_IN_DATE',
+                'NO_ZERO_DATE',
+                'ERROR_FOR_DIVISION_BY_ZERO',
+                'NO_ENGINE_SUBSTITUTION',
+            ],
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
@@ -144,7 +152,7 @@ return [
 
         'options' => [
             'cluster' => env('REDIS_CLUSTER', 'redis'),
-            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_database_'),
+            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_') . '_database_'),
         ],
 
         'default' => [

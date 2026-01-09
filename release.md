@@ -2,6 +2,25 @@
 
 All notable changes to the XTask project will be documented in this file.
 
+## [2026-01-09 11:45] - Admin Management Interface
+- **Backend**:
+  - **Schema**: Created `departments` and `projects` tables. Added `employee_id`, `role`, `is_active`, `department_id` to `users`.
+  - **API**: Implemented Admin Controllers for Users, Projects, and Departments with CRUD operations.
+  - **Security**: Added `CheckRole` middleware to restrict Admin APIs. Updated `AuthController` to block login for frozen (`is_active=false`) users.
+  - [Fix] 解決刷新頁面跳回登入問題（Middleware 改進和自動用戶資料獲取）
+  - [Fix] 修復 Admin 介面中 `apiBase` 未定義導致的路由錯誤
+  - [Fix] 補全 `zh-TW` 語系中缺少的通用翻譯 keys (`common.name`)
+  - [Feature] 完整 Admin 後台介面（用戶、部門、專案管理）
+  - [Feature] 用戶凍結功能
+  - **Testing**: Added comprehensive Feature tests for all Admin APIs (`AdminUserTest`, `AdminDepartmentTest`, `AdminProjectTest`).
+  - **Seeding**: Added default departments (技術, 營運, 產品, etc.).
+- **Frontend**:
+  - **Layout**: Created `admin` layout with sidebar navigation.
+  - **Account Management**: Implemented User List, Create, and Edit pages. Added "Freeze" account functionality.
+  - **Resource Management**: Implemented Project and Department management with Add/Edit modals.
+  - **i18n**: Added full Chinese/English translations for the Admin interface.
+  - **Navigation**: Added "Management" button to the main header for admin users.
+
 ## [2026-01-08 17:30] - User Registration Feature with Toggle Control
 - **Backend**: 
   - Added `ALLOW_REGISTRATION` environment variable to control registration availability.

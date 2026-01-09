@@ -120,6 +120,7 @@ definePageMeta({
 const { t } = useI18n()
 const { user, fetchMe, token } = useAuth()
 
+
 const loading = ref(false)
 const passwordLoading = ref(false)
 const successMessage = ref('')
@@ -150,12 +151,15 @@ watch(user, (newUser) => {
   }
 })
 
+const config = useRuntimeConfig()
+const apiBase = (config.public.apiBase as string) || ''
+
 const handleUpdateInfo = async () => {
     loading.value = true
     successMessage.value = ''
     errorMessage.value = ''
     try {
-        await $fetch('/api/profile', {
+        await $fetch(`${apiBase}/api/profile`, {
             method: 'PUT',
             body: {
                 name: form.name,
@@ -188,7 +192,7 @@ const handleChangePassword = async () => {
     pwdErrorMessage.value = ''
     
     try {
-        await $fetch('/api/profile', {
+        await $fetch(`${apiBase}/api/profile`, {
             method: 'PUT',
             body: {
                 current_password: passwordForm.current_password,

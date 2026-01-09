@@ -8,7 +8,21 @@
         "welcome": "歡迎來到",
         "getStarted": "立即開始",
         "viewSchedules": "查看排程",
-        "viewTasks": "查看任務"
+        "viewTasks": "查看任務",
+        "management": "管理",
+        "name": "姓名"
+    },
+    "admin": {
+        "users": "帳號管理",
+        "projects": "專案管理",
+        "departments": "部門管理",
+        "addUser": "添加帳號",
+        "editUser": "編輯帳號",
+        "freeze": "凍結",
+        "freezeConfirm": "確定要凍結此帳號嗎？凍結後該帳號將無法登入。",
+        "add": "添加",
+        "edit": "編輯",
+        "delete": "刪除"
     },
     "hero": {
         "title": "Welcome to XTask",

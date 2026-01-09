@@ -132,6 +132,8 @@ definePageMeta({
 })
 
 const { token } = useAuth()
+const config = useRuntimeConfig()
+const apiBase = (config.public.apiBase as string) || ''
 const showCreateModal = ref(false)
 const creating = ref(false)
 
@@ -162,7 +164,7 @@ interface Schedule {
   memo: string;
 }
 
-const { data: schedules, pending, error, refresh } = await useFetch<Schedule[]>('/api/schedules', {
+const { data: schedules, pending, error, refresh } = await useFetch<Schedule[]>(`${apiBase}/api/schedules`, {
   headers: {
     Authorization: `Bearer ${token.value}`,
     Accept: 'application/json'
@@ -172,7 +174,7 @@ const { data: schedules, pending, error, refresh } = await useFetch<Schedule[]>(
 const handleCreate = async () => {
   creating.value = true
   try {
-    await $fetch('/api/schedules', {
+    await $fetch(`${apiBase}/api/schedules`, {
       method: 'POST',
       body: form,
       headers: {

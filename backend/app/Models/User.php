@@ -24,7 +24,20 @@ class User extends Authenticatable
         'department',
         'photo_url',
         'role',
+        'employee_id',
+        'is_active',
+        'department_id',
     ];
+
+    public function projects()
+    {
+        return $this->belongsToMany(Project::class);
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
+    }
 
     /**
      * The attributes that should be hidden for serialization.

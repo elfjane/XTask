@@ -7,6 +7,7 @@
           <template v-if="user">
             <NuxtLink to="/schedules">{{ $t('common.schedules') }}</NuxtLink>
             <NuxtLink to="/tasks">{{ $t('common.tasks') }}</NuxtLink>
+            <NuxtLink v-if="user?.role === 'admin'" to="/admin" class="nav-item">{{ $t('common.management') }}</NuxtLink>
             
             <!-- Language Switcher -->
             <div class="lang-switcher" v-click-outside="closeLangDropdown">
