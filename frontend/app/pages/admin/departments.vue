@@ -2,7 +2,7 @@
   <div class="admin-page-container">
     <div class="page-header">
       <h1 class="page-title">{{ $t('admin.departments') }}</h1>
-      <button @click="openModal()" class="btn btn-primary">{{ $t('admin.add') }}</button>
+      <button v-if="can('manage-departments')" @click="openModal()" class="btn btn-primary">{{ $t('admin.add') }}</button>
     </div>
 
     <div class="card">
@@ -11,14 +11,14 @@
           <tr>
             <th>ID</th>
             <th>Name</th>
-            <th>Actions</th>
+            <th v-if="can('manage-departments')">Actions</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="item in items" :key="item.id">
             <td>{{ item.id }}</td>
             <td>{{ item.name }}</td>
-            <td class="actions-cell">
+            <td v-if="can('manage-departments')" class="actions-cell">
               <button @click="openModal(item)" class="btn-icon">✏️</button>
             </td>
           </tr>
@@ -51,7 +51,7 @@ definePageMeta({
   middleware: ['auth', 'admin']
 })
 
-const { token } = useAuth()
+const { token, can } = useAuth()
 const config = useRuntimeConfig()
 
 const items = ref<any[]>([])

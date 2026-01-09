@@ -77,6 +77,40 @@ export const useAuth = () => {
         return token.value
     }
 
+    const hasRole = (roleOrRoles: string | string[]) => {
+        if (!user.value) return false
+        if (Array.isArray(roleOrRoles)) {
+            return roleOrRoles.includes(user.value.role)
+        }
+        return user.value.role === roleOrRoles
+    }
+
+    const can = (action: string) => {
+        if (!user.value) return false
+        const role = user.value.role
+        if (role === 'admin') return true
+
+        switch (action) {
+            case 'manage-users':
+                return role === 'admin'
+            case 'manage-departments':
+            case 'manage-projects':
+                return role === 'manager'
+            case 'manage-schedules':
+                return role === 'manager'
+            case 'manage-tasks':
+                return ['manager', 'task_user'].includes(role)
+            case 'add-task':
+                return ['manager', 'task_user', 'executor'].includes(role)
+            case 'view-admin':
+                return ['admin', 'manager', 'auditor'].includes(role)
+            case 'view-users':
+                return ['admin', 'auditor'].includes(role)
+            default:
+                return false
+        }
+    }
+
     return {
         user,
         token,
@@ -86,6 +120,8 @@ export const useAuth = () => {
         logout,
         fetchMe,
         getToken,
+        hasRole,
+        can,
         isAuthenticated: computed(() => !!token.value)
     }
 }

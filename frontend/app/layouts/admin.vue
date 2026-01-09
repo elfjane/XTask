@@ -12,13 +12,13 @@
     <div class="admin-body container">
       <aside class="sidebar">
         <nav class="side-nav">
-          <NuxtLink to="/admin/users" class="nav-item">
+          <NuxtLink v-if="can('view-users')" to="/admin/users" class="nav-item">
             <span class="icon">👥</span> {{ $t('admin.users') }}
           </NuxtLink>
-          <NuxtLink to="/admin/projects" class="nav-item">
+          <NuxtLink v-if="can('view-admin')" to="/admin/projects" class="nav-item">
             <span class="icon">📁</span> {{ $t('admin.projects') }}
           </NuxtLink>
-          <NuxtLink to="/admin/departments" class="nav-item">
+          <NuxtLink v-if="can('view-admin')" to="/admin/departments" class="nav-item">
             <span class="icon">🏢</span> {{ $t('admin.departments') }}
           </NuxtLink>
         </nav>
@@ -30,6 +30,10 @@
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+const { can } = useAuth()
+</script>
 
 <style scoped>
 .admin-layout {

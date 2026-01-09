@@ -2,6 +2,18 @@
 
 All notable changes to the XTask project will be documented in this file.
 
+## [2026-01-09 14:15] - Role-Based Access Control (RBAC) System
+- **Backend**:
+  - Implemented 5 roles: `admin`, `manager`, `task_user`, `executor`, `auditor`.
+  - Added Laravel Policies for `User`, `Department`, `Project`, `Schedule`, and `Task`.
+  - Updated `CheckRole` middleware to support multi-role validation.
+  - Enforced "Authorization before Validation" in controllers for enhanced security.
+  - Seeded default users for all roles (e.g., `manager@example.com`, `auditor@example.com`).
+- **Frontend**:
+  - Enhanced `useAuth` composable with `hasRole` and `can` permission helpers.
+  - Implemented dynamic UI rendering based on roles (hiding/showing buttons and nav items).
+  - Updated `admin` middleware to support multiple authorized roles.
+
 ## [2026-01-09 11:45] - Admin Management Interface
 - **Backend**:
   - **Schema**: Created `departments` and `projects` tables. Added `employee_id`, `role`, `is_active`, `department_id` to `users`.

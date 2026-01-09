@@ -41,8 +41,11 @@
         <div class="form-group">
           <label>Role <span class="required">*</span></label>
           <select v-model="form.role" required class="form-control">
-            <option value="user">User</option>
-            <option value="admin">Admin</option>
+            <option value="admin">{{ $t('common.roles.admin') }}</option>
+            <option value="manager">{{ $t('common.roles.manager') }}</option>
+            <option value="task_user">{{ $t('common.roles.task_user') }}</option>
+            <option value="executor">{{ $t('common.roles.executor') }}</option>
+            <option value="auditor">{{ $t('common.roles.auditor') }}</option>
           </select>
         </div>
 
@@ -103,7 +106,7 @@ const form = reactive({
   password: '',
   employee_id: '',
   photo_url: '',
-  role: 'user',
+  role: 'executor',
   department_id: '',
   projects: []
 })

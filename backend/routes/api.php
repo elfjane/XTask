@@ -25,7 +25,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('users', \App\Http\Controllers\UserController::class)->only(['index']);
 });
 
-Route::middleware(['auth:sanctum', 'check.role:admin'])->prefix('admin')->group(function () {
+Route::middleware(['auth:sanctum', 'check.role:admin,manager,auditor'])->prefix('admin')->group(function () {
     Route::apiResource('departments', \App\Http\Controllers\Admin\DepartmentController::class)->only(['index', 'store', 'update']);
     Route::apiResource('projects', \App\Http\Controllers\Admin\ProjectController::class)->only(['index', 'store', 'update']);
     Route::apiResource('users', \App\Http\Controllers\Admin\UserController::class);

@@ -11,11 +11,13 @@ class DepartmentController extends Controller
 {
     public function index()
     {
+        \Illuminate\Support\Facades\Gate::authorize('viewAny', Department::class);
         return Department::all();
     }
 
     public function store(Request $request)
     {
+        \Illuminate\Support\Facades\Gate::authorize('create', Department::class);
         $validated = $request->validate(['name' => 'required|string|unique:departments,name']);
         $department = Department::create($validated);
         return response()->json($department, 201);
@@ -23,6 +25,7 @@ class DepartmentController extends Controller
 
     public function update(Request $request, Department $department)
     {
+        \Illuminate\Support\Facades\Gate::authorize('update', $department);
         $validated = $request->validate(['name' => 'required|string|unique:departments,name,' . $department->id]);
         $department->update($validated);
         return response()->json($department);

@@ -6,7 +6,8 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
         await fetchMe()
     }
 
-    if (!user.value || user.value.role !== 'admin') {
+    const allowedRoles = ['admin', 'manager', 'auditor']
+    if (!user.value || !allowedRoles.includes(user.value.role)) {
         return navigateTo('/')
     }
 })

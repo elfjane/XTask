@@ -10,7 +10,14 @@
         "viewSchedules": "查看排程",
         "viewTasks": "查看任務",
         "management": "管理",
-        "name": "姓名"
+        "name": "姓名",
+        "roles": {
+            "admin": "系統管理員",
+            "manager": "審核者",
+            "task_user": "任務建立者",
+            "executor": "任務執行人員",
+            "auditor": "稽核人員"
+        }
     },
     "admin": {
         "users": "帳號管理",
@@ -19,6 +26,7 @@
         "addUser": "添加帳號",
         "editUser": "編輯帳號",
         "freeze": "凍結",
+        "unfreeze": "解除凍結",
         "freezeConfirm": "確定要凍結此帳號嗎？凍結後該帳號將無法登入。",
         "add": "添加",
         "edit": "編輯",

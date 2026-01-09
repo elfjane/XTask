@@ -16,14 +16,58 @@ class DatabaseSeeder extends Seeder
         $this->call(DepartmentsSeeder::class);
         $this->call(ProjectsSeeder::class);
 
-        \App\Models\User::firstOrCreate(
+        $admin = \App\Models\User::firstOrCreate(
             ['email' => 'admin@example.com'],
             [
                 'name' => 'Admin User',
                 'password' => \Illuminate\Support\Facades\Hash::make('password'),
-                'role' => 'admin',
+                'role' => \App\Models\User::ROLE_ADMIN,
                 'is_active' => true,
-                'department_id' => 1 // Assuming 1 is 技术 after DepartmentsSeeder
+                'department_id' => 1
+            ]
+        );
+
+        \App\Models\User::firstOrCreate(
+            ['email' => 'manager@example.com'],
+            [
+                'name' => 'Manager User',
+                'password' => \Illuminate\Support\Facades\Hash::make('password'),
+                'role' => \App\Models\User::ROLE_MANAGER,
+                'is_active' => true,
+                'department_id' => 1
+            ]
+        );
+
+        \App\Models\User::firstOrCreate(
+            ['email' => 'task@example.com'],
+            [
+                'name' => 'Task User',
+                'password' => \Illuminate\Support\Facades\Hash::make('password'),
+                'role' => \App\Models\User::ROLE_TASK_USER,
+                'is_active' => true,
+                'department_id' => 1
+            ]
+        );
+
+        \App\Models\User::firstOrCreate(
+            ['email' => 'executor@example.com'],
+            [
+                'name' => 'Executor User',
+                'password' => \Illuminate\Support\Facades\Hash::make('password'),
+                'role' => \App\Models\User::ROLE_EXECUTOR,
+                'is_active' => true,
+                'department_id' => 1
+            ]
+        );
+
+        \App\Models\User::firstOrCreate(
+            ['email' => 'auditor@example.com'],
+            [
+                'name' => 'Auditor User',
+                'password' => \Illuminate\Support\Facades\Hash::make('password'),
+                'role' => \App\Models\User::ROLE_AUDITOR,
+                'is_active' => true,
+                'department_id' => 1
             ]
         );
     }

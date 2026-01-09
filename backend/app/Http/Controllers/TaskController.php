@@ -10,9 +10,22 @@ class TaskController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json(Task::with(['assignee', 'remarks'])->get());
+        \Illuminate\Support\Facades\Gate::authorize('viewAny', Task::class);
+
+        $user = $request->user();
+        $query = Task::with(['assignee', 'remarks']);
+
+        if ($user->isExecutor()) {
+            $query->where(function ($q) use ($user) {
+                $q->where('department', $user->department?->name)
+                    ->orWhere('user_id', $user->id)
+                    ->orWhere('related_personnel', 'like', '%' . $user->name . '%');
+            });
+        }
+
+        return response()->json($query->get());
     }
 
     /**
@@ -37,6 +50,8 @@ class TaskController extends Controller
             'output_url' => 'nullable|string|max:255',
             'memo' => 'nullable|string',
         ]);
+
+        \Illuminate\Support\Facades\Gate::authorize('create', Task::class);
 
         $task = Task::create($validated);
 

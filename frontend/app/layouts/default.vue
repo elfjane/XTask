@@ -27,7 +27,7 @@
                     <img :src="user.photo_url || 'https://ui-avatars.com/api/?name=' + user.name" :alt="user.name" class="avatar-large" />
                     <div class="user-info">
                       <span class="name">{{ user.name }}</span>
-                      <span class="title">{{ user.title || 'Team Member' }}</span>
+                      <span class="role-title">{{ $t('common.roles.' + user.role) }}</span>
                     </div>
                   </div>
                   <div class="dropdown-divider"></div>
@@ -35,7 +35,7 @@
                     <NuxtLink to="/profile" class="dropdown-item" @click="closeDropdown">
                       <span class="icon">👤</span> {{ $t('common.profile') }}
                     </NuxtLink>                    
-                    <NuxtLink v-if="user?.role === 'admin'" to="/admin" class="dropdown-item" @click="closeDropdown">
+                    <NuxtLink v-if="can('view-admin')" to="/admin" class="dropdown-item" @click="closeDropdown">
                       <span class="icon">⚙️</span> {{ $t('common.management') }}
                     </NuxtLink>
                     <button @click="handleLogout" class="dropdown-item logout">
@@ -60,7 +60,7 @@
 </template>
 
 <script setup lang="ts">
-const { user, logout } = useAuth()
+const { user, logout, can } = useAuth()
 const { locale, locales, setLocale } = useI18n()
 
 // User Dropdown

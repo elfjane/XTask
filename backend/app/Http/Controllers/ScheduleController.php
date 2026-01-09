@@ -12,6 +12,7 @@ class ScheduleController extends Controller
      */
     public function index()
     {
+        \Illuminate\Support\Facades\Gate::authorize('viewAny', Schedule::class);
         return response()->json(Schedule::with('memos')->get());
     }
 
@@ -32,6 +33,8 @@ class ScheduleController extends Controller
             'actual_finish' => 'nullable|date',
             'memo' => 'nullable|string',
         ]);
+
+        \Illuminate\Support\Facades\Gate::authorize('create', Schedule::class);
 
         $schedule = Schedule::create($validated);
 

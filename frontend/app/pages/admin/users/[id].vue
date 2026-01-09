@@ -43,8 +43,11 @@
         <div class="form-group">
           <label>Role</label>
           <select v-model="form.role" required class="form-control">
-            <option value="user">User</option>
-            <option value="admin">Admin</option>
+            <option value="admin">{{ $t('common.roles.admin') }}</option>
+            <option value="manager">{{ $t('common.roles.manager') }}</option>
+            <option value="task_user">{{ $t('common.roles.task_user') }}</option>
+            <option value="executor">{{ $t('common.roles.executor') }}</option>
+            <option value="auditor">{{ $t('common.roles.auditor') }}</option>
           </select>
         </div>
 
@@ -70,8 +73,13 @@
         </div>
 
         <div class="form-actions">
-          <button type="button" @click="handleDelete" class="btn btn-danger" style="margin-right: auto;">
-            Delete (Freeze)
+          <button 
+            type="button" 
+            @click="handleFreezeToggle" 
+            :class="['btn', form.is_active ? 'btn-danger' : 'btn-success']" 
+            style="margin-right: auto;"
+          >
+            {{ form.is_active ? $t('admin.freeze') : $t('admin.unfreeze') }}
           </button>
           <button type="submit" class="btn btn-primary" :disabled="submitting">
             {{ submitting ? 'Saving...' : 'Save Changes' }}
@@ -110,9 +118,10 @@ const form = reactive({
   password: '',
   employee_id: '',
   photo_url: '',
-  role: 'user',
+  role: 'executor',
   department_id: '',
-  projects: [] as number[]
+  projects: [] as number[],
+  is_active: true
 })
 
 onMounted(async () => {
@@ -135,6 +144,7 @@ onMounted(async () => {
     form.role = userRes.role
     form.department_id = userRes.department_id
     form.projects = userRes.projects.map((p: any) => p.id)
+    form.is_active = userRes.is_active
     
   } catch (e) {
     console.error('Failed to load data', e)
@@ -166,17 +176,33 @@ async function submitForm() {
   }
 }
 
-async function handleDelete() {
-  if (confirm('Are you sure you want to freeze this account? They will no longer be able to login.')) {
+async function handleFreezeToggle() {
+  const isFreezing = form.is_active
+  const confirmMsg = isFreezing 
+    ? $t('admin.freezeConfirm')
+    : 'Are you sure you want to unfreeze this account?'
+    
+  if (confirm(confirmMsg)) {
     try {
       const apiBase = (config.public.apiBase as string) || ''
-      await $fetch(`${apiBase}/api/admin/users/${userId}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token.value}` }
-      })
-      router.push('/admin/users')
+      if (isFreezing) {
+        // Use DELETE to freeze (as implemented in backend)
+        await $fetch(`${apiBase}/api/admin/users/${userId}`, {
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${token.value}` }
+        })
+        form.is_active = false
+      } else {
+        // Use PUT to unfreeze
+        await $fetch(`${apiBase}/api/admin/users/${userId}`, {
+          method: 'PUT',
+          headers: { Authorization: `Bearer ${token.value}` },
+          body: { is_active: true }
+        })
+        form.is_active = true
+      }
     } catch (e) {
-      alert('Failed to delete user')
+      alert('Action failed')
     }
   }
 }
@@ -198,6 +224,8 @@ async function handleDelete() {
 .btn-secondary { background: #edf2f7; color: #4a5568; }
 .btn-danger { background: #feb2b2; color: #c53030; }
 .btn-danger:hover { background: #fc8181; }
+.btn-success { background: #68d391; color: white; }
+.btn-success:hover { background: #48bb78; }
 .error-msg { margin-top: 1rem; color: #e53e3e; background: #fff5f5; padding: 1rem; border-radius: 6px; }
 .loading { font-size: 1.2rem; color: #666; }
 </style>

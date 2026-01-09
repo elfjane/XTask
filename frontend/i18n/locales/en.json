@@ -10,7 +10,14 @@
         "viewSchedules": "View Schedules",
         "viewTasks": "View Tasks",
         "management": "Management",
-        "name": "Name"
+        "name": "Name",
+        "roles": {
+            "admin": "System Administrator",
+            "manager": "Reviewer",
+            "task_user": "Task Creator",
+            "executor": "Task Executor",
+            "auditor": "Auditor"
+        }
     },
     "admin": {
         "users": "User Management",
@@ -19,6 +26,7 @@
         "addUser": "Add User",
         "editUser": "Edit User",
         "freeze": "Freeze",
+        "unfreeze": "Unfreeze",
         "freezeConfirm": "Are you sure you want to freeze this account? They will no longer be able to login.",
         "add": "Add",
         "edit": "Edit",

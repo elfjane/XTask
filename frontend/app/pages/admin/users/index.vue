@@ -2,7 +2,7 @@
   <div class="admin-page-container">
     <div class="page-header">
       <h1 class="page-title">{{ $t('admin.users') }}</h1>
-      <NuxtLink to="/admin/users/create" class="btn btn-primary">{{ $t('admin.addUser') }}</NuxtLink>
+      <NuxtLink v-if="can('manage-users')" to="/admin/users/create" class="btn btn-primary">{{ $t('admin.addUser') }}</NuxtLink>
     </div>
 
     <div v-if="loading" class="loading-state">
@@ -27,7 +27,7 @@
             <th>Role</th>
             <th>Projects</th>
             <th>Department</th>
-            <th>Actions</th>
+            <th v-if="can('manage-users')">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -41,7 +41,7 @@
             <td>{{ user.email }}</td>
             <td>
               <span class="badge" :class="user.role === 'admin' ? 'badge-purple' : 'badge-gray'">
-                {{ user.role }}
+                {{ $t('common.roles.' + user.role) }}
               </span>
             </td>
             <td>
@@ -50,17 +50,8 @@
               </div>
             </td>
             <td>{{ user.department?.name || '-' }}</td>
-            <td class="actions-cell">
+            <td v-if="can('manage-users')" class="actions-cell">
               <NuxtLink :to="'/admin/users/' + user.id" class="btn-icon" :title="$t('admin.edit')">✏️</NuxtLink>
-              <button 
-                v-if="user.is_active" 
-                @click="confirmFreeze(user)" 
-                class="btn-icon text-red" 
-                :title="$t('admin.freeze')"
-              >
-                ❄️
-              </button>
-              <span v-else class="text-gray text-small">{{ $t('admin.freeze') }}d</span>
             </td>
           </tr>
         </tbody>
@@ -75,7 +66,7 @@ definePageMeta({
   middleware: ['auth', 'admin']
 })
 
-const { token } = useAuth()
+const { token, can } = useAuth()
 const config = useRuntimeConfig()
 const users = ref<any[]>([])
 const loading = ref(true)
@@ -104,27 +95,7 @@ async function fetchUsers() {
   }
 }
 
-function confirmFreeze(user: any) {
-  if (confirm('Are you sure you want to freeze this account? They will no longer be able to login.')) {
-    freezeUser(user.id)
-  }
-}
 
-async function freezeUser(id: number) {
-  try {
-    const apiBase = (config.public.apiBase as string) || ''
-    await $fetch(`${apiBase}/api/admin/users/${id}`, {
-      method: 'DELETE',
-      headers: {
-        Authorization: `Bearer ${token.value}`
-      }
-    })
-    // Refresh list
-    await fetchUsers()
-  } catch (e) {
-    alert('Failed to freeze user')
-  }
-}
 </script>
 
 <style scoped>

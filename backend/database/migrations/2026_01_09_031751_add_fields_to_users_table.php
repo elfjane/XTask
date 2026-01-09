@@ -15,7 +15,7 @@ return new class extends Migration {
                 $table->string('employee_id')->nullable()->after('email');
             }
             if (!Schema::hasColumn('users', 'role')) {
-                $table->string('role')->default('user')->after('employee_id');
+                $table->string('role')->default(\App\Models\User::ROLE_EXECUTOR)->after('employee_id');
             }
             if (!Schema::hasColumn('users', 'is_active')) {
                 $table->boolean('is_active')->default(true)->after('role');
