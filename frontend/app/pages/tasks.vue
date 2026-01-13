@@ -210,6 +210,7 @@
                 <th>{{ $t('tasks.reviewStatus') }}</th>
                 <th>{{ $t('tasks.reviewer') }}</th>
                 <th>{{ $t('tasks.reviewedAt') }}</th>
+                <th>{{ $t('tasks.outputUrl') }}</th>
                 <th>{{ $t('tasks.memo') }}</th>
               </tr>
             </thead>
@@ -234,10 +235,10 @@
                 <td>{{ item.department }}</td>
                 <td class="work-cell">{{ item.work }}</td>
                 <td>{{ item.points }}</td>
-                <td>{{ item.release_date || '-' }}</td>
-                <td>{{ item.start_date || '-' }}</td>
-                <td>{{ item.expected_finish_date || '-' }}</td>
-                <td>{{ item.actual_finish_date || '-' }}</td>
+                <td>{{ formatDate(item.release_date) }}</td>
+                <td>{{ formatDate(item.start_date) }}</td>
+                <td>{{ formatDate(item.expected_finish_date) }}</td>
+                <td>{{ formatDate(item.actual_finish_date) }}</td>
                 <td>
                   <span v-if="item.review_status && item.review_status !== 'unsubmitted'" :class="['status-badge', item.review_status]">
                     {{ $t(`tasks.reviewStatus_${item.review_status}`) }}
@@ -246,13 +247,23 @@
                 </td>
                 <td>{{ item.reviewer?.name || '-' }}</td>
                 <td>{{ item.reviewed_at ? formatDateTime(item.reviewed_at) : '-' }}</td>
+                <td class="output-url-cell">
+                  <div v-if="item.output_url">
+                    <MarkdownViewer :content="item.output_url" />
+                  </div>
+                  <span v-else>-</span>
+                </td>
                 <td class="memo-cell">
-                  <div class="memo-list">
-                    <div v-if="item.remarks && item.remarks.length > 0" class="memo-item">
+                  <div v-if="item.memo" class="main-memo">
+                    <MarkdownViewer :content="item.memo" />
+                  </div>
+                  <div class="memo-list" v-if="item.remarks && item.remarks.length > 0">
+                    <div class="memo-item">
                       <span class="memo-user">{{ item.remarks[item.remarks.length - 1]?.user_name }}:</span>
-                      <span class="memo-content">{{ item.remarks[item.remarks.length - 1]?.content }}</span>
+                      <MarkdownViewer class="memo-content" :content="item.remarks[item.remarks.length - 1]?.content" />
                     </div>
                   </div>
+                  <span v-if="!item.memo && (!item.remarks || item.remarks.length === 0)">-</span>
                 </td>
               </tr>
             </tbody>
@@ -1248,6 +1259,14 @@ const handleCreate = async () => {
   max-width: 400px;
   text-align: left !important;
   vertical-align: top;
+  white-space: normal !important;
+}
+
+.output-url-cell {
+  min-width: 200px;
+  max-width: 400px;
+  text-align: left !important;
+  white-space: normal !important;
 }
 
 .memo-board {

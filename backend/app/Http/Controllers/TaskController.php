@@ -377,17 +377,18 @@ class TaskController extends Controller
                 $hasData = false;
                 $rowData = [];
                 for ($col = 1; $col <= count($headers); $col++) {
+                    $header = $headers[$col] ?? null;
+                    if (!$header)
+                        continue;
+
                     $cell = $sheet->getCell([$col, $row]);
                     $val = $cell->getValue();
-                    $header = $headers[$col];
                     $rowData[$header] = $val;
 
-                    // Specific handling for Hyperlinks in "工作" column
-                    if ($header === '工作') {
-                        $hyperlink = $cell->getHyperlink()->getUrl();
-                        if ($hyperlink) {
-                            $rowData['工作_link'] = $hyperlink;
-                        }
+                    // Extract hyperlink for any column
+                    $hyperlink = $cell->getHyperlink()->getUrl();
+                    if ($hyperlink) {
+                        $rowData[$header . '_link'] = $hyperlink;
                     }
 
                     if ($val !== null && $val !== '')
@@ -419,8 +420,8 @@ class TaskController extends Controller
 
                 $task->related_personnel = $rowData['相關人員'] ?? null;
                 $task->project = $rowData['專案'] ?? 'Imported';
-                $task->item = $rowData['項目'] ?? ($rowData['類別'] ?? null);
-
+                $task->item = $rowData['項目'] ?? ($rowData['項目'] ?? null);
+                $task->department = $rowData['類別'] ?? null;
                 $workText = $rowData['工作'] ?? '';
                 $embeddedLink = $rowData['工作_link'] ?? null;
 
@@ -433,13 +434,27 @@ class TaskController extends Controller
                 $task->actual_finish_date = $this->parseExcelValueAsDate($rowData['完成日'] ?? null);
 
                 $originalMemo = $rowData['備註說明'] ?? '';
-                if ($embeddedLink) {
-                    $task->memo = $embeddedLink . ($originalMemo ? "\n" . $originalMemo : "");
-                } else {
-                    $task->memo = $originalMemo ?: null;
+                $memoLink = $rowData['備註說明_link'] ?? null;
+                if ($memoLink && $originalMemo) {
+                    $originalMemo = "[" . $originalMemo . "](" . $memoLink . ")";
                 }
 
-                $task->output_url = $rowData['產出的文件或建檔(詳細說明)'] ?? null;
+                $memoContent = $originalMemo;
+
+                if ($embeddedLink) {
+                    $workTitle = $workText ?: '工作連結';
+                    $markdownLink = "[" . $workTitle . "](" . $embeddedLink . ")";
+                    $memoContent = $markdownLink . ($originalMemo ? "\n" . $originalMemo : "");
+                }
+
+                $task->memo = $this->autoConvertLinksToMarkdown($memoContent);
+
+                $outputUrlRaw = $rowData['產出的文件或建檔(詳細說明)'] ?? '';
+                $outputUrlLink = $rowData['產出的文件或建檔(詳細說明)_link'] ?? null;
+                if ($outputUrlLink && $outputUrlRaw) {
+                    $outputUrlRaw = "[" . $outputUrlRaw . "](" . $outputUrlLink . ")";
+                }
+                $task->output_url = $this->autoConvertLinksToMarkdown($outputUrlRaw);
 
                 $task->review_status = 'approved';
                 $task->reviewed_by = $admin->id;
@@ -460,6 +475,20 @@ class TaskController extends Controller
         } catch (\Exception $e) {
             return response()->json(['message' => 'Error processing Excel: ' . $e->getMessage()], 500);
         }
+    }
+
+    private function autoConvertLinksToMarkdown($text)
+    {
+        if (!$text)
+            return $text;
+
+        // Pattern to find URLs that are not already part of a markdown link [title](url)
+        $pattern = '/(?<!\()https?:\/\/[^\s\)]+/i';
+
+        return preg_replace_callback($pattern, function ($matches) {
+            $url = $matches[0];
+            return "[$url]($url)";
+        }, $text);
     }
 
     private function parseExcelValueAsDate($value)
