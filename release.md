@@ -4,9 +4,8 @@ All notable changes to the XTask project will be documented in this file.
 
 ## [2026-01-13 15:50] - Excel Task Import
 - **Backend**:
-  - Implemented `TaskController@import` to batch import tasks from Excel files.
-  - Used `npx xlsx-cli` bridge to support Excel parsing in environments without `ext-zip`.
-  - Automatic link extraction from "Work" column to "Output URL".
+  - Implemented `TaskController@import` to batch import tasks from Excel files using `phpoffice/phpspreadsheet`.
+  - Automatic extraction of embedded hyperlinks from the "Work" column (H column) into the "Memo" field.
   - Auto-approval and mapping of audit metadata based on import data.
 - **Frontend**:
   - Added "Import Tasks" page for administrators.

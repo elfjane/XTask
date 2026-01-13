@@ -351,112 +351,123 @@ class TaskController extends Controller
         $file = $request->file('file');
         $path = $file->getRealPath();
 
-        // Use npx xlsx-cli to convert to JSON since ext-zip might be missing in PHP environment
-        $jsonPath = tempnam(sys_get_temp_dir(), 'tasks_') . '.json';
-        $command = "npx -y xlsx-cli " . escapeshellarg($path) . " -j > " . escapeshellarg($jsonPath);
+        try {
+            $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($path);
+            $sheet = $spreadsheet->getActiveSheet();
+            $highestRow = $sheet->getHighestRow();
+            $highestColumn = $sheet->getHighestColumn();
 
-        exec($command, $output, $returnVar);
+            // Get headers from first row to find column indexes if they change
+            $headers = [];
+            for ($col = 1; $col <= \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($highestColumn); $col++) {
+                $headers[$col] = $sheet->getCell([$col, 1])->getValue();
+            }
 
-        if ($returnVar !== 0 || !file_exists($jsonPath)) {
-            return response()->json(['message' => 'Failed to parse Excel file via npx. Ensure node/npx is available.'], 500);
-        }
+            $admin = $request->user();
+            $importedCount = 0;
 
-        // Redirects on Windows can create UTF-16LE. Try to read and convert if needed.
-        $jsonRaw = file_get_contents($jsonPath);
-        unlink($jsonPath);
+            for ($row = 2; $row <= $highestRow; $row++) {
+                // Check if row has any data
+                $hasData = false;
+                $rowData = [];
+                for ($col = 1; $col <= count($headers); $col++) {
+                    $cell = $sheet->getCell([$col, $row]);
+                    $val = $cell->getValue();
+                    $header = $headers[$col];
+                    $rowData[$header] = $val;
 
-        // Detect and convert UTF-16LE to UTF-8 if necessary
-        if (str_starts_with($jsonRaw, "\xFF\xFE") || str_starts_with($jsonRaw, "\xFE\xFF")) {
-            $jsonRaw = iconv('UTF-16', 'UTF-8', $jsonRaw);
-        }
+                    // Specific handling for Hyperlinks in "工作" column
+                    if ($header === '工作') {
+                        $hyperlink = $cell->getHyperlink()->getUrl();
+                        if ($hyperlink) {
+                            $rowData['工作_link'] = $hyperlink;
+                        }
+                    }
 
-        $data = json_decode($jsonRaw, true);
-
-        if (!$data) {
-            return response()->json(['message' => 'Invalid JSON output from parser.'], 422);
-        }
-
-        $admin = $request->user();
-        $importedCount = 0;
-
-        foreach ($data as $row) {
-            $task = new Task();
-
-            // Mapping based on the reference tasks.xlsx / CSV headers
-            $task->level = $row['級別'] ?? 1;
-            $task->status = 'finished'; // Requirement: 匯入的檔案一律都是審核成功 (implied finished)
-
-            // Assignee lookup
-            $assigneeName = $row['執行人員'] ?? null;
-            if ($assigneeName) {
-                $user = \App\Models\User::where('name', $assigneeName)->first();
-                if ($user) {
-                    $task->user_id = $user->id;
-                    $task->department = $user->department?->name ?: 'Unknown';
-                } else {
-                    // Fallback to admin if user not found? Or skip? Request says Auditor is importer.
-                    $task->user_id = $admin->id;
-                    $task->department = $admin->department ?: 'Admin Dept';
+                    if ($val !== null && $val !== '')
+                        $hasData = true;
                 }
-            } else {
-                $task->user_id = $admin->id;
-                $task->department = 'Unknown';
+
+                if (!$hasData)
+                    continue;
+
+                $task = new Task();
+
+                $task->level = $rowData['級別'] ?? 1;
+                $task->status = 'finished';
+
+                $assigneeName = $rowData['執行人員'] ?? null;
+                if ($assigneeName) {
+                    $user = \App\Models\User::where('name', $assigneeName)->first();
+                    if ($user) {
+                        $task->user_id = $user->id;
+                        $task->department = $user->department?->name ?: 'Unknown';
+                    } else {
+                        $task->user_id = $admin->id;
+                        $task->department = $admin->department?->name ?: 'Admin Dept';
+                    }
+                } else {
+                    $task->user_id = $admin->id;
+                    $task->department = 'Unknown';
+                }
+
+                $task->related_personnel = $rowData['相關人員'] ?? null;
+                $task->project = $rowData['專案'] ?? 'Imported';
+                $task->item = $rowData['項目'] ?? ($rowData['類別'] ?? null);
+
+                $workText = $rowData['工作'] ?? '';
+                $embeddedLink = $rowData['工作_link'] ?? null;
+
+                $task->work = $workText;
+                $task->points = $rowData['點數'] ?? 0;
+
+                $task->release_date = $this->parseExcelValueAsDate($rowData['發佈日'] ?? null);
+                $task->start_date = $this->parseExcelValueAsDate($rowData['起始日'] ?? null);
+                $task->expected_finish_date = $this->parseExcelValueAsDate($rowData['預計完成日'] ?? null);
+                $task->actual_finish_date = $this->parseExcelValueAsDate($rowData['完成日'] ?? null);
+
+                $originalMemo = $rowData['備註說明'] ?? '';
+                if ($embeddedLink) {
+                    $task->memo = $embeddedLink . ($originalMemo ? "\n" . $originalMemo : "");
+                } else {
+                    $task->memo = $originalMemo ?: null;
+                }
+
+                $task->output_url = $rowData['產出的文件或建檔(詳細說明)'] ?? null;
+
+                $task->review_status = 'approved';
+                $task->reviewed_by = $admin->id;
+
+                $finishDate = $task->actual_finish_date ?: now();
+                $task->reviewed_at = $finishDate;
+                $task->approved_at = $finishDate;
+
+                $task->save();
+                $importedCount++;
             }
 
-            $task->related_personnel = $row['相關人員'] ?? null;
-            $task->project = $row['專案'] ?? 'Imported';
-            $task->item = $row['項目'] ?? ($row['類別'] ?? null);
+            return response()->json([
+                'message' => "Successfully imported $importedCount tasks.",
+                'count' => $importedCount
+            ]);
 
-            $workContent = $row['工作'] ?? '';
-            $task->work = $workContent;
-
-            $task->points = $row['點數'] ?? 0;
-
-            // Dates
-            $task->release_date = $this->parseExcelDate($row['發佈日'] ?? null);
-            $task->start_date = $this->parseExcelDate($row['起始日'] ?? null);
-            $task->expected_finish_date = $this->parseExcelDate($row['預計完成日'] ?? null);
-            $task->actual_finish_date = $this->parseExcelDate($row['完成日'] ?? null);
-
-            // Link extraction from Work column
-            $extractedLink = null;
-            if (preg_match('/(https?:\/\/[^\s]+)/', $workContent, $matches)) {
-                $extractedLink = $matches[0];
-            }
-
-            $outputDetail = $row['產出的文件或建檔(詳細說明)'] ?? '';
-            if ($extractedLink) {
-                $outputDetail = ($outputDetail ? $outputDetail . "\n" : "") . $extractedLink;
-            }
-            $task->output_url = $outputDetail;
-
-            $task->memo = $row['備註說明'] ?? null;
-
-            // Approval info: requirement "匯入的檔案一律都是審核成功", "審核時間跟完成日期一致"
-            $task->review_status = 'approved';
-            $task->reviewed_by = $admin->id;
-
-            $finishDate = $task->actual_finish_date ?: now();
-            $task->reviewed_at = $finishDate;
-            $task->approved_at = $finishDate;
-
-            $task->save();
-            $importedCount++;
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error processing Excel: ' . $e->getMessage()], 500);
         }
-
-        return response()->json([
-            'message' => "Successfully imported $importedCount tasks.",
-            'count' => $importedCount
-        ]);
     }
 
-    private function parseExcelDate($value)
+    private function parseExcelValueAsDate($value)
     {
         if (!$value)
             return null;
+
+        // PhpSpreadsheet might return numeric value for dates
         if (is_numeric($value)) {
-            // Excel dates are number of days since Dec 30, 1899
-            return Carbon::create(1899, 12, 30)->addDays((int) $value)->toDateString();
+            try {
+                return Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value))->toDateString();
+            } catch (\Exception $e) {
+                return null;
+            }
         }
 
         try {
@@ -466,4 +477,3 @@ class TaskController extends Controller
         }
     }
 }
-

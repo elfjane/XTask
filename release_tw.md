@@ -4,9 +4,8 @@
 
 ## [2026-01-13 15:50] - Excel 任務匯入
 - **後端**:
-  - 實作 `TaskController@import` 以批次從 Excel 檔案匯入任務。
-  - 使用 `npx xlsx-cli` 橋接器，支援在沒有 `ext-zip` 的環境中進行 Excel 解析。
-  - 自動從「工作」欄位提取連結到「產出的文件或連結」。
+  - 實作 `TaskController@import` 使用 `phpoffice/phpspreadsheet` 批次從 Excel 檔案匯入任務。
+  - 自動從「工作」欄位 (H 欄) 提取內嵌超連結到「備註說明」（置於備註最上方並換行）。
   - 根據匯入資料自動設定審核成功狀態與審核相關資訊。
 - **前端**:
   - 為管理員新增「任務匯入」頁面。
