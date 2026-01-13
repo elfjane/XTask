@@ -6,6 +6,7 @@ All notable changes to the XTask project will be documented in this file.
 - **Markdown Support**:
   - Installed `marked` for Markdown parsing.
   - Created `MarkdownViewer.vue` component to safely render Markdown content with auto-opening links in new tabs.
+  - **Automatic link icons**: Added automatic service icon detection (GitLab, Asana, Google Docs/Sheets/Slides, GitHub, Slack, YouTube, etc.) for Markdown links.
   - Enabled Markdown for Task `memo`, `remarks`, and `output_url` fields.
   - Enabled Markdown for Schedule `memo` and `memos` fields.
   - Added "Markdown" hint badges to input labels in forms.

@@ -6,6 +6,7 @@
 - **Markdown 語法支援**:
   - 安裝 `marked` 代碼庫用於 Markdown 解析。
   - 建立 `MarkdownViewer.vue` 組件，確保安全渲染 Markdown 並自動在新分頁開啟連結。
+  - **自動識別連結圖示**: 新增自動偵測服務圖示功能（支援 GitLab, Asana, Google Docs/Sheets/Slides, GitHub, Slack, YouTube 等），在連結文字前自動顯示對應 Icon。
   - 任務面板的「備註」、「對話紀錄」與「產出連結」現在全面支援 Markdown。
   - 排程面板的「備註」與「留言紀錄」同樣支援 Markdown。
   - 在表單輸入框標籤旁新增 "Markdown" 提示標籤。
