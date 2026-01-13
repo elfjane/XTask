@@ -65,8 +65,14 @@ class TaskPolicy
             return true;
         }
 
-        // Executor cannot edit tasks, only respond in memo (handled by a separate ability or within update check)
-        // Auditor cannot edit any task
+        if ($user->isAuditor()) {
+            return true;
+        }
+
+        if ($user->id === $task->user_id) {
+            return true;
+        }
+
         return false;
     }
 

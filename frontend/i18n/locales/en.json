@@ -11,6 +11,7 @@
         "viewTasks": "View Tasks",
         "management": "Management",
         "name": "Name",
+        "cancel": "Cancel",
         "roles": {
             "admin": "System Administrator",
             "manager": "Reviewer",
@@ -80,6 +81,8 @@
         "scheduledStart": "Target Start",
         "scheduledEnd": "Target End",
         "scheduledDays": "Target Days",
+        "actualStart": "Actual Start",
+        "actualFinish": "Actual Finish",
         "project": "Project",
         "scheduleTitle": "Schedule Title",
         "memo": "Remarks",
@@ -92,7 +95,12 @@
         "confirmed": "Confirmed",
         "cancel": "Cancel",
         "create": "Create Schedule",
-        "creating": "Creating..."
+        "creating": "Creating...",
+        "editSchedule": "Edit Schedule",
+        "edit": "Edit",
+        "save": "Save Changes",
+        "updating": "Updating...",
+        "details": "Schedule Details"
     },
     "tasks": {
         "title": "Tasks",
@@ -125,7 +133,25 @@
         "cancelled": "Cancelled",
         "working": "Working",
         "in_progress": "In Progress",
-        "finished": "Finished"
+        "finished": "Finished",
+        "details": "Task Details",
+        "editTask": "Edit Task",
+        "remarks": "Remarks",
+        "id": "ID",
+        "reviewTasks": "Tasks Under Review",
+        "exitReview": "Back to List",
+        "reviewPass": "Pass",
+        "reviewFail": "Fail",
+        "reviewInfo": "Review Information",
+        "reviewStatus": "Review Status",
+        "reviewStatus_unsubmitted": "Unsubmitted",
+        "reviewStatus_submitted": "Submitted",
+        "reviewStatus_approved": "Approved",
+        "reviewStatus_failed": "Failed",
+        "reviewer": "Reviewer",
+        "reviewedAt": "Reviewed At",
+        "approvedAt": "Approved At",
+        "failedAt": "Failed At"
     },
     "profile": {
         "title": "Profile Settings",

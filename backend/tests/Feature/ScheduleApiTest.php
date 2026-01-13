@@ -25,7 +25,7 @@ class ScheduleApiTest extends TestCase
 
     public function test_user_can_create_schedule()
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role' => 'manager']);
 
         $data = [
             'project' => 'Test Project',
@@ -45,5 +45,40 @@ class ScheduleApiTest extends TestCase
             ->assertJsonFragment(['title' => 'Test Schedule']);
 
         $this->assertDatabaseHas('schedules', ['title' => 'Test Schedule']);
+    }
+
+    public function test_user_can_view_schedule()
+    {
+        $user = User::factory()->create();
+        $schedule = Schedule::factory()->create();
+
+        $response = $this->actingAs($user, 'sanctum')
+            ->getJson("/api/schedules/{$schedule->id}");
+
+        $response->assertStatus(200)
+            ->assertJsonFragment(['title' => $schedule->title]);
+    }
+
+    public function test_user_can_update_schedule()
+    {
+        $user = User::factory()->create(['role' => 'manager']);
+        $schedule = Schedule::factory()->create();
+
+        $data = [
+            'title' => 'Updated Title',
+            'status' => 'finish',
+        ];
+
+        $response = $this->actingAs($user, 'sanctum')
+            ->putJson("/api/schedules/{$schedule->id}", $data);
+
+        $response->assertStatus(200)
+            ->assertJsonFragment(['title' => 'Updated Title']);
+
+        $this->assertDatabaseHas('schedules', [
+            'id' => $schedule->id,
+            'title' => 'Updated Title',
+            'status' => 'finish',
+        ]);
     }
 }

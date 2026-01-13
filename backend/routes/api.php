@@ -24,9 +24,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/', [ProfileController::class, 'update']);
     });
 
-    Route::apiResource('schedules', ScheduleController::class)->only(['index', 'store']);
+    Route::apiResource('schedules', ScheduleController::class)->only(['index', 'store', 'show', 'update']);
     Route::post('schedules/{schedule}/memos', [ScheduleMemoController::class, 'store']);
-    Route::apiResource('tasks', TaskController::class)->only(['index', 'store', 'update']);
+    Route::apiResource('tasks', TaskController::class)->only(['index', 'store', 'show', 'update']);
     Route::post('tasks/{task}/remarks', [TaskRemarkController::class, 'store']);
     Route::apiResource('users', \App\Http\Controllers\UserController::class)->only(['index']);
     Route::get('projects', [ProjectController::class, 'index']);

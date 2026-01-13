@@ -35,8 +35,8 @@ XTask/
 
 ## Features
 - **User Registration**: Configurable registration system with environment variable toggle.
-- **Schedules**: Responsive view (Table for PC, Cards for Mobile) with an integrated **Message Board** for collaborator remarks.
-- **Task Tracking**: Detailed task management with status and priority. Supports **inline assignee changes** and automated department context updates.
+- **Schedules**: Responsive view (Table for PC, Cards for Mobile) with an integrated **Message Board** for collaborator remarks. Supports **detailed view and editing** by clicking on schedule titles.
+- **Task Tracking**: Detailed task management with status and priority. Supports **inline assignee changes** and automated department context updates. Includes an **Approval Workflow** where finished tasks are submitted for Auditor review.
 - **Multi-language Support**: i18n integrated for English and Traditional Chinese.
 
 ## Environment Configuration

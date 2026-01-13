@@ -11,6 +11,7 @@
         "viewTasks": "查看任務",
         "management": "管理",
         "name": "姓名",
+        "cancel": "取消",
         "roles": {
             "admin": "系統管理員",
             "manager": "審核者",
@@ -80,6 +81,8 @@
         "scheduledStart": "預定開始日期",
         "scheduledEnd": "預定結束日期",
         "scheduledDays": "預定天數",
+        "actualStart": "實際開始日期",
+        "actualFinish": "實際結束日期",
         "project": "專案",
         "scheduleTitle": "排程標題",
         "memo": "備註",
@@ -92,7 +95,12 @@
         "confirmed": "已確認",
         "cancel": "取消",
         "create": "建立排程",
-        "creating": "建立中..."
+        "creating": "建立中...",
+        "editSchedule": "編輯排程",
+        "edit": "編輯",
+        "save": "儲存變更",
+        "updating": "更新中...",
+        "details": "排程詳情"
     },
     "tasks": {
         "title": "任務",
@@ -125,7 +133,25 @@
         "cancelled": "已取消",
         "working": "執行中",
         "in_progress": "未執行",
-        "finished": "已完成"
+        "finished": "已完成",
+        "details": "任務詳情",
+        "editTask": "編輯任務",
+        "remarks": "備注",
+        "id": "編號",
+        "reviewTasks": "送審中任務",
+        "exitReview": "返回列表",
+        "reviewPass": "通過",
+        "reviewFail": "未通過",
+        "reviewInfo": "審核資訊",
+        "reviewStatus": "審核狀態",
+        "reviewStatus_unsubmitted": "未送審",
+        "reviewStatus_submitted": "送審中",
+        "reviewStatus_approved": "已通過",
+        "reviewStatus_failed": "已退回",
+        "reviewer": "審核者",
+        "reviewedAt": "審核時間",
+        "approvedAt": "通過時間",
+        "failedAt": "退回時間"
     },
     "profile": {
         "title": "個人設定",

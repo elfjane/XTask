@@ -1,6 +1,34 @@
 # Release Notes
 
 All notable changes to the XTask project will be documented in this file.
+
+## [2026-01-13 13:00] - Task Approval Workflow
+- **Backend**:
+  - Added `review_status` to tasks table (unsubmitted, submitted, approved, failed).
+  - Implemented logic to auto-submit task for review when status becomes `finished`.
+  - Added review status filtering to `TaskController@index`.
+  - Updated `TaskPolicy` to allow Auditors to review (update) tasks and Assignees to update their own tasks.
+  - Added `TaskReviewApiTest`.
+- **Frontend**:
+  - Added "Tasks Under Review" mode in `tasks.vue` (visible to Auditor, Manager, Admin).
+  - Implemented read-only detail view for reviewing tasks.
+  - Added "Pass" and "Fail" actions for Auditors.
+  - Filtered out approved/failed tasks from the main task list.
+
+## [2026-01-12 14:35] - Task & Schedule Details Enhancements
+- **Backend**:
+  - Added `show` and `update` methods to both `ScheduleController` and `TaskController`.
+  - Updated API routes to support individual task/schedule retrieval and full updates.
+  - Enabled sorting of Memos/Remarks by `created_at` (ASC).
+- **Frontend**:
+  - **Details Modal**: Implemented comprehensive detailed views for both Tasks and Schedules.
+  - **Editing**: Integrated full editing capabilities within the detail modals, including updating all fields and dates.
+  - **Remarks/Memos**:
+    - List views now show only the **latest** remark/memo for a cleaner interface.
+    - Full history of remarks/memos is accessible within the detail modals.
+    - Added timestamp display for all remarks/memos.
+  - **Actual Dates**: Added "Actual Start Date" and "Actual Finish Date" support for Schedules in both UI and backend.
+  - **UI/UX**: Made task "Item" and "Work" cells clickable to open details, matching the schedule title behavior.
     
 ## [2026-01-09 16:50] - Schedule & Task Feature Enhancements
 - **Backend**:

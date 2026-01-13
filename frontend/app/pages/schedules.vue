@@ -22,7 +22,8 @@
               <th>{{ $t('schedules.scheduledStart') }}</th>
               <th>{{ $t('schedules.scheduledEnd') }}</th>
               <th>{{ $t('schedules.scheduledDays') }}</th>
-              <th>{{ $t('schedules.scheduledDays') }}</th>
+              <th>{{ $t('schedules.actualStart') }}</th>
+              <th>{{ $t('schedules.actualFinish') }}</th>
               <th>{{ $t('schedules.project') }}</th>
               <th>{{ $t('schedules.scheduleTitle') }}</th>
               <th>{{ $t('schedules.memo') }}</th>
@@ -40,14 +41,15 @@
               <td>{{ item.scheduled_start }}</td>
               <td>{{ item.scheduled_end }}</td>
               <td>{{ calculateDays(item.scheduled_start, item.scheduled_end) }}</td>
-              <td>{{ calculateDays(item.scheduled_start, item.scheduled_end) }}</td>
+              <td>{{ item.actual_start || '-' }}</td>
+              <td>{{ item.actual_finish || '-' }}</td>
               <td>{{ item.project }}</td>
-              <td class="title-cell">{{ item.title }}</td>
+              <td class="title-cell clickable" @click="openDetails(item)">{{ item.title }}</td>
               <td class="memo-cell">
                 <div class="memo-list">
-                  <div v-for="memo in item.memos" :key="memo.id" class="memo-item">
-                    <span class="memo-user">{{ memo.user_name }}:</span>
-                    <span class="memo-content">{{ memo.content }}</span>
+                  <div v-if="item.memos && item.memos.length > 0" class="memo-item">
+                    <span class="memo-user">{{ item.memos[item.memos.length - 1]?.user_name }}:</span>
+                    <span class="memo-content">{{ item.memos[item.memos.length - 1]?.content }}</span>
                   </div>
                 </div>
                 <div class="memo-add">
@@ -74,19 +76,19 @@
             <span :class="['status', item.status]">{{ $t(`schedules.${item.status}`) }}</span>
           </div>
           <div class="card-body">
-            <h2 class="project-title">{{ item.project }} - {{ item.title }}</h2>
+            <h2 class="project-title clickable" @click="openDetails(item)">{{ item.project }} - {{ item.title }}</h2>
             <div class="info-grid">
               <div class="info-item"><strong>{{ $t('schedules.confirm') }}:</strong> {{ $t(`schedules.${item.confirm.toLowerCase()}`) }}</div>
               <div class="info-item"><strong>{{ $t('schedules.deadline') }}:</strong> {{ item.deadline }}</div>
-              <div class="info-item"><strong>Target:</strong> {{ item.scheduled_start }} ~ {{ item.scheduled_end }}</div>
-              <div class="info-item"><strong>Target:</strong> {{ item.scheduled_start }} ~ {{ item.scheduled_end }}</div>
+              <div class="info-item"><strong>{{ $t('schedules.scheduledStart') }}:</strong> {{ item.scheduled_start }} ~ {{ item.scheduled_end }}</div>
+              <div class="info-item"><strong>{{ $t('schedules.actualStart') }}:</strong> {{ item.actual_start || '-' }} ~ {{ item.actual_finish || '-' }}</div>
             </div>
             <div class="memo-board">
               <strong>{{ $t('schedules.memo') }}:</strong>
               <div class="memo-list mobile">
-                <div v-for="memo in item.memos" :key="memo.id" class="memo-item">
-                  <span class="memo-user">{{ memo.user_name }}:</span>
-                  <span class="memo-content">{{ memo.content }}</span>
+                <div v-if="item.memos && item.memos.length > 0" class="memo-item">
+                  <span class="memo-user">{{ item.memos[item.memos.length - 1]?.user_name }}:</span>
+                  <span class="memo-content">{{ item.memos[item.memos.length - 1]?.content }}</span>
                 </div>
               </div>
               <div class="memo-add mobile">
@@ -140,15 +142,142 @@
             <BaseInput v-model="form.scheduled_end" :label="$t('schedules.scheduledEnd')" type="date" />
           </div>
         </div>
-          <div class="full-width">
-            <BaseInput v-model="form.memo" :label="$t('schedules.memo')" type="textarea" placeholder="Add some remarks..." />
-          </div>
-
+        <div class="full-width">
+          <BaseInput v-model="form.memo" :label="$t('schedules.memo')" type="textarea" placeholder="Add some remarks..." />
+        </div>
       </form>
       <template #footer>
         <button @click="showCreateModal = false" class="btn-secondary">{{ $t('schedules.cancel') }}</button>
         <button @click="handleCreate" :disabled="creating" class="btn-primary">
           {{ creating ? $t('schedules.creating') : $t('schedules.create') }}
+        </button>
+      </template>
+    </BaseModal>
+
+    <!-- Details/Edit Modal -->
+    <BaseModal v-model="showDetailsModal" :title="isEditing ? $t('schedules.editSchedule') : $t('schedules.details')" class="schedule-modal">
+      <div v-if="!isEditing" class="details-view">
+        <div class="detail-item">
+          <label>{{ $t('schedules.project') }}</label>
+          <div class="value">{{ selectedSchedule?.project }}</div>
+        </div>
+        <div class="detail-item">
+          <label>{{ $t('schedules.scheduleTitle') }}</label>
+          <div class="value">{{ selectedSchedule?.title }}</div>
+        </div>
+        <div class="form-grid">
+          <div class="detail-item">
+            <label>{{ $t('schedules.status') }}</label>
+            <div class="value">
+              <span :class="['status-badge', selectedSchedule?.status]">{{ $t(`schedules.${selectedSchedule?.status}`) }}</span>
+            </div>
+          </div>
+          <div class="detail-item">
+            <label>{{ $t('schedules.confirm') }}</label>
+            <div class="value">{{ selectedSchedule ? $t(`schedules.${selectedSchedule.confirm.toLowerCase()}`) : '' }}</div>
+          </div>
+          <div class="detail-item">
+            <label>{{ $t('schedules.deadline') }}</label>
+            <div class="value">{{ selectedSchedule?.deadline }}</div>
+          </div>
+          <div class="detail-item">
+            <label>{{ $t('schedules.scheduledStart') }}</label>
+            <div class="value">{{ selectedSchedule?.scheduled_start }}</div>
+          </div>
+          <div class="detail-item">
+            <label>{{ $t('schedules.scheduledEnd') }}</label>
+            <div class="value">{{ selectedSchedule?.scheduled_end }}</div>
+          </div>
+          <div class="detail-item">
+            <label>{{ $t('schedules.actualStart') }}</label>
+            <div class="value">{{ selectedSchedule?.actual_start || '-' }}</div>
+          </div>
+          <div class="detail-item">
+            <label>{{ $t('schedules.actualFinish') }}</label>
+            <div class="value">{{ selectedSchedule?.actual_finish || '-' }}</div>
+          </div>
+        </div>
+        <div class="detail-item">
+          <label>{{ $t('schedules.memo') }}</label>
+          <div class="value memo-content-box">{{ selectedSchedule?.memo || '-' }}</div>
+        </div>
+
+        <div class="detail-memos">
+          <label>{{ $t('schedules.memo') }} ({{ $t('common.management') }})</label>
+          <div class="memo-list modal-memos">
+            <div v-for="memo in selectedSchedule?.memos" :key="memo.id" class="memo-item">
+              <span class="memo-user">{{ memo.user_name }}:</span>
+              <span class="memo-content">{{ memo.content }}</span>
+              <span class="memo-time">{{ formatTime(memo.created_at) }}</span>
+            </div>
+          </div>
+          <div class="memo-add">
+            <input 
+              v-model="newMemos[selectedSchedule!.id]" 
+              :placeholder="$t('schedules.addMemoPlaceHolder')" 
+              @keyup.enter="handlePostMemo(selectedSchedule!.id)"
+            />
+            <button @click="handlePostMemo(selectedSchedule!.id)" :disabled="postingMemo === selectedSchedule!.id">
+              {{ postingMemo === selectedSchedule!.id ? '...' : '➔' }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <form v-else @submit.prevent="handleUpdate" class="modal-form">
+        <div class="form-section">
+          <div class="form-grid">
+            <BaseInput 
+              v-model="editForm.project" 
+              :label="$t('schedules.project')" 
+              type="select" 
+              :options="projectOptions" 
+            />
+            <BaseInput v-model="editForm.title" :label="$t('schedules.scheduleTitle')" />
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-grid">
+            <BaseInput 
+              v-model="editForm.status" 
+              :label="$t('schedules.status')" 
+              type="select" 
+              :options="[
+                { label: $t('schedules.working'), value: 'working' },
+                { label: $t('schedules.finish'), value: 'finish' },
+                { label: $t('schedules.in_progress'), value: 'in_progress' },
+                { label: $t('schedules.fail'), value: 'fail' }
+              ]" 
+            />
+            <BaseInput 
+              v-model="editForm.confirm" 
+              :label="$t('schedules.confirm')" 
+              type="select" 
+              :options="[
+                { label: $t('schedules.tentatively'), value: 'Tentatively' },
+                { label: $t('schedules.confirmed'), value: 'Confirmed' }
+              ]" 
+            />
+            <BaseInput v-model="editForm.deadline" :label="$t('schedules.deadline')" type="date" />
+            <BaseInput v-model="editForm.scheduled_start" :label="$t('schedules.scheduledStart')" type="date" />
+            <BaseInput v-model="editForm.scheduled_end" :label="$t('schedules.scheduledEnd')" type="date" />
+            <BaseInput v-model="editForm.actual_start" :label="$t('schedules.actualStart')" type="date" />
+            <BaseInput v-model="editForm.actual_finish" :label="$t('schedules.actualFinish')" type="date" />
+          </div>
+        </div>
+        <div class="full-width">
+          <BaseInput v-model="editForm.memo" :label="$t('schedules.memo')" type="textarea" />
+        </div>
+      </form>
+
+      <template #footer>
+        <button v-if="!isEditing" @click="showDetailsModal = false" class="btn-secondary">{{ $t('schedules.cancel') }}</button>
+        <button v-if="!isEditing" @click="startEditing" class="btn-primary">{{ $t('schedules.edit') }}</button>
+        
+        <button v-if="isEditing" @click="isEditing = false" class="btn-secondary">{{ $t('schedules.cancel') }}</button>
+        <button v-if="isEditing" @click="handleUpdate" :disabled="updating" class="btn-primary">
+          {{ updating ? $t('schedules.updating') : $t('schedules.save') }}
         </button>
       </template>
     </BaseModal>
@@ -164,9 +293,17 @@ const { token } = useAuth()
 const config = useRuntimeConfig()
 const apiBase = (config.public.apiBase as string) || ''
 const showCreateModal = ref(false)
+const showDetailsModal = ref(false)
+const isEditing = ref(false)
 const creating = ref(false)
+const updating = ref(false)
 const postingMemo = ref<number | null>(null)
 const newMemos = ref<Record<number, string>>({})
+const currentScheduleId = ref<number | null>(null)
+const selectedSchedule = computed(() => {
+  if (!currentScheduleId.value || !schedules.value) return null
+  return schedules.value.find(s => s.id === currentScheduleId.value) || null
+})
 
 const form = reactive({
   project: '',
@@ -175,6 +312,20 @@ const form = reactive({
   deadline: '',
   scheduled_start: '',
   scheduled_end: '',
+  memo: ''
+})
+
+const editForm = reactive({
+  id: 0,
+  project: '',
+  title: '',
+  status: '',
+  confirm: 'Tentatively',
+  deadline: '',
+  scheduled_start: '',
+  scheduled_end: '',
+  actual_start: '',
+  actual_finish: '',
   memo: ''
 })
 
@@ -187,6 +338,8 @@ interface Schedule {
   deadline: string;
   scheduled_start: string;
   scheduled_end: string;
+  actual_start?: string;
+  actual_finish?: string;
   memo: string;
   memos: Memo[];
 }
@@ -224,6 +377,30 @@ watch(projectOptions, (newOptions) => {
   }
 }, { immediate: true })
 
+const openDetails = (schedule: Schedule) => {
+  currentScheduleId.value = schedule.id
+  isEditing.value = false
+  showDetailsModal.value = true
+}
+
+const startEditing = () => {
+  if (!selectedSchedule.value) return
+  Object.assign(editForm, {
+    id: selectedSchedule.value.id,
+    project: selectedSchedule.value.project,
+    title: selectedSchedule.value.title,
+    status: selectedSchedule.value.status,
+    confirm: selectedSchedule.value.confirm,
+    deadline: selectedSchedule.value.deadline,
+    scheduled_start: selectedSchedule.value.scheduled_start,
+    scheduled_end: selectedSchedule.value.scheduled_end,
+    actual_start: selectedSchedule.value.actual_start || '',
+    actual_finish: selectedSchedule.value.actual_finish || '',
+    memo: selectedSchedule.value.memo
+  })
+  isEditing.value = true
+}
+
 const handleCreate = async () => {
   creating.value = true
   try {
@@ -254,6 +431,29 @@ const handleCreate = async () => {
   }
 }
 
+const handleUpdate = async () => {
+  if (!editForm.id) return
+  updating.value = true
+  try {
+    await $fetch(`${apiBase}/api/schedules/${editForm.id}`, {
+      method: 'PUT',
+      body: editForm,
+      headers: {
+        Authorization: `Bearer ${token.value}`,
+        Accept: 'application/json'
+      }
+    })
+    
+    await refresh()
+    
+    isEditing.value = false
+  } catch (err) {
+    console.error('Failed to update schedule:', err)
+  } finally {
+    updating.value = false
+  }
+}
+
 const handlePostMemo = async (scheduleId: number) => {
   const content = newMemos.value[scheduleId]
   if (!content || !content.trim()) return
@@ -275,6 +475,12 @@ const handlePostMemo = async (scheduleId: number) => {
   } finally {
     postingMemo.value = null
   }
+}
+
+const formatTime = (dateStr: string) => {
+  if (!dateStr) return ''
+  const date = new Date(dateStr)
+  return date.toLocaleString([], { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })
 }
 
 const getWeekDay = (dateStr: string) => {
@@ -375,10 +581,106 @@ const calculateDays = (start: string, end: string) => {
   color: #4b5563;
 }
 
+.schedule-table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.schedule-table tbody tr:hover {
+  background-color: #f8f6ff; /* Light purple hover effect */
+}
+
 .title-cell {
   text-align: left !important;
   min-width: 200px;
   white-space: normal !important;
+}
+
+.clickable {
+  cursor: pointer;
+  color: #764ba2;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.clickable:hover {
+  color: #5d3b81;
+  text-decoration: underline;
+}
+
+.details-view {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.detail-item label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.detail-item .value {
+  font-size: 1rem;
+  color: #1f2937;
+  padding: 0.5rem 0.75rem;
+  background: #f9fafb;
+  border-radius: 6px;
+  min-height: 1.5rem;
+}
+
+.memo-content-box {
+  white-space: pre-wrap;
+  line-height: 1.6;
+}
+
+.detail-memos {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #f3f4f6;
+}
+
+.detail-memos label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.75rem;
+  display: block;
+}
+
+.modal-memos {
+  max-height: 300px;
+  overflow-y: auto;
+  background: #f9fafb;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.memo-time {
+  font-size: 0.7rem;
+  color: #9ca3af;
+  margin-left: auto;
+}
+
+.memo-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding: 8px;
+  background: white;
+  border-radius: 6px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
 
 .status-badge {

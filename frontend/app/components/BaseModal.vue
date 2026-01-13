@@ -41,6 +41,7 @@ defineEmits(['update:modelValue'])
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  padding: 20px; /* Leave space around modal */
 }
 
 .modal-content {
@@ -48,8 +49,11 @@ defineEmits(['update:modelValue'])
   border-radius: 16px;
   width: 90%;
   max-width: 500px;
+  max-height: calc(100% - 40px); /* Fill screen but leave padding */
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .modal-header {
@@ -58,6 +62,7 @@ defineEmits(['update:modelValue'])
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-shrink: 0; /* Header won't shrink */
 }
 
 .modal-header h3 {
@@ -81,6 +86,8 @@ defineEmits(['update:modelValue'])
 
 .modal-body {
   padding: 1.5rem;
+  overflow-y: auto;
+  flex: 1; /* Take remaining space and scroll */
 }
 
 .modal-footer {
@@ -90,6 +97,7 @@ defineEmits(['update:modelValue'])
   display: flex;
   justify-content: flex-end;
   gap: 0.75rem;
+  flex-shrink: 0; /* Footer won't shrink */
 }
 
 .fade-enter-active, .fade-leave-active {

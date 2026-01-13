@@ -88,6 +88,7 @@ components:
         expected_finish_date: { type: string, format: date }
         actual_finish_date: { type: string, format: date }
         output_url: { type: string }
+        review_status: { type: string, enum: [unsubmitted, submitted, failed, approved], default: 'unsubmitted' }
         memo: { type: string }
         remarks:
           type: array
@@ -257,6 +258,43 @@ paths:
               schema:
                 $ref: '#/components/schemas/Schedule'
 
+  /schedules/{schedule}:
+    get:
+      summary: Get schedule details
+      parameters:
+        - name: schedule
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Schedule'
+    put:
+      summary: Update schedule
+      parameters:
+        - name: schedule
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Schedule'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Schedule'
+
   /schedules/{schedule}/memos:
     post:
       summary: Add a memo to a schedule
@@ -285,6 +323,17 @@ paths:
   /tasks:
     get:
       summary: List tasks
+      parameters:
+        - name: review_status
+          in: query
+          schema:
+            type: string
+            enum: [unsubmitted, submitted, failed, approved]
+        - name: exclude_review_status
+          in: query
+          schema:
+            type: string
+            description: Comma-separated list of statuses to exclude
       responses:
         '200':
           description: OK
@@ -324,6 +373,7 @@ paths:
               properties:
                 user_id: { type: integer }
                 status: { type: string }
+                review_status: { type: string, enum: [unsubmitted, submitted, failed, approved] }
                 department: { type: string }
       responses:
         '200':

@@ -26,11 +26,21 @@ class Task extends Model
         'actual_finish_date',
         'output_url',
         'memo',
+        'review_status',
+        'reviewed_by',
+        'reviewed_at',
+        'approved_at',
+        'failed_at',
     ];
 
     public function assignee()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function reviewer()
+    {
+        return $this->belongsTo(User::class, 'reviewed_by');
     }
 
     public function remarks()
