@@ -26,6 +26,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('schedules', ScheduleController::class)->only(['index', 'store', 'show', 'update']);
     Route::post('schedules/{schedule}/memos', [ScheduleMemoController::class, 'store']);
+    Route::get('tasks/completed', [TaskController::class, 'completed']);
     Route::apiResource('tasks', TaskController::class)->only(['index', 'store', 'show', 'update']);
     Route::post('tasks/{task}/remarks', [TaskRemarkController::class, 'store']);
     Route::apiResource('users', \App\Http\Controllers\UserController::class)->only(['index']);

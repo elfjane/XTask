@@ -39,6 +39,43 @@ class TaskController extends Controller
             $query->whereNotIn('review_status', explode(',', $request->input('exclude_review_status')));
         }
 
+        // Search functionality
+        if ($request->has('search') && $search = $request->input('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('work', 'like', "%{$search}%")
+                    ->orWhere('project', 'like', "%{$search}%")
+                    ->orWhere('item', 'like', "%{$search}%")
+                    ->orWhere('department', 'like', "%{$search}%")
+                    ->orWhere('memo', 'like', "%{$search}%")
+                    ->orWhereHas('assignee', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        // Sorting functionality
+        $sortField = $request->input('sort_field', 'id');
+        $sortOrder = $request->input('sort_order', 'desc');
+
+        $allowedSortFields = [
+            'id',
+            'level',
+            'status',
+            'project',
+            'department',
+            'points',
+            'release_date',
+            'start_date',
+            'expected_finish_date',
+            'actual_finish_date'
+        ];
+
+        if (in_array($sortField, $allowedSortFields)) {
+            $query->orderBy($sortField, $sortOrder);
+        } else {
+            $query->orderBy('id', 'desc');
+        }
+
         return response()->json($query->get());
     }
 
@@ -136,6 +173,11 @@ class TaskController extends Controller
                 if ($newReviewStatus === 'approved') {
                     $validated['approved_at'] = now();
                     $validated['failed_at'] = null; // Clear failed timestamp if exists
+
+                    // If actual_finish_date is empty, set it to current date/time when approved
+                    if (empty($task->actual_finish_date)) {
+                        $validated['actual_finish_date'] = now();
+                    }
                 } elseif ($newReviewStatus === 'failed') {
                     $validated['failed_at'] = now();
                     $validated['approved_at'] = null; // Clear approved timestamp if exists
@@ -153,5 +195,69 @@ class TaskController extends Controller
                 $q->orderBy('created_at', 'asc');
             }
         ]));
+    }
+
+    /**
+     * Get completed tasks (finished or approved)
+     */
+    public function completed(Request $request)
+    {
+        \Illuminate\Support\Facades\Gate::authorize('viewAny', Task::class);
+
+        $perPage = $request->input('per_page', 20);
+        $sort = $request->input('sort', 'desc'); // asc or desc
+
+        $user = $request->user();
+        $query = Task::with([
+            'assignee',
+            'reviewer',
+            'remarks' => function ($q) {
+                $q->orderBy('created_at', 'asc');
+            }
+        ]);
+
+        // Apply user-specific filtering
+        if ($user->isExecutor()) {
+            $query->where(function ($q) use ($user) {
+                $q->where('department', $user->department?->name)
+                    ->orWhere('user_id', $user->id)
+                    ->orWhere('related_personnel', 'like', '%' . $user->name . '%');
+            });
+        }
+
+        // Filter for completed tasks: status='finished' OR review_status='approved'
+        $query->where(function ($q) {
+            $q->where('status', 'finished')
+                ->orWhere('review_status', 'approved');
+        });
+
+        // Search functionality
+        if ($request->has('search') && $search = $request->input('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('work', 'like', "%{$search}%")
+                    ->orWhere('project', 'like', "%{$search}%")
+                    ->orWhere('item', 'like', "%{$search}%")
+                    ->orWhere('department', 'like', "%{$search}%")
+                    ->orWhere('memo', 'like', "%{$search}%")
+                    ->orWhereHas('assignee', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('reviewer', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        // Sorting: prioritize approved_at if exists, otherwise actual_finish_date
+        // MySQL compatible sorting (NULLS LAST equivalent)
+        if ($sort === 'asc') {
+            $query->orderByRaw('COALESCE(approved_at, actual_finish_date) IS NULL')
+                ->orderByRaw('COALESCE(approved_at, actual_finish_date) ASC');
+        } else {
+            $query->orderByRaw('COALESCE(approved_at, actual_finish_date) IS NULL')
+                ->orderByRaw('COALESCE(approved_at, actual_finish_date) DESC');
+        }
+
+        return response()->json($query->paginate($perPage));
     }
 }

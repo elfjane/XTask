@@ -12,6 +12,8 @@
         "management": "Management",
         "name": "Name",
         "cancel": "Cancel",
+        "previous": "Previous",
+        "next": "Next",
         "roles": {
             "admin": "System Administrator",
             "manager": "Reviewer",
@@ -19,6 +21,11 @@
             "executor": "Task Executor",
             "auditor": "Auditor"
         }
+    },
+    "validation": {
+        "required": "The {field} field is required.",
+        "required_badge": "Required",
+        "errorOccurred": "Please check the fields for errors."
     },
     "admin": {
         "users": "User Management",
@@ -147,11 +154,31 @@
         "reviewStatus_unsubmitted": "Unsubmitted",
         "reviewStatus_submitted": "Submitted",
         "reviewStatus_approved": "Approved",
-        "reviewStatus_failed": "Failed",
+        "reviewStatus_failed": "Review Failed",
         "reviewer": "Reviewer",
         "reviewedAt": "Reviewed At",
         "approvedAt": "Approved At",
-        "failedAt": "Failed At"
+        "failedAt": "Failed At",
+        "completedTasks": "Completed Tasks",
+        "exitCompleted": "Back to List",
+        "sortByTime": "Sort by Time",
+        "sortAsc": "Oldest First",
+        "sortDesc": "Newest First",
+        "noCompletedTasks": "No completed tasks",
+        "search": "Search",
+        "searchPlaceholder": "Search tasks...",
+        "sortBy": "Sort by",
+        "sortById": "By ID",
+        "sortByLevel": "By Level",
+        "sortByStatus": "By Status",
+        "sortByProject": "By Project",
+        "sortByDepartment": "By Department",
+        "sortByPoints": "By Points",
+        "sortByReleaseDate": "By Release Date",
+        "sortByStartDate": "By Start Date",
+        "sortByExpectedFinish": "By Expected Finish",
+        "sortByActualFinish": "By Actual Finish",
+        "cannotBeSameAsAssignee": "Related personnel cannot be the same as assignee"
     },
     "profile": {
         "title": "Profile Settings",

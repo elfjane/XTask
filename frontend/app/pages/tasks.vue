@@ -2,20 +2,64 @@
   <div class="page">
     <div class="header">
       <h1>{{ $t('tasks.title') }}</h1>
-      <button 
-        @click="isReviewMode = !isReviewMode" 
-        :class="isReviewMode ? 'btn-secondary' : 'btn-primary'" 
-        style="margin-right: 10px"
-      >
-        {{ isReviewMode ? $t('tasks.exitReview') : $t('tasks.reviewTasks') }}
-      </button>
-      <button @click="showCreateModal = true" class="btn-primary" v-if="!isReviewMode">{{ $t('tasks.addTask') }}</button>
+      <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+        <button 
+          @click="isReviewMode = !isReviewMode" 
+          :class="isReviewMode ? 'btn-secondary' : 'btn-primary'" 
+        >
+          {{ isReviewMode ? $t('tasks.exitReview') : $t('tasks.reviewTasks') }}
+        </button>
+        <button 
+          @click="toggleCompletedMode" 
+          :class="isCompletedMode ? 'btn-secondary' : 'btn-primary'" 
+        >
+          {{ isCompletedMode ? $t('tasks.exitCompleted') : $t('tasks.completedTasks') }}
+        </button>
+        
+        <!-- Search box -->
+        <input 
+          v-model="searchQuery" 
+          @input="handleSearch"
+          type="text"
+          :placeholder="$t('tasks.searchPlaceholder')"
+          class="search-input"
+        />
+        
+        <!-- Sort options for completed tasks -->
+        <select v-if="isCompletedMode" v-model="sortOrder" @change="fetchCompletedTasks" class="sort-select">
+          <option value="desc">{{ $t('tasks.sortDesc') }}</option>
+          <option value="asc">{{ $t('tasks.sortAsc') }}</option>
+        </select>
+        
+        <!-- Sort options for regular/review tasks -->
+        <select v-if="!isCompletedMode" v-model="sortField" @change="handleSortChange" class="sort-select">
+          <option value="id">{{ $t('tasks.sortById') }}</option>
+          <option value="level">{{ $t('tasks.sortByLevel') }}</option>
+          <option value="status">{{ $t('tasks.sortByStatus') }}</option>
+          <option value="project">{{ $t('tasks.sortByProject') }}</option>
+          <option value="department">{{ $t('tasks.sortByDepartment') }}</option>
+          <option value="points">{{ $t('tasks.sortByPoints') }}</option>
+          <option value="release_date">{{ $t('tasks.sortByReleaseDate') }}</option>
+          <option value="start_date">{{ $t('tasks.sortByStartDate') }}</option>
+          <option value="expected_finish_date">{{ $t('tasks.sortByExpectedFinish') }}</option>
+          <option value="actual_finish_date">{{ $t('tasks.sortByActualFinish') }}</option>
+        </select>
+        
+        <select v-if="!isCompletedMode" v-model="sortOrderRegular" @change="handleSortChange" class="sort-select-mini">
+          <option value="desc">↓</option>
+          <option value="asc">↑</option>
+        </select>
+        
+        <button @click="showCreateModal = true" class="btn-primary" v-if="!isReviewMode && !isCompletedMode">{{ $t('tasks.addTask') }}</button>
+      </div>
     </div>
 
     <div v-if="pending" class="loading">{{ $t('login.loggingIn') ? $t('login.loggingIn') : 'Loading...' }}</div>
     <div v-else-if="error" class="error">{{ error.message }}</div>
     
     <div v-else class="content-wrapper">
+      <!-- Regular Tasks View -->
+      <div v-if="!isCompletedMode">
       <!-- Desktop View (Table) -->
       <div class="desktop-view">
         <table class="task-table">
@@ -139,8 +183,125 @@
           </div>
         </div>
       </div>
+      </div>
       
-      <div v-if="tasks?.length === 0" class="empty">
+      <!-- Completed Tasks View -->
+      <div v-if="isCompletedMode" class="completed-tasks-view">
+        <div class="desktop-view">
+          <table class="task-table">
+            <thead>
+              <tr>
+                <th>{{ $t('tasks.idx') }}</th>
+                <th>{{ $t('tasks.level') }}</th>
+                <th>{{ $t('tasks.status') }}</th>
+                <th>{{ $t('tasks.assignee') }}</th>
+                <th>{{ $t('tasks.relatedPersonnel') }}</th>
+                <th>{{ $t('tasks.project') }}</th>
+                <th>{{ $t('tasks.item') }}</th>
+                <th>{{ $t('tasks.department') }}</th>
+                <th>{{ $t('tasks.work') }}</th>
+                <th>{{ $t('tasks.points') }}</th>
+                <th>{{ $t('tasks.releaseDate') }}</th>
+                <th>{{ $t('tasks.startDate') }}</th>
+                <th>{{ $t('tasks.expectedFinishDate') }}</th>
+                <th>{{ $t('tasks.actualFinishDate') }}</th>
+                <th>{{ $t('tasks.reviewStatus') }}</th>
+                <th>{{ $t('tasks.reviewer') }}</th>
+                <th>{{ $t('tasks.reviewedAt') }}</th>
+                <th>{{ $t('tasks.memo') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="item in completedTasks" :key="item.id" @click="openDetails(item)" style="cursor: pointer;">
+                <td>{{ item.id }}</td>
+                <td>{{ item.level }}</td>
+                <td>
+                  <span :class="['status-badge', item.status.replace(' ', '-')]">
+                    {{ $t(`tasks.${item.status.replace(' ', '_')}`) }}
+                  </span>
+                </td>
+                <td>
+                  <div class="user-info">
+                    <img v-if="item.assignee" :src="item.assignee.photo_url || 'https://ui-avatars.com/api/?name=' + item.assignee.name" class="avatar" />
+                    {{ item.assignee?.name || '-' }}
+                  </div>
+                </td>
+                <td>{{ item.related_personnel || '-' }}</td>
+                <td>{{ item.project }}</td>
+                <td>{{ item.item || '-' }}</td>
+                <td>{{ item.department }}</td>
+                <td class="work-cell">{{ item.work }}</td>
+                <td>{{ item.points }}</td>
+                <td>{{ item.release_date || '-' }}</td>
+                <td>{{ item.start_date || '-' }}</td>
+                <td>{{ item.expected_finish_date || '-' }}</td>
+                <td>{{ item.actual_finish_date || '-' }}</td>
+                <td>
+                  <span v-if="item.review_status && item.review_status !== 'unsubmitted'" :class="['status-badge', item.review_status]">
+                    {{ $t(`tasks.reviewStatus_${item.review_status}`) }}
+                  </span>
+                  <span v-else>-</span>
+                </td>
+                <td>{{ item.reviewer?.name || '-' }}</td>
+                <td>{{ item.reviewed_at ? formatDateTime(item.reviewed_at) : '-' }}</td>
+                <td class="memo-cell">
+                  <div class="memo-list">
+                    <div v-if="item.remarks && item.remarks.length > 0" class="memo-item">
+                      <span class="memo-user">{{ item.remarks[item.remarks.length - 1]?.user_name }}:</span>
+                      <span class="memo-content">{{ item.remarks[item.remarks.length - 1]?.content }}</span>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Mobile View for Completed Tasks -->
+        <div class="mobile-view">
+          <div v-for="item in completedTasks" :key="item.id" class="card" @click="openDetails(item)">
+            <div class="card-header">
+              <span class="idx">#{{ item.id }}</span>
+              <span :class="['status', item.status.replace(' ', '-')]">{{ $t(`tasks.${item.status.replace(' ', '_')}`) }}</span>
+            </div>
+            <div class="card-body">
+              <h2 class="work-title">{{ item.work }}</h2>
+              <div class="info-grid">
+                <div class="info-item"><strong>{{ $t('tasks.project') }}:</strong> {{ item.project }}</div>
+                <div class="info-item"><strong>{{ $t('tasks.assignee') }}:</strong> {{ item.assignee?.name || '-' }}</div>
+                <div class="info-item"><strong>{{ $t('tasks.reviewer') }}:</strong> {{ item.reviewer?.name || '-' }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        <div v-if="completedPagination" class="pagination">
+          <button 
+            @click="goToPage(completedPagination.current_page - 1)" 
+            :disabled="completedPagination.current_page === 1"
+            class="btn-secondary"
+          >
+            ← {{ $t('common.previous') || '上一頁' }}
+          </button>
+          <span class="page-info">
+            {{ completedPagination.from }} - {{ completedPagination.to }} / {{ completedPagination.total }}
+          </span>
+          <button 
+            @click="goToPage(completedPagination.current_page + 1)" 
+            :disabled="completedPagination.current_page === completedPagination.last_page"
+            class="btn-secondary"
+          >
+            {{ $t('common.next') || '下一頁' }} →
+          </button>
+        </div>
+
+        <div v-if="completedTasks.length === 0" class="empty">
+          {{ $t('tasks.noCompletedTasks') || '沒有已完成的任務' }}
+        </div>
+      </div>
+      
+      <div v-if="!isCompletedMode && tasks?.length === 0" class="empty">
         No tasks found.
       </div>
     </div>
@@ -433,12 +594,18 @@ definePageMeta({
 })
 
 const { token, user } = useAuth() // Assume user is available from useAuth
+const { t } = useI18n()
 const config = useRuntimeConfig()
 const apiBase = (config.public.apiBase as string) || ''
 const showCreateModal = ref(false)
 const showDetailsModal = ref(false)
 const isEditingTasks = ref(false)
 const isReviewMode = ref(false) // Toggle for review list
+const isCompletedMode = ref(false) // Toggle for completed list
+const sortOrder = ref('desc') // Sort order for completed tasks
+const searchQuery = ref('') // Search query
+const sortField = ref('id') // Sort field for regular tasks
+const sortOrderRegular = ref('desc') // Sort order for regular tasks
 const creating = ref(false)
 const updatingTasks = ref(false)
 const createError = ref('')
@@ -448,6 +615,8 @@ const newRemarks = ref<Record<number, string>>({})
 const editingAssigneeId = ref<number | null>(null)
 const assigneeSelect = ref<HTMLSelectElement | null>(null)
 const currentTaskId = ref<number | null>(null)
+const completedTasks = ref<Task[]>([])
+const completedPagination = ref<any>(null)
 
 const form = reactive({
   level: 1,
@@ -530,11 +699,22 @@ interface TaskRemark {
 }
 
 const fetchParams = computed(() => {
+  const params: any = {}
+  
   if (isReviewMode.value) {
-    return { review_status: 'submitted' }
+    params.review_status = 'submitted'
   } else {
-    return { exclude_review_status: 'approved,failed' }
+    params.exclude_review_status = 'approved,failed'
   }
+  
+  if (searchQuery.value) {
+    params.search = searchQuery.value
+  }
+  
+  params.sort_field = sortField.value
+  params.sort_order = sortOrderRegular.value
+  
+  return params
 })
 
 const { data: tasks, pending, error, refresh } = await useFetch<Task[]>(`${apiBase}/api/tasks`, {
@@ -587,8 +767,11 @@ const userOptions = computed(() => {
 })
 
 const userNameOptions = computed(() => {
-  if (!users.value) return []
-  return users.value.map((u: any) => ({ label: u.name, value: u.name }))
+  if (!users.value) return [{ label: '-', value: '' }]
+  return [
+    { label: '-', value: '' },
+    ...users.value.map((u: any) => ({ label: u.name, value: u.name }))
+  ]
 })
 
 const isAuditor = computed(() => ['auditor', 'admin', 'manager'].includes(user.value?.role))
@@ -755,6 +938,79 @@ const updateAssignee = async (task: Task, newUserId: string) => {
   }
 }
 
+const toggleCompletedMode = () => {
+  isCompletedMode.value = !isCompletedMode.value
+  if (isCompletedMode.value) {
+    isReviewMode.value = false // Exit review mode when entering completed mode
+    fetchCompletedTasks()
+  }
+}
+
+const fetchCompletedTasks = async () => {
+  try {
+    const params: any = {
+      sort: sortOrder.value,
+      per_page: 20
+    }
+    
+    if (searchQuery.value) {
+      params.search = searchQuery.value
+    }
+    
+    const response = await $fetch<any>(`${apiBase}/api/tasks/completed`, {
+      headers: {
+        Authorization: `Bearer ${token.value}`,
+        Accept: 'application/json'
+      },
+      params
+    })
+    completedTasks.value = response.data
+    completedPagination.value = {
+      current_page: response.current_page,
+      last_page: response.last_page,
+      total: response.total,
+      from: response.from,
+      to: response.to
+    }
+  } catch (err) {
+    console.error('Failed to fetch completed tasks:', err)
+  }
+}
+
+const goToPage = async (page: number) => {
+  try {
+    const response = await $fetch<any>(`${apiBase}/api/tasks/completed`, {
+      headers: {
+        Authorization: `Bearer ${token.value}`,
+        Accept: 'application/json'
+      },
+      params: {
+        sort: sortOrder.value,
+        per_page: 20,
+        page
+      }
+    })
+    completedTasks.value = response.data
+    completedPagination.value = {
+      current_page: response.current_page,
+      last_page: response.last_page,
+      total: response.total,
+      from: response.from,
+      to: response.to
+    }
+  } catch (err) {
+    console.error('Failed to fetch page:', err)
+  }
+}
+
+const handleSearch = () => {
+  refresh()
+}
+
+const handleSortChange = () => {
+  refresh()
+}
+
 watch(projectOptions, (newOptions) => {
   if (newOptions && newOptions.length > 0 && !form.project) {
     form.project = newOptions[0]?.value as string || ''
@@ -785,6 +1041,27 @@ const handleCreate = async () => {
   // Reset per-field errors
   Object.keys(errors).forEach(key => delete errors[key])
 
+  // Validate required fields
+  if (!form.user_id) errors.user_id = t('validation.required', { field: t('tasks.assignee') })
+  if (!form.project) errors.project = t('validation.required', { field: t('tasks.project') })
+  if (!form.department) errors.department = t('validation.required', { field: t('tasks.department') })
+  if (!form.work) errors.work = t('validation.required', { field: t('tasks.work') })
+  if (form.points === undefined || form.points === null) errors.points = t('validation.required', { field: t('tasks.points') })
+
+  // Validate: assignee and related_personnel cannot be the same
+  if (form.related_personnel && form.user_id) {
+    const assignee = users.value?.find((u: any) => u.id === Number(form.user_id))
+    if (assignee && form.related_personnel === assignee.name) {
+      errors.related_personnel = t('tasks.cannotBeSameAsAssignee')
+    }
+  }
+
+  if (Object.keys(errors).length > 0) {
+    createError.value = t('validation.errorOccurred')
+    creating.value = false
+    return
+  }
+
   try {
     await $fetch(`${apiBase}/api/tasks`, {
       method: 'POST',
@@ -796,12 +1073,12 @@ const handleCreate = async () => {
     })
     showCreateModal.value = false
     refresh()
-    // Reset form
+    // Reset form with defaults from options if available
     Object.assign(form, {
       level: 1,
       status: 'in progress',
       user_id: userOptions.value[0]?.value || '',
-      related_personnel: userNameOptions.value[0]?.value || '',
+      related_personnel: '',
       project: projectOptions.value[0]?.value || '',
       item: '',
       department: departmentOptions.value[0]?.value || '',
@@ -820,7 +1097,7 @@ const handleCreate = async () => {
       Object.keys(err.data.errors).forEach(key => {
         errors[key] = err.data.errors[key][0]
       })
-      createError.value = 'Please check the fields for errors.'
+      createError.value = t('validation.errorOccurred')
     } else {
       createError.value = err.data?.message || 'Failed to create task.'
     }
@@ -1266,5 +1543,101 @@ const handleCreate = async () => {
   border-radius: 6px;
   margin-top: 1rem;
   font-size: 0.85rem;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding: 1rem;
+}
+
+.pagination button {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination button:not(:disabled):hover {
+  background: #f3f4f6;
+}
+
+.page-info {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+/* Sort Select */
+.sort-select {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  background: white;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.sort-select:hover {
+  border-color: #667eea;
+}
+
+.sort-select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Search input */
+.search-input {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  font-size: 0.9rem;
+  min-width: 200px;
+  transition: all 0.2s;
+}
+
+.search-input:hover {
+  border-color: #667eea;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Mini sort select */
+.sort-select-mini {
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  background: white;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s;
+  min-width: 50px;
+}
+
+.sort-select-mini:hover {
+  border-color: #667eea;
+}
+
+.sort-select-mini:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 </style>
