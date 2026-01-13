@@ -32,6 +32,7 @@
         "users": "帳號管理",
         "projects": "專案管理",
         "departments": "部門管理",
+        "tasks": "任務匯入",
         "addUser": "添加帳號",
         "editUser": "編輯帳號",
         "freeze": "凍結",
@@ -185,7 +186,13 @@
         "statsTitle": "任務點數統計",
         "dateRange": "日期範圍",
         "statStartDate": "開始年月",
-        "statEndDate": "結束年月"
+        "statEndDate": "結束年月",
+        "import": "匯入任務",
+        "importExcel": "匯入 Excel",
+        "importSuccess": "成功匯入 {count} 筆任務",
+        "importFailed": "匯入失敗: {message}",
+        "uploading": "上傳中...",
+        "selectFile": "選擇檔案"
     },
     "profile": {
         "title": "個人設定",

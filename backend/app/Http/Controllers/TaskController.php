@@ -341,4 +341,129 @@ class TaskController extends Controller
 
         return response()->json($result);
     }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file'
+        ]);
+
+        $file = $request->file('file');
+        $path = $file->getRealPath();
+
+        // Use npx xlsx-cli to convert to JSON since ext-zip might be missing in PHP environment
+        $jsonPath = tempnam(sys_get_temp_dir(), 'tasks_') . '.json';
+        $command = "npx -y xlsx-cli " . escapeshellarg($path) . " -j > " . escapeshellarg($jsonPath);
+
+        exec($command, $output, $returnVar);
+
+        if ($returnVar !== 0 || !file_exists($jsonPath)) {
+            return response()->json(['message' => 'Failed to parse Excel file via npx. Ensure node/npx is available.'], 500);
+        }
+
+        // Redirects on Windows can create UTF-16LE. Try to read and convert if needed.
+        $jsonRaw = file_get_contents($jsonPath);
+        unlink($jsonPath);
+
+        // Detect and convert UTF-16LE to UTF-8 if necessary
+        if (str_starts_with($jsonRaw, "\xFF\xFE") || str_starts_with($jsonRaw, "\xFE\xFF")) {
+            $jsonRaw = iconv('UTF-16', 'UTF-8', $jsonRaw);
+        }
+
+        $data = json_decode($jsonRaw, true);
+
+        if (!$data) {
+            return response()->json(['message' => 'Invalid JSON output from parser.'], 422);
+        }
+
+        $admin = $request->user();
+        $importedCount = 0;
+
+        foreach ($data as $row) {
+            $task = new Task();
+
+            // Mapping based on the reference tasks.xlsx / CSV headers
+            $task->level = $row['級別'] ?? 1;
+            $task->status = 'finished'; // Requirement: 匯入的檔案一律都是審核成功 (implied finished)
+
+            // Assignee lookup
+            $assigneeName = $row['執行人員'] ?? null;
+            if ($assigneeName) {
+                $user = \App\Models\User::where('name', $assigneeName)->first();
+                if ($user) {
+                    $task->user_id = $user->id;
+                    $task->department = $user->department?->name ?: 'Unknown';
+                } else {
+                    // Fallback to admin if user not found? Or skip? Request says Auditor is importer.
+                    $task->user_id = $admin->id;
+                    $task->department = $admin->department ?: 'Admin Dept';
+                }
+            } else {
+                $task->user_id = $admin->id;
+                $task->department = 'Unknown';
+            }
+
+            $task->related_personnel = $row['相關人員'] ?? null;
+            $task->project = $row['專案'] ?? 'Imported';
+            $task->item = $row['項目'] ?? ($row['類別'] ?? null);
+
+            $workContent = $row['工作'] ?? '';
+            $task->work = $workContent;
+
+            $task->points = $row['點數'] ?? 0;
+
+            // Dates
+            $task->release_date = $this->parseExcelDate($row['發佈日'] ?? null);
+            $task->start_date = $this->parseExcelDate($row['起始日'] ?? null);
+            $task->expected_finish_date = $this->parseExcelDate($row['預計完成日'] ?? null);
+            $task->actual_finish_date = $this->parseExcelDate($row['完成日'] ?? null);
+
+            // Link extraction from Work column
+            $extractedLink = null;
+            if (preg_match('/(https?:\/\/[^\s]+)/', $workContent, $matches)) {
+                $extractedLink = $matches[0];
+            }
+
+            $outputDetail = $row['產出的文件或建檔(詳細說明)'] ?? '';
+            if ($extractedLink) {
+                $outputDetail = ($outputDetail ? $outputDetail . "\n" : "") . $extractedLink;
+            }
+            $task->output_url = $outputDetail;
+
+            $task->memo = $row['備註說明'] ?? null;
+
+            // Approval info: requirement "匯入的檔案一律都是審核成功", "審核時間跟完成日期一致"
+            $task->review_status = 'approved';
+            $task->reviewed_by = $admin->id;
+
+            $finishDate = $task->actual_finish_date ?: now();
+            $task->reviewed_at = $finishDate;
+            $task->approved_at = $finishDate;
+
+            $task->save();
+            $importedCount++;
+        }
+
+        return response()->json([
+            'message' => "Successfully imported $importedCount tasks.",
+            'count' => $importedCount
+        ]);
+    }
+
+    private function parseExcelDate($value)
+    {
+        if (!$value)
+            return null;
+        if (is_numeric($value)) {
+            // Excel dates are number of days since Dec 30, 1899
+            return Carbon::create(1899, 12, 30)->addDays((int) $value)->toDateString();
+        }
+
+        try {
+            return Carbon::parse($value)->toDateString();
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
 }
+

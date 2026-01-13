@@ -32,6 +32,7 @@
         "users": "User Management",
         "projects": "Project Management",
         "departments": "Department Management",
+        "tasks": "Import Tasks",
         "addUser": "Add User",
         "editUser": "Edit User",
         "freeze": "Freeze",
@@ -186,7 +187,13 @@
         "statsTitle": "Task Point Statistics",
         "dateRange": "Date Range",
         "statStartDate": "Start Month",
-        "statEndDate": "End Month"
+        "statEndDate": "End Month",
+        "import": "Import Tasks",
+        "importExcel": "Import Excel",
+        "importSuccess": "Successfully imported {count} tasks",
+        "importFailed": "Import failed: {message}",
+        "uploading": "Uploading...",
+        "selectFile": "Select File"
     },
     "profile": {
         "title": "Profile Settings",

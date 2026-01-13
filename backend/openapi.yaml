@@ -383,6 +383,34 @@ paths:
               schema:
                 $ref: '#/components/schemas/Task'
 
+  /tasks/import:
+    post:
+      summary: Import tasks from Excel (Admin only)
+      security:
+        - bearerAuth: []
+      tags:
+        - Tasks
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Import success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: { type: string }
+                  count: { type: integer }
+
   /tasks/statistics:
     get:
       summary: Get task statistics (Admin only)

@@ -21,6 +21,9 @@
           <NuxtLink v-if="can('view-admin')" to="/admin/departments" class="nav-item">
             <span class="icon">🏢</span> {{ $t('admin.departments') }}
           </NuxtLink>
+          <NuxtLink v-if="can('view-admin')" to="/admin/tasks" class="nav-item">
+            <span class="icon">📊</span> {{ $t('admin.tasks') }}
+          </NuxtLink>
         </nav>
       </aside>
 
