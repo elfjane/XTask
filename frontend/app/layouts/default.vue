@@ -10,6 +10,7 @@
           <template v-if="user">
             <NuxtLink to="/schedules" class="nav-link">{{ $t('common.schedules') }}</NuxtLink>
             <NuxtLink to="/tasks" class="nav-link">{{ $t('common.tasks') }}</NuxtLink>
+            <NuxtLink v-if="user.role === 'admin'" to="/stats" class="nav-link">{{ $t('tasks.statistics') }}</NuxtLink>
           </template>
         </div>
 

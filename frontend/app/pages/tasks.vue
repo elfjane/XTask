@@ -51,13 +51,6 @@
         </select>
         
         <button @click="showCreateModal = true" class="btn-primary" v-if="!isReviewMode && !isCompletedMode">{{ $t('tasks.addTask') }}</button>
-        <button 
-          v-if="isAdmin" 
-          @click="navigateTo('/stats')" 
-          class="btn-secondary"
-        >
-          {{ $t('tasks.statistics') }}
-        </button>
       </div>
     </div>
 
@@ -782,7 +775,6 @@ const userNameOptions = computed(() => {
 })
 
 const isAuditor = computed(() => ['auditor', 'admin', 'manager'].includes(user.value?.role))
-const isAdmin = computed(() => user.value?.role === 'admin')
 
 const formatTime = (dateStr: string) => {
   if (!dateStr) return ''

@@ -1,7 +1,20 @@
+<script setup lang="ts">
+defineProps<{
+  modelValue: boolean
+  title: string
+}>()
+
+defineEmits(['update:modelValue'])
+
+defineOptions({
+  inheritAttrs: false
+})
+</script>
+
 <template>
   <Teleport to="body">
     <Transition name="fade">
-      <div v-if="modelValue" class="modal-overlay" @click.self="$emit('update:modelValue', false)">
+      <div v-if="modelValue" class="modal-overlay" v-bind="$attrs" @click.self="$emit('update:modelValue', false)">
         <div class="modal-content">
           <div class="modal-header">
             <h3>{{ title }}</h3>
@@ -18,15 +31,6 @@
     </Transition>
   </Teleport>
 </template>
-
-<script setup lang="ts">
-defineProps<{
-  modelValue: boolean
-  title: string
-}>()
-
-defineEmits(['update:modelValue'])
-</script>
 
 <style scoped>
 .modal-overlay {
