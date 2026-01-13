@@ -120,15 +120,18 @@
               <td>{{ formatDate(item.start_date) }}</td>
               <td>{{ formatDate(item.expected_finish_date) }}</td>
               <td>{{ formatDate(item.actual_finish_date) }}</td>
-              <td>
+              <td class="output-url-cell">
                 <div v-if="item.output_url">
                   <MarkdownViewer :content="item.output_url" />
                 </div>
                 <span v-else>-</span>
               </td>
               <td class="memo-cell">
-                <div class="memo-list">
-                  <div v-if="item.remarks && item.remarks.length > 0" class="memo-item">
+                <div v-if="item.memo" class="main-memo">
+                  <MarkdownViewer :content="item.memo" />
+                </div>
+                <div class="memo-list" v-if="item.remarks && item.remarks.length > 0">
+                  <div class="memo-item">
                     <span class="memo-user">{{ item.remarks[item.remarks.length - 1]?.user_name }}:</span>
                     <MarkdownViewer class="memo-content" :content="item.remarks[item.remarks.length - 1]?.content" />
                   </div>
@@ -165,6 +168,9 @@
             </div>
             <div class="memo-board">
               <strong>{{ $t('tasks.memo') }}:</strong>
+              <div v-if="item.memo" class="main-memo mobile">
+                <MarkdownViewer :content="item.memo" />
+              </div>
               <div class="memo-list mobile">
                 <div v-if="item.remarks && item.remarks.length > 0" class="memo-item">
                   <span class="memo-user">{{ item.remarks[item.remarks.length - 1]?.user_name }}:</span>
