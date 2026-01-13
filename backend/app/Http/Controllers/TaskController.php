@@ -99,7 +99,7 @@ class TaskController extends Controller
             'start_date' => 'nullable|date',
             'expected_finish_date' => 'nullable|date',
             'actual_finish_date' => 'nullable|date',
-            'output_url' => 'nullable|string|max:255',
+            'output_url' => 'nullable|string',
             'memo' => 'nullable|string',
         ]);
 
@@ -149,15 +149,21 @@ class TaskController extends Controller
             'start_date' => 'sometimes|nullable|date',
             'expected_finish_date' => 'sometimes|nullable|date',
             'actual_finish_date' => 'sometimes|nullable|date',
-            'output_url' => 'sometimes|nullable|string|max:255',
+            'output_url' => 'sometimes|nullable|string',
             'memo' => 'sometimes|nullable|string',
-            'review_status' => 'sometimes|string|in:unsubmitted,submitted,failed,approved',
+            'review_status' => 'sometimes|nullable|string|in:unsubmitted,submitted,failed,approved',
         ]);
 
         if (isset($validated['status'])) {
-            if ($validated['status'] === 'finished') {
+            $currentStatus = $task->status;
+            $newStatus = $validated['status'];
+
+            // Auto-submit for review only if transitioning to 'finished' 
+            // and it wasn't already approved.
+            if ($newStatus === 'finished' && $currentStatus !== 'finished' && $task->review_status !== 'approved') {
                 $validated['review_status'] = 'submitted';
-            } else {
+            } elseif ($newStatus !== 'finished' && $currentStatus === 'finished' && $task->review_status === 'submitted') {
+                // If moving away from finished, reset to unsubmitted if it was only submitted
                 $validated['review_status'] = 'unsubmitted';
             }
         }

@@ -49,7 +49,7 @@
                 <div class="memo-list">
                   <div v-if="item.memos && item.memos.length > 0" class="memo-item">
                     <span class="memo-user">{{ item.memos[item.memos.length - 1]?.user_name }}:</span>
-                    <span class="memo-content">{{ item.memos[item.memos.length - 1]?.content }}</span>
+                    <MarkdownViewer class="memo-content" :content="item.memos[item.memos.length - 1]?.content" />
                   </div>
                 </div>
                 <div class="memo-add">
@@ -88,7 +88,7 @@
               <div class="memo-list mobile">
                 <div v-if="item.memos && item.memos.length > 0" class="memo-item">
                   <span class="memo-user">{{ item.memos[item.memos.length - 1]?.user_name }}:</span>
-                  <span class="memo-content">{{ item.memos[item.memos.length - 1]?.content }}</span>
+                  <MarkdownViewer class="memo-content" :content="item.memos[item.memos.length - 1]?.content" />
                 </div>
               </div>
               <div class="memo-add mobile">
@@ -143,7 +143,7 @@
           </div>
         </div>
         <div class="full-width">
-          <BaseInput v-model="form.memo" :label="$t('schedules.memo')" type="textarea" placeholder="Add some remarks..." />
+          <BaseInput v-model="form.memo" :label="$t('schedules.memo')" type="textarea" placeholder="Add some remarks..." :markdownHint="true" />
         </div>
       </form>
       <template #footer>
@@ -199,7 +199,9 @@
         </div>
         <div class="detail-item">
           <label>{{ $t('schedules.memo') }}</label>
-          <div class="value memo-content-box">{{ selectedSchedule?.memo || '-' }}</div>
+          <div class="value">
+            <MarkdownViewer :content="selectedSchedule?.memo || '-'" />
+          </div>
         </div>
 
         <div class="detail-memos">
@@ -207,7 +209,7 @@
           <div class="memo-list modal-memos">
             <div v-for="memo in selectedSchedule?.memos" :key="memo.id" class="memo-item">
               <span class="memo-user">{{ memo.user_name }}:</span>
-              <span class="memo-content">{{ memo.content }}</span>
+              <MarkdownViewer class="memo-content" :content="memo.content" />
               <span class="memo-time">{{ formatTime(memo.created_at) }}</span>
             </div>
           </div>
@@ -267,7 +269,7 @@
           </div>
         </div>
         <div class="full-width">
-          <BaseInput v-model="editForm.memo" :label="$t('schedules.memo')" type="textarea" />
+          <BaseInput v-model="editForm.memo" :label="$t('schedules.memo')" type="textarea" :markdownHint="true" />
         </div>
       </form>
 

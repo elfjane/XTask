@@ -25,6 +25,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::apiResource('schedules', ScheduleController::class)->only(['index', 'store', 'show', 'update']);
+    Route::post('schedules/{schedule}/memos', [ScheduleMemoController::class, 'store']);
     // Custom task routes must be defined before apiResource to avoid conflict with {task} parameter
     Route::post('tasks/import', [TaskController::class, 'import']);
     Route::get('tasks/statistics', [TaskController::class, 'statistics']);

@@ -116,19 +116,21 @@
               <td>{{ item.department }}</td>
               <td class="work-cell clickable" @click="openDetails(item)">{{ item.work }}</td>
               <td>{{ item.points }}</td>
-              <td>{{ item.release_date || '-' }}</td>
-              <td>{{ item.start_date || '-' }}</td>
-              <td>{{ item.expected_finish_date || '-' }}</td>
-              <td>{{ item.actual_finish_date || '-' }}</td>
+              <td>{{ formatDate(item.release_date) }}</td>
+              <td>{{ formatDate(item.start_date) }}</td>
+              <td>{{ formatDate(item.expected_finish_date) }}</td>
+              <td>{{ formatDate(item.actual_finish_date) }}</td>
               <td>
-                <a v-if="item.output_url" :href="item.output_url" target="_blank" class="link-btn">🔗</a>
+                <div v-if="item.output_url">
+                  <MarkdownViewer :content="item.output_url" />
+                </div>
                 <span v-else>-</span>
               </td>
               <td class="memo-cell">
                 <div class="memo-list">
                   <div v-if="item.remarks && item.remarks.length > 0" class="memo-item">
                     <span class="memo-user">{{ item.remarks[item.remarks.length - 1]?.user_name }}:</span>
-                    <span class="memo-content">{{ item.remarks[item.remarks.length - 1]?.content }}</span>
+                    <MarkdownViewer class="memo-content" :content="item.remarks[item.remarks.length - 1]?.content" />
                   </div>
                 </div>
                 <div class="memo-add">
@@ -166,7 +168,7 @@
               <div class="memo-list mobile">
                 <div v-if="item.remarks && item.remarks.length > 0" class="memo-item">
                   <span class="memo-user">{{ item.remarks[item.remarks.length - 1]?.user_name }}:</span>
-                  <span class="memo-content">{{ item.remarks[item.remarks.length - 1]?.content }}</span>
+                  <MarkdownViewer class="memo-content" :content="item.remarks[item.remarks.length - 1]?.content" />
                 </div>
               </div>
               <div class="memo-add mobile">
@@ -366,9 +368,11 @@
             <div class="full-width">
               <BaseInput v-model="form.work" :label="$t('tasks.work')" placeholder="Task description..." required :error="errors.work" />
             </div>
-            <BaseInput v-model="form.output_url" :label="$t('tasks.outputUrl')" placeholder="https://..." :error="errors.output_url" />
             <div class="full-width">
-              <BaseInput v-model="form.memo" :label="$t('tasks.memo')" type="textarea" placeholder="Remarks..." :error="errors.memo" />
+              <BaseInput v-model="form.output_url" :label="$t('tasks.outputUrl')" type="textarea" placeholder="https://..." :error="errors.output_url" :markdownHint="true" />
+            </div>
+            <div class="full-width">
+              <BaseInput v-model="form.memo" :label="$t('tasks.memo')" type="textarea" placeholder="Remarks..." :error="errors.memo" :markdownHint="true" />
             </div>
           </div>
         </div>
@@ -435,19 +439,19 @@
         <div class="form-grid">
           <div class="detail-item">
             <label>{{ $t('tasks.releaseDate') }}</label>
-            <div class="value">{{ selectedTask?.release_date || '-' }}</div>
+            <div class="value">{{ formatDate(selectedTask?.release_date) }}</div>
           </div>
           <div class="detail-item">
             <label>{{ $t('tasks.startDate') }}</label>
-            <div class="value">{{ selectedTask?.start_date || '-' }}</div>
+            <div class="value">{{ formatDate(selectedTask?.start_date) }}</div>
           </div>
           <div class="detail-item">
             <label>{{ $t('tasks.expectedFinishDate') }}</label>
-            <div class="value">{{ selectedTask?.expected_finish_date || '-' }}</div>
+            <div class="value">{{ formatDate(selectedTask?.expected_finish_date) }}</div>
           </div>
           <div class="detail-item">
             <label>{{ $t('tasks.actualFinishDate') }}</label>
-            <div class="value">{{ selectedTask?.actual_finish_date || '-' }}</div>
+            <div class="value">{{ formatDate(selectedTask?.actual_finish_date) }}</div>
           </div>
         </div>
         
@@ -484,7 +488,9 @@
         
         <div class="detail-item">
           <label>{{ $t('tasks.memo') }} ({{ $t('common.management') }})</label>
-          <div class="value memo-content-box">{{ selectedTask?.memo || '-' }}</div>
+          <div class="value">
+            <MarkdownViewer :content="selectedTask?.memo || '-'" />
+          </div>
         </div>
 
         <div class="detail-memos">
@@ -492,7 +498,7 @@
           <div class="memo-list modal-memos">
             <div v-for="remark in selectedTask?.remarks" :key="remark.id" class="memo-item">
               <span class="memo-user">{{ remark.user_name }}:</span>
-              <span class="memo-content">{{ remark.content }}</span>
+              <MarkdownViewer class="memo-content" :content="remark.content" />
               <span class="memo-time">{{ formatTime(remark.created_at) }}</span>
             </div>
           </div>
@@ -517,6 +523,28 @@
               :label="$t('tasks.assignee')" 
               type="select" 
               :options="userOptions" 
+            />
+            <BaseInput 
+              v-model="taskEditForm.related_personnel" 
+              :label="$t('tasks.relatedPersonnel')" 
+              type="select" 
+              :options="userNameOptions" 
+            />
+            <BaseInput 
+              v-model="taskEditForm.project" 
+              :label="$t('tasks.project')" 
+              type="select" 
+              :options="projectOptions" 
+            />
+            <BaseInput 
+              v-model="taskEditForm.item" 
+              :label="$t('tasks.item')" 
+            />
+            <BaseInput 
+              v-model="taskEditForm.department" 
+              :label="$t('tasks.department')" 
+              type="select" 
+              :options="departmentOptions" 
             />
             <BaseInput 
               v-model="taskEditForm.status" 
@@ -558,7 +586,10 @@
               <BaseInput v-model="taskEditForm.work" :label="$t('tasks.work')" />
             </div>
             <div class="full-width">
-              <BaseInput v-model="taskEditForm.memo" :label="$t('tasks.memo')" type="textarea" />
+              <BaseInput v-model="taskEditForm.output_url" :label="$t('tasks.outputUrl')" type="textarea" :markdownHint="true" />
+            </div>
+            <div class="full-width">
+              <BaseInput v-model="taskEditForm.memo" :label="$t('tasks.memo')" type="textarea" :markdownHint="true" />
             </div>
           </div>
         </div>
@@ -795,6 +826,19 @@ const formatDateTime = (dateStr: string) => {
   })
 }
 
+const formatDate = (dateStr: string | null | undefined) => {
+  if (!dateStr) return '-'
+  try {
+    const date = new Date(dateStr)
+    const y = date.getFullYear()
+    const m = String(date.getMonth() + 1).padStart(2, '0')
+    const d = String(date.getDate()).padStart(2, '0')
+    return `${y}-${m}-${d}`
+  } catch (e) {
+    return dateStr
+  }
+}
+
 const openDetails = (task: Task) => {
   currentTaskId.value = task.id
   isEditingTasks.value = false
@@ -810,7 +854,7 @@ const startEditingTask = () => {
     id: selectedTask.value.id,
     level: selectedTask.value.level,
     status: selectedTask.value.status,
-    review_status: selectedTask.value.review_status,
+    review_status: selectedTask.value.review_status || 'unsubmitted',
     user_id: selectedTask.value.user_id,
     related_personnel: selectedTask.value.related_personnel || '',
     project: selectedTask.value.project,
@@ -818,10 +862,10 @@ const startEditingTask = () => {
     department: selectedTask.value.department,
     work: selectedTask.value.work,
     points: selectedTask.value.points,
-    release_date: selectedTask.value.release_date || '',
-    start_date: selectedTask.value.start_date || '',
-    expected_finish_date: selectedTask.value.expected_finish_date || '',
-    actual_finish_date: selectedTask.value.actual_finish_date || '',
+    release_date: selectedTask.value.release_date ? formatDate(selectedTask.value.release_date) : '',
+    start_date: selectedTask.value.start_date ? formatDate(selectedTask.value.start_date) : '',
+    expected_finish_date: selectedTask.value.expected_finish_date ? formatDate(selectedTask.value.expected_finish_date) : '',
+    actual_finish_date: selectedTask.value.actual_finish_date ? formatDate(selectedTask.value.actual_finish_date) : '',
     output_url: selectedTask.value.output_url || '',
     memo: selectedTask.value.memo || ''
   })

@@ -33,6 +33,20 @@ class Task extends Model
         'failed_at',
     ];
 
+    protected $casts = [
+        'release_date' => 'datetime',
+        'start_date' => 'datetime',
+        'expected_finish_date' => 'datetime',
+        'actual_finish_date' => 'datetime',
+        'reviewed_at' => 'datetime',
+        'approved_at' => 'datetime',
+        'failed_at' => 'datetime',
+        'points' => 'float',
+        'level' => 'integer',
+        'user_id' => 'integer',
+        'reviewed_by' => 'integer',
+    ];
+
     public function assignee()
     {
         return $this->belongsTo(User::class, 'user_id');

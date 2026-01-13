@@ -2,6 +2,7 @@
   <div class="form-group" :class="{ 'is-required': required }">
     <label v-if="label">
       {{ label }}
+      <span v-if="markdownHint" class="markdown-badge">Markdown</span>
       <span v-if="required" class="required-badge">{{ $t('validation.required_badge') || '必填' }}</span>
     </label>
     <div class="input-wrapper">
@@ -46,6 +47,7 @@ defineProps<{
   placeholder?: string
   error?: string
   required?: boolean
+  markdownHint?: boolean
   options?: { label: string; value: string | number }[]
 }>()
 
@@ -71,6 +73,15 @@ label {
   font-size: 0.7rem;
   background-color: #fee2e2;
   color: #ef4444;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-weight: normal;
+}
+
+.markdown-badge {
+  font-size: 0.7rem;
+  background-color: #e0e7ff;
+  color: #4338ca;
   padding: 1px 6px;
   border-radius: 4px;
   font-weight: normal;
