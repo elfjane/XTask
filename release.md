@@ -2,6 +2,30 @@
 
 All notable changes to the XTask project will be documented in this file.
 
+## [2026-01-13 17:50] - Markdown Support & Task Enhancement
+- **Markdown Support**:
+  - Installed `marked` for Markdown parsing.
+  - Created `MarkdownViewer.vue` component to safely render Markdown content with auto-opening links in new tabs.
+  - Enabled Markdown for Task `memo`, `remarks`, and `output_url` fields.
+  - Enabled Markdown for Schedule `memo` and `memos` fields.
+  - Added "Markdown" hint badges to input labels in forms.
+- **Backend Enhancements**:
+  - Changed `output_url` column type from `string` to `text` to support long URLs.
+  - Converted task date fields (`release_date`, `start_date`, `expected_finish_date`, `actual_finish_date`) to `timestamp` for better precision.
+  - Refined `review_status` validation to be `nullable` and improved auto-update logic.
+- **Frontend Enhancements**:
+  - Expanded Task Edit Modal to include Project, Item, Department, Related Personnel, and Output URL.
+  - Changed Output URL input to `textarea` for easier Markdown/Link editing.
+  - Optimized Completed Tasks list with better date formatting and Markdown support for URLs and Remarks.
+  - Fixed layout issues where long links would break table formatting.
+- **Excel Import Improvements**:
+  - Implemented automatic extraction of embedded hyperlinks from **all** Excel columns.
+  - Added `autoConvertLinksToMarkdown` helper to linkify raw text URLs during import.
+  - Fixed field mapping for "Item" and "Department" columns.
+- **Bug Fixes**:
+  - Restored missing `schedules/{schedule}/memos` route and fixed corresponding unit tests.
+
+
 ## [2026-01-13 15:50] - Excel Task Import
 - **Backend**:
   - Implemented `TaskController@import` to batch import tasks from Excel files using `phpoffice/phpspreadsheet`.

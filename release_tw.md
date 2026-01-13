@@ -2,6 +2,30 @@
 
 所有 XTask 所有專案的重大變更都將記錄在此文件中。
 
+## [2026-01-13 17:50] - Markdown 支援與任務功能強化
+- **Markdown 語法支援**:
+  - 安裝 `marked` 代碼庫用於 Markdown 解析。
+  - 建立 `MarkdownViewer.vue` 組件，確保安全渲染 Markdown 並自動在新分頁開啟連結。
+  - 任務面板的「備註」、「對話紀錄」與「產出連結」現在全面支援 Markdown。
+  - 排程面板的「備註」與「留言紀錄」同樣支援 Markdown。
+  - 在表單輸入框標籤旁新增 "Markdown" 提示標籤。
+- **後端功能強化**:
+  - 將 `output_url` 欄位類型從 `string` 改為 `text`，取消 255 字元限制以支援長網址。
+  - 將任務日期欄位（發佈、起始、預計完成、實際完成）改為 `timestamp` 類型以提升精度。
+  - 優化 `review_status` 驗證邏輯，解決因 null 值導致的更新報錯問題。
+- **前端介面優化**:
+  - 擴充「任務編輯」彈窗，補齊專案、項目、部門、相關人員與產出連結等欄位修改功能。
+  - 將「產出連結」輸入框改為 `textarea`，方便編輯 Markdown 內容。
+  - 優化「完成任務」列表，補齊日期格式化與 Markdown 渲染顯示。
+  - 修正儲存格排版，防止長連結撐開表格導致跑版。
+- **Excel 匯入功能升級**:
+  - 實作全欄位超連結掃描，自動從 Excel 單元格屬性中提取內嵌連結。
+  - 新增 `autoConvertLinksToMarkdown` 輔助工具，自動將文字中的原始網址轉為 Markdown 格式。
+  - 修正「項目」與「部門」欄位的匯入對應與空白過濾邏輯。
+- **錯誤修正**:
+  - 補齊缺少的 `schedules/{schedule}/memos` 路由，並修正相關單元測試。
+
+
 ## [2026-01-13 15:50] - Excel 任務匯入
 - **後端**:
   - 實作 `TaskController@import` 使用 `phpoffice/phpspreadsheet` 批次從 Excel 檔案匯入任務。
