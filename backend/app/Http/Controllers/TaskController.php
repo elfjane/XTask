@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Task;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class TaskController extends Controller
 {
@@ -259,5 +260,85 @@ class TaskController extends Controller
         }
 
         return response()->json($query->paginate($perPage));
+    }
+
+    /**
+     * Get task statistics (Admin only)
+     */
+    public function statistics(Request $request)
+    {
+        \Illuminate\Support\Facades\Gate::authorize('viewStatistics', Task::class);
+
+        // Date range filtering
+        $endMonth = $request->input('end_month')
+            ? Carbon::createFromFormat('Y-m', $request->input('end_month'))->endOfMonth()
+            : now()->endOfMonth();
+
+        $startMonth = $request->input('start_month')
+            ? Carbon::createFromFormat('Y-m', $request->input('start_month'))->startOfMonth()
+            : $endMonth->copy()->subMonths(11)->startOfMonth(); // Default to last 12 months
+
+        // Query tasks: finished OR approved within the date range
+        // We use COALESCE(approved_at, actual_finish_date) as the completion date
+        $tasks = Task::with('assignee')
+            ->where(function ($q) {
+                $q->where('status', 'finished')
+                    ->orWhere('review_status', 'approved');
+            })
+            ->whereRaw('COALESCE(approved_at, actual_finish_date) >= ?', [$startMonth])
+            ->whereRaw('COALESCE(approved_at, actual_finish_date) <= ?', [$endMonth])
+            // Order by date to make processing easier
+            ->orderByRaw('COALESCE(approved_at, actual_finish_date) ASC')
+            ->get();
+
+        // Process data
+        $stats = [];
+
+        // Initialize months array
+        $current = $startMonth->copy();
+        while ($current <= $endMonth) {
+            $monthKey = $current->format('Y-m');
+            $stats[$monthKey] = [
+                'month' => $monthKey,
+                'total_points' => 0,
+                'assignee_stats' => []
+            ];
+            $current->addMonth();
+        }
+
+        foreach ($tasks as $task) {
+            $date = $task->approved_at ? Carbon::parse($task->approved_at) : Carbon::parse($task->actual_finish_date);
+            $monthKey = $date->format('Y-m');
+
+            // Skip if somehow outside range (though query should cover it)
+            if (!isset($stats[$monthKey]))
+                continue;
+
+            $points = (float) $task->points;
+            $stats[$monthKey]['total_points'] += $points;
+
+            $assigneeName = $task->assignee ? $task->assignee->name : 'Unknown';
+            $assigneeId = $task->assignee ? $task->assignee->id : 0;
+
+            if (!isset($stats[$monthKey]['assignee_stats'][$assigneeId])) {
+                $stats[$monthKey]['assignee_stats'][$assigneeId] = [
+                    'id' => $assigneeId,
+                    'name' => $assigneeName,
+                    'points' => 0
+                ];
+            }
+            $stats[$monthKey]['assignee_stats'][$assigneeId]['points'] += $points;
+        }
+
+        // Transform to array and sort assignee stats by points desc
+        $result = array_values($stats);
+        foreach ($result as &$monthStat) {
+            $monthStat['assignee_stats'] = array_values($monthStat['assignee_stats']);
+            usort($monthStat['assignee_stats'], function ($a, $b) {
+                return $b['points'] <=> $a['points'];
+            });
+        }
+
+        return response()->json($result);
     }
 }

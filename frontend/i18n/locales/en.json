@@ -9,6 +9,7 @@
         "getStarted": "Get Started",
         "viewSchedules": "View Schedules",
         "viewTasks": "View Tasks",
+        "viewStats": "View Stats",
         "management": "Management",
         "name": "Name",
         "cancel": "Cancel",
@@ -129,7 +130,7 @@
         "outputUrl": "Output/URL",
         "memo": "Remarks",
         "cancel": "Cancel",
-        "create": "Create Task",
+        "createTask": "Create Task",
         "creating": "Creating...",
         "ordinary": "Ordinary",
         "important": "Important",
@@ -178,7 +179,14 @@
         "sortByStartDate": "By Start Date",
         "sortByExpectedFinish": "By Expected Finish",
         "sortByActualFinish": "By Actual Finish",
-        "cannotBeSameAsAssignee": "Related personnel cannot be the same as assignee"
+        "cannotBeSameAsAssignee": "Related personnel cannot be the same as assignee",
+        "statistics": "Statistics",
+        "monthlyTotal": "Monthly Total",
+        "assigneeTotal": "Assignee Total",
+        "statsTitle": "Task Point Statistics",
+        "dateRange": "Date Range",
+        "statStartDate": "Start Month",
+        "statEndDate": "End Month"
     },
     "profile": {
         "title": "Profile Settings",

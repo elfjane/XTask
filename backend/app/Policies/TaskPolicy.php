@@ -21,6 +21,14 @@ class TaskPolicy
     }
 
     /**
+     * Determine whether the user can view statistics.
+     */
+    public function viewStatistics(User $user): bool
+    {
+        return $user->isAdmin();
+    }
+
+    /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool

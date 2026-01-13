@@ -9,6 +9,7 @@
         "getStarted": "立即開始",
         "viewSchedules": "查看排程",
         "viewTasks": "查看任務",
+        "viewStats": "查看統計",
         "management": "管理",
         "name": "姓名",
         "cancel": "取消",
@@ -129,7 +130,6 @@
         "outputUrl": "產出的文件或連結",
         "memo": "備註說明",
         "cancel": "取消",
-        "create": "建立任務",
         "creating": "建立中...",
         "ordinary": "一般",
         "important": "重要",
@@ -178,7 +178,14 @@
         "sortByStartDate": "按起始日",
         "sortByExpectedFinish": "按預計完成日",
         "sortByActualFinish": "按實際完成日",
-        "cannotBeSameAsAssignee": "相關人員不能與負責人相同"
+        "cannotBeSameAsAssignee": "相關人員不能與負責人相同",
+        "statistics": "任務統計",
+        "monthlyTotal": "每月總合",
+        "assigneeTotal": "負責人總合",
+        "statsTitle": "任務點數統計",
+        "dateRange": "日期範圍",
+        "statStartDate": "開始年月",
+        "statEndDate": "結束年月"
     },
     "profile": {
         "title": "個人設定",
