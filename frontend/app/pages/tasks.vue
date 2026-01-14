@@ -367,7 +367,16 @@
               required 
               :error="errors.department"
             />
-            <BaseInput v-model="form.points" :label="$t('tasks.points')" type="number" step="0.5" min="0" required :error="errors.points" />
+            <BaseInput 
+              :modelValue="form.points" 
+              @update:modelValue="val => handlePointsUpdate('create', val)"
+              :label="$t('tasks.points')" 
+              type="number" 
+              step="0.5" 
+              min="0" 
+              required 
+              :error="errors.points" 
+            />
           </div>
         </div>
 
@@ -584,7 +593,14 @@
                 { label: $t('tasks.priority'), value: 3 }
               ]" 
             />
-             <BaseInput v-model="taskEditForm.points" :label="$t('tasks.points')" type="number" step="0.5" min="0" />
+             <BaseInput 
+               :modelValue="taskEditForm.points" 
+               @update:modelValue="val => handlePointsUpdate('edit', val)"
+               :label="$t('tasks.points')" 
+               type="number" 
+               step="0.5" 
+               min="0" 
+             />
           </div>
         </div>
 
@@ -695,7 +711,7 @@ const taskEditForm = reactive({
   item: '',
   department: '',
   work: '',
-  points: 0,
+  points: 1.0,
   release_date: '',
   start_date: '',
   expected_finish_date: '',
@@ -966,6 +982,17 @@ const startEditingAssignee = (task: Task) => {
   nextTick(() => {
     assigneeSelect.value?.focus()
   })
+}
+
+const handlePointsUpdate = (mode: 'create' | 'edit', val: any) => {
+  let num = parseFloat(val)
+  // If invalid number, default to 0
+  if (isNaN(num)) num = 0
+  // Prevent negative values
+  if (num < 0) num = 0
+  
+  if (mode === 'create') form.points = num
+  else taskEditForm.points = num
 }
 
 const updateAssignee = async (task: Task, newUserId: string) => {

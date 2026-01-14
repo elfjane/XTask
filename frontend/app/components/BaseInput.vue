@@ -14,6 +14,9 @@
         :placeholder="placeholder"
         :class="{ error: error }"
         :required="required"
+        :min="min"
+        :max="max"
+        :step="step"
       />
       <textarea
         v-else-if="type === 'textarea'"
@@ -49,6 +52,9 @@ defineProps<{
   required?: boolean
   markdownHint?: boolean
   options?: { label: string; value: string | number }[]
+  min?: string | number
+  max?: string | number
+  step?: string | number
 }>()
 
 defineEmits(['update:modelValue'])
