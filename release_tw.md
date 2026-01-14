@@ -2,6 +2,13 @@
 
 所有 XTask 所有專案的重大變更都將記錄在此文件中。
 
+## [2026-01-13 18:25] - Docker 支援
+- **基礎設施**:
+  - 在根目錄新增 `docker-compose.yml` 支援全站容器化部署。
+  - 為 Laravel API 建立 `backend/Dockerfile` 與 `backend/.docker/nginx/default.conf`。
+  - 為 Nuxt 4 前端建立 `frontend/Dockerfile`。
+  - 整合 MySQL 8.0 為 Docker 預設資料庫服務。
+
 ## [2026-01-13 17:50] - Markdown 支援與任務功能強化
 - **Markdown 語法支援**:
   - 安裝 `marked` 代碼庫用於 Markdown 解析。

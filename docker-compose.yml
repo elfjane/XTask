@@ -1,0 +1,62 @@
+services:
+  # Database
+  db:
+    image: mysql:8.0
+    container_name: xtask-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-xtask}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-root}
+      MYSQL_USER: ${DB_USERNAME:-xtask}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-password}
+    ports:
+      - "3311:3306"
+    volumes:
+      - xtask-db-data:/var/lib/mysql
+
+  # Backend (PHP-FPM)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: xtask-backend
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./backend:/var/www
+    depends_on:
+      - db
+
+  # Nginx (Server for Backend)
+  nginx:
+    image: nginx:alpine
+    container_name: xtask-nginx
+    restart: unless-stopped
+    ports:
+      - "8111:80"
+    volumes:
+      - ./backend:/var/www
+      - ./backend/.docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - backend
+
+  # Frontend (Nuxt)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: xtask-frontend
+    restart: unless-stopped
+    ports:
+      - "3111:3111"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - NUXT_API_PROXY_TARGET=http://nginx
+    depends_on:
+      - backend
+      - nginx
+
+volumes:
+  xtask-db-data:

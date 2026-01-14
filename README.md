@@ -31,7 +31,12 @@ XTask/
 1. Navigate to `/backend`
 2. Run `composer install`
 3. Run `php artisan migrate`
-4. Run `php artisan serve`
+4. Run `php artisan serve --port=8111`
+
+### Docker (Recommended)
+1. Run `docker-compose up -d` in the root directory.
+2. Backend will be available at `http://localhost:8111` (via Nginx).
+3. Frontend will be available at `http://localhost:3111`.
 
 ## Features
 - **User Registration**: Configurable registration system with environment variable toggle.

@@ -31,7 +31,12 @@ XTask/
 1. 進入 `/backend`
 2. 執行 `composer install`
 3. 執行 `php artisan migrate`
-4. 執行 `php artisan serve`
+4. 執行 `php artisan serve --port=8111`
+
+### Docker (推薦)
+1. 在根目錄執行 `docker-compose up -d`
+2. 後端 API 將運行於 `http://localhost:8111` (透過 Nginx)
+3. 前端界面將運行於 `http://localhost:3111`
 
 ## 功能特性
 - **任務點數統計**: 透過互動式圖表與矩陣表格追蹤團隊表現與每月貢獻。

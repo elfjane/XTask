@@ -2,6 +2,13 @@
 
 All notable changes to the XTask project will be documented in this file.
 
+## [2026-01-13 18:25] - Docker Support
+- **Infrastructure**:
+  - Added `docker-compose.yml` to the root directory for full stack orchestration.
+  - Created `backend/Dockerfile` and `backend/.docker/nginx/default.conf` for the Laravel API.
+  - Created `frontend/Dockerfile` for the Nuxt 4 application.
+  - Integrated MySQL 8.0 as the default database service in Docker.
+
 ## [2026-01-13 17:50] - Markdown Support & Task Enhancement
 - **Markdown Support**:
   - Installed `marked` for Markdown parsing.
