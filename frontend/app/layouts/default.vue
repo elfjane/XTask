@@ -15,6 +15,21 @@
         </div>
 
         <div class="navbar-right">
+          <!-- Language Switcher -->
+          <div class="language-switcher">
+            <span class="lang-label">{{ $t('common.language') }}:</span>
+            <button 
+              v-for="loc in locales" 
+              :key="loc.code"
+              @click="setLocale(loc.code)"
+              :class="['lang-btn', { active: locale === loc.code }]"
+              :title="loc.name"
+            >
+              <span class="lang-icon">{{ loc.icon }}</span>
+              <span class="lang-name">{{ loc.name }}</span>
+            </button>
+          </div>
+
           <template v-if="user">
             <!-- User Menu -->
             <div class="user-menu-root" v-click-outside="closeDropdown">
@@ -186,6 +201,64 @@ const vClickOutside = {
   padding: 8px 20px;
   border-radius: 8px;
   font-weight: 600;
+}
+
+/* Language Switcher */
+.language-switcher {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-right: 1.5rem;
+  background: #f8faff;
+  padding: 4px;
+  border-radius: 10px;
+}
+
+.lang-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #94a3b8;
+  margin: 0 0.5rem;
+  text-transform: uppercase;
+}
+
+.lang-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #64748b;
+  transition: all 0.2s;
+}
+
+.lang-btn:hover {
+  background: rgba(255, 255, 255, 0.8);
+  color: #764ba2;
+}
+
+.lang-btn.active {
+  background: white;
+  color: #764ba2;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.lang-icon {
+  font-size: 1.1rem;
+}
+
+@media (max-width: 640px) {
+  .lang-name, .lang-label {
+    display: none;
+  }
+  .language-switcher {
+    margin-right: 0.5rem;
+  }
 }
 
 

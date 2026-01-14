@@ -6,6 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
+/**
+ * @property string $review_status
+ * @property string $status
+ * @property int $id
+ * @property string $actual_finish_date
+ * @property \Carbon\Carbon $approved_at
+ * @property \Carbon\Carbon $reviewed_at
+ * @property \Carbon\Carbon $failed_at
+ */
 class Task extends Model
 {
     use HasFactory;
