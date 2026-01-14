@@ -2,6 +2,19 @@
 
 All notable changes to the XTask project will be documented in this file.
 
+## [2026-01-14 10:50] - Excel Import Status Improvement
+- **Backend Improvements**:
+  - Enhanced Excel task import to respect the 'Status' (狀態) column.
+  - Tasks are now only marked as 'approved' and 'finished' if the Excel status specifically indicates they are completed.
+  - Added mapping for multiple status strings (e.g., 已完成, 執行中, 未執行, 待測試, etc.) to ensure data consistency during import.
+
+## [2026-01-14 11:10] - Performance and UI Optimization
+- **Performance Improvements**:
+  - Added database indexes to frequently used filtering and sorting columns in the tasks table.
+  - Optimized Eager Loading logic to only fetch the `latestRemark` in list views, significantly reducing memory usage and API response time.
+- **Frontend UI Adjustments**:
+  - Reordered columns in the "Completed Tasks" view: "Review Status", "Reviewer", and "Reviewed At" are now moved after the "Memo" column for better readability.
+
 ## [2026-01-13 18:25] - Docker Support
 - **Infrastructure**:
   - Added `docker-compose.yml` to the root directory for full stack orchestration.

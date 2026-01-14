@@ -19,9 +19,7 @@ class TaskController extends Controller
         $query = Task::with([
             'assignee',
             'reviewer',
-            'remarks' => function ($q) {
-                $q->orderBy('created_at', 'asc');
-            }
+            'latestRemark'
         ]);
 
         if ($user->isExecutor()) {
@@ -218,9 +216,7 @@ class TaskController extends Controller
         $query = Task::with([
             'assignee',
             'reviewer',
-            'remarks' => function ($q) {
-                $q->orderBy('created_at', 'asc');
-            }
+            'latestRemark'
         ]);
 
         // Apply user-specific filtering
@@ -401,7 +397,26 @@ class TaskController extends Controller
                 $task = new Task();
 
                 $task->level = $rowData['級別'] ?? 1;
-                $task->status = 'finished';
+
+                $excelStatus = $rowData['狀態'] ?? '已完成';
+                $statusMap = [
+                    '已完成' => 'finished',
+                    'finished' => 'finished',
+                    '執行中' => 'working',
+                    'working' => 'working',
+                    '未執行' => 'in_progress',
+                    'in_progress' => 'in_progress',
+                    '閒置' => 'idle',
+                    'idle' => 'idle',
+                    '待測試' => 'waiting_qa',
+                    'waiting_qa' => 'waiting_qa',
+                    '未達成' => 'miss',
+                    'miss' => 'miss',
+                    '已取消' => 'cancelled',
+                    'cancelled' => 'cancelled',
+                ];
+
+                $task->status = $statusMap[$excelStatus] ?? 'in_progress';
 
                 $assigneeName = $rowData['執行人員'] ?? null;
                 if ($assigneeName) {
@@ -456,12 +471,16 @@ class TaskController extends Controller
                 }
                 $task->output_url = $this->autoConvertLinksToMarkdown($outputUrlRaw);
 
-                $task->review_status = 'approved';
-                $task->reviewed_by = $admin->id;
+                if ($task->status === 'finished') {
+                    $task->review_status = 'approved';
+                    $task->reviewed_by = $admin->id;
 
-                $finishDate = $task->actual_finish_date ?: now();
-                $task->reviewed_at = $finishDate;
-                $task->approved_at = $finishDate;
+                    $finishDate = $task->actual_finish_date ?: now();
+                    $task->reviewed_at = $finishDate;
+                    $task->approved_at = $finishDate;
+                } else {
+                    $task->review_status = 'unsubmitted';
+                }
 
                 $task->save();
                 $importedCount++;

@@ -61,4 +61,9 @@ class Task extends Model
     {
         return $this->hasMany(Remark::class);
     }
+
+    public function latestRemark()
+    {
+        return $this->hasOne(Remark::class)->latestOfMany();
+    }
 }

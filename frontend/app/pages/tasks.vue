@@ -130,10 +130,10 @@
                 <div v-if="item.memo" class="main-memo">
                   <MarkdownViewer :content="item.memo" />
                 </div>
-                <div class="memo-list" v-if="item.remarks && item.remarks.length > 0">
+                <div class="memo-list" v-if="item.latest_remark">
                   <div class="memo-item">
-                    <span class="memo-user">{{ item.remarks[item.remarks.length - 1]?.user_name }}:</span>
-                    <MarkdownViewer class="memo-content" :content="item.remarks[item.remarks.length - 1]?.content" />
+                    <span class="memo-user">{{ item.latest_remark.user_name }}:</span>
+                    <MarkdownViewer class="memo-content" :content="item.latest_remark.content" />
                   </div>
                 </div>
                 <div class="memo-add">
@@ -172,9 +172,9 @@
                 <MarkdownViewer :content="item.memo" />
               </div>
               <div class="memo-list mobile">
-                <div v-if="item.remarks && item.remarks.length > 0" class="memo-item">
-                  <span class="memo-user">{{ item.remarks[item.remarks.length - 1]?.user_name }}:</span>
-                  <MarkdownViewer class="memo-content" :content="item.remarks[item.remarks.length - 1]?.content" />
+                <div v-if="item.latest_remark" class="memo-item">
+                  <span class="memo-user">{{ item.latest_remark.user_name }}:</span>
+                  <MarkdownViewer class="memo-content" :content="item.latest_remark.content" />
                 </div>
               </div>
               <div class="memo-add mobile">
@@ -213,11 +213,11 @@
                 <th>{{ $t('tasks.startDate') }}</th>
                 <th>{{ $t('tasks.expectedFinishDate') }}</th>
                 <th>{{ $t('tasks.actualFinishDate') }}</th>
+                <th>{{ $t('tasks.outputUrl') }}</th>
+                <th>{{ $t('tasks.memo') }}</th>
                 <th>{{ $t('tasks.reviewStatus') }}</th>
                 <th>{{ $t('tasks.reviewer') }}</th>
                 <th>{{ $t('tasks.reviewedAt') }}</th>
-                <th>{{ $t('tasks.outputUrl') }}</th>
-                <th>{{ $t('tasks.memo') }}</th>
               </tr>
             </thead>
             <tbody>
@@ -245,14 +245,6 @@
                 <td>{{ formatDate(item.start_date) }}</td>
                 <td>{{ formatDate(item.expected_finish_date) }}</td>
                 <td>{{ formatDate(item.actual_finish_date) }}</td>
-                <td>
-                  <span v-if="item.review_status && item.review_status !== 'unsubmitted'" :class="['status-badge', item.review_status]">
-                    {{ $t(`tasks.reviewStatus_${item.review_status}`) }}
-                  </span>
-                  <span v-else>-</span>
-                </td>
-                <td>{{ item.reviewer?.name || '-' }}</td>
-                <td>{{ item.reviewed_at ? formatDateTime(item.reviewed_at) : '-' }}</td>
                 <td class="output-url-cell">
                   <div v-if="item.output_url">
                     <MarkdownViewer :content="item.output_url" />
@@ -263,14 +255,22 @@
                   <div v-if="item.memo" class="main-memo">
                     <MarkdownViewer :content="item.memo" />
                   </div>
-                  <div class="memo-list" v-if="item.remarks && item.remarks.length > 0">
+                  <div class="memo-list" v-if="item.latest_remark">
                     <div class="memo-item">
-                      <span class="memo-user">{{ item.remarks[item.remarks.length - 1]?.user_name }}:</span>
-                      <MarkdownViewer class="memo-content" :content="item.remarks[item.remarks.length - 1]?.content" />
+                      <span class="memo-user">{{ item.latest_remark.user_name }}:</span>
+                      <MarkdownViewer class="memo-content" :content="item.latest_remark.content" />
                     </div>
                   </div>
-                  <span v-if="!item.memo && (!item.remarks || item.remarks.length === 0)">-</span>
+                  <span v-if="!item.memo && !item.latest_remark">-</span>
                 </td>
+                <td>
+                  <span v-if="item.review_status && item.review_status !== 'unsubmitted'" :class="['status-badge', item.review_status]">
+                    {{ $t(`tasks.reviewStatus_${item.review_status}`) }}
+                  </span>
+                  <span v-else>-</span>
+                </td>
+                <td>{{ item.reviewer?.name || '-' }}</td>
+                <td>{{ item.reviewed_at ? formatDateTime(item.reviewed_at) : '-' }}</td>
               </tr>
             </tbody>
           </table>
@@ -723,6 +723,7 @@ interface Task {
   output_url?: string;
   memo?: string;
   remarks: TaskRemark[];
+  latest_remark?: TaskRemark;
   assignee?: {
     id: number;
     name: string;

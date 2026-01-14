@@ -64,3 +64,19 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## docker db init
+```
+docker exec -it xtask-backend php artisan migrate
+```
+
+## docker user to admin
+```
+mkdir backend/.config
+chmod 777 backend/.config
+docker exec -it xtask-backend php artisan tinker
+```
+
+```
+User::find(1)->update(['role' => 'admin']);
+```
