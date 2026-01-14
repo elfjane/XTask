@@ -2,6 +2,15 @@
 
 All notable changes to the XTask project will be documented in this file.
 
+## [2026-01-14 17:15] - Task Status Quick Switch
+- **Frontend Enhancements**:
+  - Implemented one-click status switching in the Task list.
+  - Users can now click the status badge to open a dropdown and change the task status directly (e.g., Working, In Progress, Idle).
+  - Backend integration reuses the robust `PUT /tasks/{task}` interface which handles side-effects like auto-submission for review.
+- **Backend Improvements**:
+  - Optimized the handling of `AccessDeniedHttpException` to return a clean JSON 403 Forbidden response instead of a verbose debug stack trace.
+  - Updated `PUT /tasks/{task}` OpenAPI specification to document the 403 Unauthorized response.
+
 ## [2026-01-14 10:50] - Excel Import Status Improvement
 - **Backend Improvements**:
   - Enhanced Excel task import to respect the 'Status' (狀態) column.

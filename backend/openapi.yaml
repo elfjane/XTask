@@ -382,6 +382,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Task'
+        '403':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: { type: string, example: 'This action is unauthorized.' }
 
   /tasks/import:
     post:

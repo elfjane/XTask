@@ -292,6 +292,7 @@ definePageMeta({
 })
 
 const { token } = useAuth()
+const { t } = useI18n()
 const config = useRuntimeConfig()
 const apiBase = (config.public.apiBase as string) || ''
 const showCreateModal = ref(false)
@@ -449,8 +450,12 @@ const handleUpdate = async () => {
     await refresh()
     
     isEditing.value = false
-  } catch (err) {
-    console.error('Failed to update schedule:', err)
+  } catch (err: any) {
+    if (err.status === 403) {
+      alert(t('common.unauthorizedAction'))
+    } else {
+      console.error('Failed to update schedule:', err)
+    }
   } finally {
     updating.value = false
   }

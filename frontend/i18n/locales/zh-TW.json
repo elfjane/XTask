@@ -22,7 +22,8 @@
             "task_user": "任務建立者",
             "executor": "任務執行人員",
             "auditor": "稽核人員"
-        }
+        },
+        "unauthorizedAction": "您沒有權限執行此操作"
     },
     "validation": {
         "required": "{field} 為必填項目",

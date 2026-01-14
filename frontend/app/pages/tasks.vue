@@ -88,7 +88,22 @@
               <td>{{ item.id }}</td>
               <td>{{ item.level }}</td>
               <td>
-                <span :class="['status-badge', item.status.replace(' ', '-')]">
+                <div v-if="editingStatusId === item.id" class="edit-select-wrapper" @click.stop>
+                  <select 
+                    :value="item.status" 
+                    @change="updateStatus(item, ($event.target as HTMLSelectElement).value)"
+                    @blur="editingStatusId = null"
+                    :ref="el => setFocus(el)"
+                  >
+                    <option v-for="opt in statusOptions" :key="opt.value" :value="opt.value">
+                      {{ opt.label }}
+                    </option>
+                  </select>
+                </div>
+                <span v-else 
+                  :class="['status-badge', item.status.replace(' ', '-'), 'clickable']"
+                  @click.stop="startEditingStatus(item)"
+                >
                   {{ $t(`tasks.${item.status.replace(' ', '_')}`) }}
                 </span>
               </td>
@@ -98,7 +113,7 @@
                     :value="item.user_id" 
                     @change="updateAssignee(item, ($event.target as HTMLSelectElement).value)"
                     @blur="editingAssigneeId = null"
-                    ref="assigneeSelect"
+                    :ref="el => setFocus(el)"
                   >
                     <option v-for="opt in userOptions" :key="opt.value" :value="opt.value">
                       {{ opt.label }}
@@ -677,7 +692,7 @@ const errors = reactive<Record<string, string>>({})
 const postingRemark = ref<number | null>(null)
 const newRemarks = ref<Record<number, string>>({})
 const editingAssigneeId = ref<number | null>(null)
-const assigneeSelect = ref<HTMLSelectElement | null>(null)
+const editingStatusId = ref<number | null>(null)
 const currentTaskId = ref<number | null>(null)
 const completedTasks = ref<Task[]>([])
 const completedPagination = ref<any>(null)
@@ -839,6 +854,16 @@ const userNameOptions = computed(() => {
   ]
 })
 
+const statusOptions = computed(() => [
+  { label: t('tasks.in_progress'), value: 'in progress' },
+  { label: t('tasks.working'), value: 'working' },
+  { label: t('tasks.idle'), value: 'idle' },
+  { label: t('tasks.waiting_qa'), value: 'waiting_qa' },
+  { label: t('tasks.completed') || t('tasks.finished'), value: 'finished' },
+  { label: t('tasks.miss'), value: 'miss' },
+  { label: t('tasks.cancelled'), value: 'cancelled' }
+])
+
 const isAuditor = computed(() => ['auditor', 'admin', 'manager'].includes(user.value?.role))
 
 const formatTime = (dateStr: string) => {
@@ -920,8 +945,13 @@ const handleUpdate = async () => {
     })
     await refresh()
     isEditingTasks.value = false
-  } catch (err) {
-    console.error('Failed to update task:', err)
+  } catch (err: any) {
+    if (err.status === 403) {
+      alert(t('common.unauthorizedAction'))
+    } else {
+      console.error('Failed to update task:', err)
+      alert(err.data?.message || 'Failed to update task.')
+    }
   } finally {
     updatingTasks.value = false
   }
@@ -946,8 +976,12 @@ const handleReview = async (action: 'approved' | 'failed') => {
     })
     await refresh()
     showDetailsModal.value = false
-  } catch (err) {
-    console.error('Failed to review task:', err)
+  } catch (err: any) {
+    if (err.status === 403) {
+      alert(t('common.unauthorizedAction'))
+    } else {
+      console.error('Failed to review task:', err)
+    }
   } finally {
     updatingTasks.value = false
   }
@@ -979,9 +1013,6 @@ const handlePostRemark = async (taskId: number) => {
 const startEditingAssignee = (task: Task) => {
   if (isReviewMode.value) return // Disable quick edit in review mode
   editingAssigneeId.value = task.id
-  nextTick(() => {
-    assigneeSelect.value?.focus()
-  })
 }
 
 const handlePointsUpdate = (mode: 'create' | 'edit', val: any) => {
@@ -993,6 +1024,46 @@ const handlePointsUpdate = (mode: 'create' | 'edit', val: any) => {
   
   if (mode === 'create') form.points = num
   else taskEditForm.points = num
+}
+
+const setFocus = (el: any) => {
+  if (el) {
+    (el as HTMLElement).focus()
+  }
+}
+
+const startEditingStatus = (task: Task) => {
+  if (isReviewMode.value || isCompletedMode.value) return
+  editingStatusId.value = task.id
+}
+
+const updateStatus = async (task: Task, newStatus: string) => {
+  if (newStatus === task.status) {
+    editingStatusId.value = null
+    return
+  }
+
+  try {
+    const updatedTask = await $fetch<Task>(`${apiBase}/api/tasks/${task.id}`, {
+      method: 'PUT',
+      body: { status: newStatus },
+      headers: {
+        Authorization: `Bearer ${token.value}`,
+        Accept: 'application/json'
+      }
+    })
+    // Update local state instead of refreshing whole list
+    Object.assign(task, updatedTask)
+  } catch (err: any) {
+    if (err.status === 403) {
+      alert(t('common.unauthorizedAction'))
+    } else {
+      console.error('Failed to update status:', err)
+      alert('Failed to update status.')
+    }
+  } finally {
+    editingStatusId.value = null
+  }
 }
 
 const updateAssignee = async (task: Task, newUserId: string) => {
@@ -1010,7 +1081,7 @@ const updateAssignee = async (task: Task, newUserId: string) => {
       payload.department = selectedUser.department.name
     }
 
-    await $fetch(`${apiBase}/api/tasks/${task.id}`, {
+    const updatedTask = await $fetch<Task>(`${apiBase}/api/tasks/${task.id}`, {
       method: 'PUT',
       body: payload,
       headers: {
@@ -1018,10 +1089,15 @@ const updateAssignee = async (task: Task, newUserId: string) => {
         Accept: 'application/json'
       }
     })
-    refresh()
-  } catch (err) {
-    console.error('Failed to update assignee:', err)
-    alert('Failed to update assignee. You might not have permission.')
+    // Update local state instead of refreshing whole list
+    Object.assign(task, updatedTask)
+  } catch (err: any) {
+    if (err.status === 403) {
+      alert(t('common.unauthorizedAction'))
+    } else {
+      console.error('Failed to update assignee:', err)
+      alert('Failed to update assignee.')
+    }
   } finally {
     editingAssigneeId.value = null
   }

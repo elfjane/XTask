@@ -22,14 +22,6 @@ class TaskController extends Controller
             'latestRemark'
         ]);
 
-        if ($user->isExecutor()) {
-            $query->where(function ($q) use ($user) {
-                $q->where('department', $user->department?->name)
-                    ->orWhere('user_id', $user->id)
-                    ->orWhere('related_personnel', 'like', '%' . $user->name . '%');
-            });
-        }
-
         if ($request->has('review_status')) {
             $query->where('review_status', $request->input('review_status'));
         }

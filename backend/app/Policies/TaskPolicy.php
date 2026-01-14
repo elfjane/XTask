@@ -41,7 +41,7 @@ class TaskPolicy
      */
     public function view(User $user, Task $task): bool
     {
-        if ($user->isAdmin() || $user->isManager() || $user->isAuditor() || $user->isTaskUser()) {
+        if ($user->isAdmin() || $user->isManager() || $user->isAuditor() || $user->isTaskUser() || $user->isExecutor()) {
             return true;
         }
 

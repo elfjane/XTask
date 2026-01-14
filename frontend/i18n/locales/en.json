@@ -22,7 +22,8 @@
             "task_user": "Task Creator",
             "executor": "Task Executor",
             "auditor": "Auditor"
-        }
+        },
+        "unauthorizedAction": "You are not authorized to perform this action"
     },
     "validation": {
         "required": "The {field} field is required.",
