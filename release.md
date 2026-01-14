@@ -14,6 +14,7 @@ All notable changes to the XTask project will be documented in this file.
   - Optimized Eager Loading logic to only fetch the `latestRemark` in list views, significantly reducing memory usage and API response time.
 - **Frontend UI Adjustments**:
   - Reordered columns in the "Completed Tasks" view: "Review Status", "Reviewer", and "Reviewed At" are now moved after the "Memo" column for better readability.
+  - Removed test account credentials from the login page.
 
 ## [2026-01-13 18:25] - Docker Support
 - **Infrastructure**:

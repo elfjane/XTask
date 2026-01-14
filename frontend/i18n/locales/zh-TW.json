@@ -61,7 +61,6 @@
         "password": "密碼",
         "signIn": "登入",
         "loggingIn": "登入中...",
-        "testCreds": "測試帳號：",
         "noAccount": "還沒有帳號？",
         "register": "註冊",
         "registrationDisabled": "註冊功能暫時關閉"

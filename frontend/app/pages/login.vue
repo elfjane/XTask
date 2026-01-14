@@ -41,10 +41,6 @@
       <p>{{ $t('login.noAccount') }} <NuxtLink to="/register">{{ $t('login.register') }}</NuxtLink></p>
     </div>
     
-    <div class="test-creds">
-      <p>{{ $t('login.testCreds') }}</p>
-      <code>admin@example.com / password</code>
-    </div>
   </div>
 </template>
 
@@ -191,18 +187,4 @@ input:focus {
   text-decoration: underline;
 }
 
-.test-creds {
-  margin-top: 2rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid #edf2f7;
-  font-size: 0.8rem;
-  color: #a0aec0;
-}
-
-code {
-  background: #f7fafc;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  color: #4a5568;
-}
 </style>
