@@ -32,5 +32,10 @@ export default defineNuxtConfig({
   },
   routeRules: {
     '/api/**': { proxy: (process.env.NUXT_API_PROXY_TARGET || 'http://127.0.0.1:8111') + '/api/**' }
+  },
+  vite: {
+    server: {
+      allowedHosts: ['xtask.elfjane.com']
+    }
   }
 })

@@ -24,6 +24,13 @@ services:
     working_dir: /var/www
     volumes:
       - ./backend:/var/www
+    environment:
+      - DB_CONNECTION=mysql
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=${DB_DATABASE:-xtask}
+      - DB_USERNAME=${DB_USERNAME:-xtask}
+      - DB_PASSWORD=${DB_PASSWORD:-password}
     depends_on:
       - db
 
