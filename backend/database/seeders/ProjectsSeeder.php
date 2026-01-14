@@ -13,6 +13,6 @@ class ProjectsSeeder extends Seeder
      */
     public function run(): void
     {
-        Project::firstOrCreate(['name' => 'Project']);
+        Project::firstOrCreate(['name' => 'General']);
     }
 }

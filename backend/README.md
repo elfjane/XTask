@@ -68,6 +68,8 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 ## docker db init
 ```
 docker exec -it xtask-backend php artisan migrate
+docker exec -it xtask-backend php artisan db:seed --class=DepartmentsSeeder
+docker exec -it xtask-backend php artisan db:seed --class=ProjectsSeeder
 ```
 
 ## docker user to admin
