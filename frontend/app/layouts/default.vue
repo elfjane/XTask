@@ -17,7 +17,9 @@
         <div class="navbar-right">
           <!-- Language Switcher -->
           <div class="language-switcher">
-            <span class="lang-label">{{ $t('common.language') }}:</span>
+            <ClientOnly>
+              <span class="lang-label">{{ $t('common.language') }}:</span>
+            </ClientOnly>
             <button 
               v-for="loc in locales" 
               :key="loc.code"
