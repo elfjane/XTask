@@ -92,7 +92,7 @@ class TaskController extends Controller
             'item' => 'nullable|string|max:255',
             'department' => 'required|string|max:255',
             'work' => 'required|string|max:255',
-            'points' => 'required|numeric|min:0.5|max:21',
+            'points' => 'required|numeric|min:0|max:21',
             'release_date' => 'nullable|date',
             'start_date' => 'nullable|date',
             'expected_finish_date' => 'nullable|date',
@@ -105,6 +105,10 @@ class TaskController extends Controller
         $validated['status'] = $validated['status'] ?? 'in progress';
 
         \Illuminate\Support\Facades\Gate::authorize('create', Task::class);
+
+        if (isset($validated['points'])) {
+            $validated['points'] = round($validated['points'] * 2) / 2;
+        }
 
         $task = Task::create($validated);
 
@@ -142,7 +146,7 @@ class TaskController extends Controller
             'item' => 'sometimes|nullable|string|max:255',
             'department' => 'sometimes|string|max:255',
             'work' => 'sometimes|string|max:255',
-            'points' => 'sometimes|numeric|min:0.5|max:21',
+            'points' => 'sometimes|numeric|min:0|max:21',
             'release_date' => 'sometimes|nullable|date',
             'start_date' => 'sometimes|nullable|date',
             'expected_finish_date' => 'sometimes|nullable|date',
@@ -151,6 +155,9 @@ class TaskController extends Controller
             'memo' => 'sometimes|nullable|string',
             'review_status' => 'sometimes|nullable|string|in:unsubmitted,submitted,failed,approved',
         ]);
+        if (isset($validated['points'])) {
+            $validated['points'] = round($validated['points'] * 2) / 2;
+        }
 
         if (isset($validated['status'])) {
             $currentStatus = $task->status;

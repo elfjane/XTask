@@ -367,7 +367,7 @@
               required 
               :error="errors.department"
             />
-            <BaseInput v-model="form.points" :label="$t('tasks.points')" type="number" step="0.5" required :error="errors.points" />
+            <BaseInput v-model="form.points" :label="$t('tasks.points')" type="number" step="0.5" min="0" required :error="errors.points" />
           </div>
         </div>
 
@@ -584,7 +584,7 @@
                 { label: $t('tasks.priority'), value: 3 }
               ]" 
             />
-             <BaseInput v-model="taskEditForm.points" :label="$t('tasks.points')" type="number" step="0.5" />
+             <BaseInput v-model="taskEditForm.points" :label="$t('tasks.points')" type="number" step="0.5" min="0" />
           </div>
         </div>
 
