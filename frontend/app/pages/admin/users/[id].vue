@@ -101,6 +101,7 @@ definePageMeta({
 })
 
 const { token } = useAuth()
+const toast = useToast()
 const config = useRuntimeConfig()
 const route = useRoute()
 const router = useRouter()
@@ -168,9 +169,11 @@ async function submitForm() {
       headers: { Authorization: `Bearer ${token.value}` },
       body: payload
     })
+    toast.success('User updated successfully')
     router.push('/admin/users')
   } catch (e: any) {
     error.value = e.data?.message || 'Failed to update user'
+    toast.error(error.value)
   } finally {
     submitting.value = false
   }
@@ -201,8 +204,11 @@ async function handleFreezeToggle() {
         })
         form.is_active = true
       }
+
+      toast.success(isFreezing ? 'Account frozen' : 'Account unfrozen')
     } catch (e) {
-      alert('Action failed')
+      console.error(e)
+      toast.error('Action failed')
     }
   }
 }

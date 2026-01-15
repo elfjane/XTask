@@ -53,6 +53,7 @@ const config = useRuntimeConfig()
 const allowRegistration = computed(() => String(config.public.allowRegistration) === 'true')
 
 const { loginWithEmail, isAuthenticated } = useAuth()
+const toast = useToast()
 const email = ref('')
 const password = ref('')
 const loading = ref(false)
@@ -72,7 +73,12 @@ const handleLogin = async () => {
     await loginWithEmail(email.value, password.value)
     navigateTo('/')
   } catch (err: any) {
-    error.value = err.data?.message || 'Invalid email or password'
+    const errorMsg = err.data?.message || 'Invalid email or password'
+    // Keep inline error for specific login failure, but use toast for generic/network errors if status is not 401/422
+    if (!err.status || (err.status >= 500)) {
+      toast.error('Login failed: ' + errorMsg)
+    }
+    error.value = errorMsg
   } finally {
     loading.value = false
   }

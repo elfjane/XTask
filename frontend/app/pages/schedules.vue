@@ -293,6 +293,7 @@ definePageMeta({
 
 const { token } = useAuth()
 const { t } = useI18n()
+const toast = useToast()
 const config = useRuntimeConfig()
 const apiBase = (config.public.apiBase as string) || ''
 const showCreateModal = ref(false)
@@ -427,8 +428,9 @@ const handleCreate = async () => {
       scheduled_end: '',
       memo: ''
     })
-  } catch (err) {
+  } catch (err: any) {
     console.error('Failed to create schedule:', err)
+    toast.error(err.data?.message || 'Failed to create schedule')
   } finally {
     creating.value = false
   }
@@ -452,9 +454,10 @@ const handleUpdate = async () => {
     isEditing.value = false
   } catch (err: any) {
     if (err.status === 403) {
-      alert(t('common.unauthorizedAction'))
+      toast.error(t('common.unauthorizedAction'))
     } else {
       console.error('Failed to update schedule:', err)
+      toast.error(err.data?.message || 'Failed to update schedule')
     }
   } finally {
     updating.value = false
@@ -477,8 +480,9 @@ const handlePostMemo = async (scheduleId: number) => {
     })
     newMemos.value[scheduleId] = ''
     refresh()
-  } catch (err) {
+  } catch (err: any) {
     console.error('Failed to post memo:', err)
+    toast.error(err.data?.message || 'Failed to post memo')
   } finally {
     postingMemo.value = null
   }
