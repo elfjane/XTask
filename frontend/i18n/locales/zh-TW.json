@@ -58,7 +58,7 @@
     },
     "login": {
         "title": "XTask 登入",
-        "subtitle": "使用您的憑據存取工作區",
+        "subtitle": "工作區",
         "email": "電子郵件",
         "password": "密碼",
         "signIn": "登入",
