@@ -74,6 +74,10 @@
     <main class="container main-content">
       <slot />
     </main>
+    
+    <ClientOnly>
+      <ToastContainer />
+    </ClientOnly>
   </div>
 </template>
 

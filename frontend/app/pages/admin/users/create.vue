@@ -92,6 +92,7 @@ definePageMeta({
 })
 
 const { token } = useAuth()
+const toast = useToast()
 const config = useRuntimeConfig()
 const router = useRouter()
 
@@ -136,9 +137,11 @@ async function submitForm() {
       headers: { Authorization: `Bearer ${token.value}` },
       body: form
     })
+    toast.success('User created successfully')
     router.push('/admin/users')
   } catch (e: any) {
     error.value = e.data?.message || 'Failed to create user'
+    toast.error(error.value)
   } finally {
     loading.value = false
   }

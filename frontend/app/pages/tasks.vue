@@ -674,6 +674,7 @@ definePageMeta({
 
 const { token, user } = useAuth() // Assume user is available from useAuth
 const { t } = useI18n()
+const toast = useToast()
 const config = useRuntimeConfig()
 const apiBase = (config.public.apiBase as string) || ''
 const showCreateModal = ref(false)
@@ -947,10 +948,10 @@ const handleUpdate = async () => {
     isEditingTasks.value = false
   } catch (err: any) {
     if (err.status === 403) {
-      alert(t('common.unauthorizedAction'))
+      toast.error(t('common.unauthorizedAction'))
     } else {
       console.error('Failed to update task:', err)
-      alert(err.data?.message || 'Failed to update task.')
+      toast.error(err.data?.message || 'Failed to update task.')
     }
   } finally {
     updatingTasks.value = false
@@ -978,9 +979,10 @@ const handleReview = async (action: 'approved' | 'failed') => {
     showDetailsModal.value = false
   } catch (err: any) {
     if (err.status === 403) {
-      alert(t('common.unauthorizedAction'))
+      toast.error(t('common.unauthorizedAction'))
     } else {
       console.error('Failed to review task:', err)
+      toast.error('Failed to review task')
     }
   } finally {
     updatingTasks.value = false
@@ -1056,10 +1058,10 @@ const updateStatus = async (task: Task, newStatus: string) => {
     Object.assign(task, updatedTask)
   } catch (err: any) {
     if (err.status === 403) {
-      alert(t('common.unauthorizedAction'))
+      toast.error(t('common.unauthorizedAction'))
     } else {
       console.error('Failed to update status:', err)
-      alert('Failed to update status.')
+      toast.error('Failed to update status.')
     }
   } finally {
     editingStatusId.value = null
@@ -1093,10 +1095,10 @@ const updateAssignee = async (task: Task, newUserId: string) => {
     Object.assign(task, updatedTask)
   } catch (err: any) {
     if (err.status === 403) {
-      alert(t('common.unauthorizedAction'))
+      toast.error(t('common.unauthorizedAction'))
     } else {
       console.error('Failed to update assignee:', err)
-      alert('Failed to update assignee.')
+      toast.error('Failed to update assignee.')
     }
   } finally {
     editingAssigneeId.value = null
