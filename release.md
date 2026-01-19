@@ -2,6 +2,12 @@
 
 All notable changes to the XTask project will be documented in this file.
 
+## [2026-01-19] - Completed Tasks Filter Optimization
+- **Backend Improvements**:
+  - Refined the "Completed Tasks" list to strictly exclude tasks that are "Under Review" (`submitted`).
+  - Tasks now only appear in the completed list if they are `approved` or `finished` without a pending review.
+  - Applied the same logic to task statistics to ensure point calculations only include finalized work.
+
 ## [2026-01-14 17:15] - Task Status Quick Switch
 - **Frontend Enhancements**:
   - Implemented one-click status switching in the Task list.

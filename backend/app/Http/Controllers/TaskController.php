@@ -227,11 +227,11 @@ class TaskController extends Controller
             });
         }
 
-        // Filter for completed tasks: status='finished' OR review_status='approved'
+        // Filter for completed tasks: (status='finished' OR review_status='approved') AND review_status != 'submitted'
         $query->where(function ($q) {
             $q->where('status', 'finished')
                 ->orWhere('review_status', 'approved');
-        });
+        })->where('review_status', '!=', 'submitted');
 
         // Search functionality
         if ($request->has('search') && $search = $request->input('search')) {
@@ -286,6 +286,7 @@ class TaskController extends Controller
                 $q->where('status', 'finished')
                     ->orWhere('review_status', 'approved');
             })
+            ->where('review_status', '!=', 'submitted')
             ->whereRaw('COALESCE(approved_at, actual_finish_date) >= ?', [$startMonth])
             ->whereRaw('COALESCE(approved_at, actual_finish_date) <= ?', [$endMonth])
             // Order by date to make processing easier

@@ -44,7 +44,7 @@ XTask/
 - **Task Points Statistics**: Interactive charts and matrix tables to track team performance and monthly contributions.
 - **Markdown Support**: Full Markdown support for memos, remarks, and output links with automatic URL-to-link conversion.
 - **Excel Task Import**: Batch import tasks with automatic extraction of embedded hyperlinks from Excel cells into Markdown links.
-- **Responsive Design**: Fully functional across desktop, tablet, and mobile devices. Includes an **Approval Workflow** where finished tasks are submitted for Auditor review. Support for **detailed view and editing** for all task fields.
+- **Responsive Design**: Fully functional across desktop, tablet, and mobile devices. Includes an **Approval Workflow** where finished tasks are submitted for Auditor review. The **Completed Tasks** list automatically filters out pending reviews to ensure data clarity. Supports **detailed view and editing** for all task and schedule fields.
 - **Multi-language Support**: i18n integrated for English and Traditional Chinese.
 
 ## Environment Configuration
