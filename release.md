@@ -9,7 +9,7 @@ All notable changes to the XTask project will be documented in this file.
   - Added the "Level" field to the Task Creation modal, allowing users to set priority levels when creating new tasks.
   - Updated sorting labels to reflect the new "Level" terminology.
 - **Bug Fix**: 
-  - Fixed an issue where uploaded avatars were not displaying correctly (404 error). Added a proxy for the `/storage` path to ensure static assets are correctly served from the backend.
+  - Fixed an issue where uploaded avatars were not displaying correctly (404 error). Added a proxy for the `/storage` path in the frontend and an Nginx alias in the backend Docker configuration to ensure static assets are correctly served from the backend in both development and Docker environments.
 - **New Feature**: 
   - **Profile Picture Upload**: Users can now upload and change their profile pictures from the Profile page. Includes a built-in cropper and automatic resizing to 512x512.
   - **Drag-and-Drop Reordering**: Users can now manually reorder tasks by dragging any non-interactive area of a task row up or down in the list. The custom order is preserved across sessions.
