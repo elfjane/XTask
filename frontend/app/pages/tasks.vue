@@ -655,10 +655,14 @@
         </template>
         <template v-else>
           <button v-if="!isEditingTasks" @click="showDetailsModal = false" class="btn-secondary">{{ $t('schedules.cancel') }}</button>
-          <button v-if="!isEditingTasks && (isAuditor || user?.role === 'admin')" @click="handleRevert" class="btn-danger" style="background: #f59e0b; color: white;">
+          
+          <!-- Revert button: ONLY in completed mode and only for authorized users -->
+          <button v-if="!isEditingTasks && isCompletedMode && (isAuditor || user?.role === 'admin')" @click="handleRevert" class="btn-danger" style="background: #f59e0b; color: white;">
             {{ $t('tasks.revertToUnsubmitted') || '退回未送審' }}
           </button>
-          <button v-if="!isEditingTasks" @click="startEditingTask" class="btn-primary">{{ $t('schedules.edit') }}</button>
+          
+          <!-- Edit button: show in regular mode for everyone, but only for authorized users in completed mode -->
+          <button v-if="!isEditingTasks && (!isCompletedMode || (isAuditor || user?.role === 'admin'))" @click="startEditingTask" class="btn-primary">{{ $t('schedules.edit') }}</button>
           
           <button v-if="isEditingTasks" @click="isEditingTasks = false" class="btn-secondary">{{ $t('schedules.cancel') }}</button>
           <button v-if="isEditingTasks" @click="handleUpdate" :disabled="updatingTasks" class="btn-primary">
