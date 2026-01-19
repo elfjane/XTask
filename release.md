@@ -3,7 +3,13 @@
 All notable changes to the XTask project will be documented in this file.
 
 ## [2026-01-19] - Completed Tasks Management Enhancement
+- **UI/UX Optimization**:
+  - Renamed "Category" to "Level" (級別) across the task management module for better clarity.
+  - **Visual Enhancement**: The "Level" column in the task table now features dynamic background colors: Level 2 (Important) is highlighted in **Yellow**, and Level 3 (Priority) in **Red**.
+  - Added the "Level" field to the Task Creation modal, allowing users to set priority levels when creating new tasks.
+  - Updated sorting labels to reflect the new "Level" terminology.
 - **New Feature**: 
+  - **Drag-and-Drop Reordering**: Users can now manually reorder tasks by dragging any non-interactive area of a task row up or down in the list. The custom order is preserved across sessions.
   - Administrators and Auditors can now revert completed or failed tasks back to "Unsubmitted" and "Working" status exclusively from the **Completed Tasks** page details modal.
   - The "Edit" and "Revert" buttons for finalized tasks are now restricted to authorized users and only appear when viewing the Completed Tasks list to maintain a clean workflow.
 - **Backend Improvements**:

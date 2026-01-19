@@ -65,6 +65,7 @@
         <table class="task-table">
           <thead>
             <tr>
+              <th v-if="canDrag" style="width: 40px;"></th>
               <th>{{ $t('tasks.idx') }}</th>
               <th>{{ $t('tasks.level') }}</th>
               <th>{{ $t('tasks.status') }}</th>
@@ -83,87 +84,98 @@
               <th>{{ $t('tasks.memo') }}</th>
             </tr>
           </thead>
-          <tbody>
-            <tr v-for="item in tasks" :key="item.id">
-              <td>{{ item.id }}</td>
-              <td>{{ item.level }}</td>
-              <td>
-                <div v-if="editingStatusId === item.id" class="edit-select-wrapper" @click.stop>
-                  <select 
-                    :value="item.status" 
-                    @change="updateStatus(item, ($event.target as HTMLSelectElement).value)"
-                    @blur="editingStatusId = null"
-                    :ref="el => setFocus(el)"
-                  >
-                    <option v-for="opt in statusOptions" :key="opt.value" :value="opt.value">
-                      {{ opt.label }}
-                    </option>
-                  </select>
-                </div>
-                <span v-else 
-                  :class="['status-badge', item.status.replace(' ', '-'), 'clickable']"
-                  @click.stop="startEditingStatus(item)"
-                >
-                  {{ $t(`tasks.${item.status.replace(' ', '_')}`) }}
-                </span>
-              </td>
-              <td class="user-cell clickable" @click="startEditingAssignee(item)">
-                <div v-if="editingAssigneeId === item.id" class="edit-select-wrapper" @click.stop>
-                  <select 
-                    :value="item.user_id" 
-                    @change="updateAssignee(item, ($event.target as HTMLSelectElement).value)"
-                    @blur="editingAssigneeId = null"
-                    :ref="el => setFocus(el)"
-                  >
-                    <option v-for="opt in userOptions" :key="opt.value" :value="opt.value">
-                      {{ opt.label }}
-                    </option>
-                  </select>
-                </div>
-                <div v-else class="user-info">
-                  <img v-if="item.assignee" :src="item.assignee.photo_url || 'https://ui-avatars.com/api/?name=' + item.assignee.name" class="avatar" />
-                  {{ item.assignee?.name || '-' }}
-                </div>
-              </td>
-              <td>{{ item.related_personnel || '-' }}</td>
-              <td>{{ item.project }}</td>
-              <td class="clickable" @click="openDetails(item)">{{ item.item || '-' }}</td>
-              <td>{{ item.department }}</td>
-              <td class="work-cell clickable" @click="openDetails(item)">{{ item.work }}</td>
-              <td>{{ item.points }}</td>
-              <td>{{ formatDate(item.release_date) }}</td>
-              <td>{{ formatDate(item.start_date) }}</td>
-              <td>{{ formatDate(item.expected_finish_date) }}</td>
-              <td>{{ formatDate(item.actual_finish_date) }}</td>
-              <td class="output-url-cell">
-                <div v-if="item.output_url">
-                  <MarkdownViewer :content="item.output_url" />
-                </div>
-                <span v-else>-</span>
-              </td>
-              <td class="memo-cell">
-                <div v-if="item.memo" class="main-memo">
-                  <MarkdownViewer :content="item.memo" />
-                </div>
-                <div class="memo-list" v-if="item.latest_remark">
-                  <div class="memo-item">
-                    <span class="memo-user">{{ item.latest_remark.user_name }}:</span>
-                    <MarkdownViewer class="memo-content" :content="item.latest_remark.content" />
+          <draggable 
+            v-model="tasks" 
+            tag="tbody" 
+            item-key="id" 
+            @end="handleReorder"
+            :disabled="!canDrag"
+            handle=".drag-handle"
+            ghost-class="sortable-ghost"
+          >
+            <template #item="{ element: item }">
+              <tr>
+                <td v-if="canDrag" class="drag-handle">☰</td>
+                <td>{{ item.id }}</td>
+                <td :class="getLevelClass(item.level)">{{ getLevelLabel(item.level) }}</td>
+                <td>
+                  <div v-if="editingStatusId === item.id" class="edit-select-wrapper" @click.stop>
+                    <select 
+                      :value="item.status" 
+                      @change="updateStatus(item, ($event.target as HTMLSelectElement).value)"
+                      @blur="editingStatusId = null"
+                      :ref="el => setFocus(el)"
+                    >
+                      <option v-for="opt in statusOptions" :key="opt.value" :value="opt.value">
+                        {{ opt.label }}
+                      </option>
+                    </select>
                   </div>
-                </div>
-                <div class="memo-add">
-                  <input 
-                    v-model="newRemarks[item.id]" 
-                    :placeholder="$t('schedules.addMemoPlaceHolder')" 
-                    @keyup.enter="handlePostRemark(item.id)"
-                  />
-                  <button @click="handlePostRemark(item.id)" :disabled="postingRemark === item.id">
-                    {{ postingRemark === item.id ? '...' : '➔' }}
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
+                  <span v-else 
+                    :class="['status-badge', item.status.replace(' ', '-'), 'clickable']"
+                    @click.stop="startEditingStatus(item)"
+                  >
+                    {{ $t(`tasks.${item.status.replace(' ', '_')}`) }}
+                  </span>
+                </td>
+                <td class="user-cell clickable" @click="startEditingAssignee(item)">
+                  <div v-if="editingAssigneeId === item.id" class="edit-select-wrapper" @click.stop>
+                    <select 
+                      :value="item.user_id" 
+                      @change="updateAssignee(item, ($event.target as HTMLSelectElement).value)"
+                      @blur="editingAssigneeId = null"
+                      :ref="el => setFocus(el)"
+                    >
+                      <option v-for="opt in userOptions" :key="opt.value" :value="opt.value">
+                        {{ opt.label }}
+                      </option>
+                    </select>
+                  </div>
+                  <div v-else class="user-info">
+                    <img v-if="item.assignee" :src="item.assignee.photo_url || 'https://ui-avatars.com/api/?name=' + item.assignee.name" class="avatar" />
+                    {{ item.assignee?.name || '-' }}
+                  </div>
+                </td>
+                <td>{{ item.related_personnel || '-' }}</td>
+                <td>{{ item.project }}</td>
+                <td class="clickable" @click="openDetails(item)">{{ item.item || '-' }}</td>
+                <td>{{ item.department }}</td>
+                <td class="work-cell clickable" @click="openDetails(item)">{{ item.work }}</td>
+                <td>{{ item.points }}</td>
+                <td>{{ formatDate(item.release_date) }}</td>
+                <td>{{ formatDate(item.start_date) }}</td>
+                <td>{{ formatDate(item.expected_finish_date) }}</td>
+                <td>{{ formatDate(item.actual_finish_date) }}</td>
+                <td class="output-url-cell">
+                  <div v-if="item.output_url">
+                    <MarkdownViewer :content="item.output_url" />
+                  </div>
+                  <span v-else>-</span>
+                </td>
+                <td class="memo-cell">
+                  <div v-if="item.memo" class="main-memo">
+                    <MarkdownViewer :content="item.memo" />
+                  </div>
+                  <div class="memo-list" v-if="item.latest_remark">
+                    <div class="memo-item">
+                      <span class="memo-user">{{ item.latest_remark.user_name }}:</span>
+                      <MarkdownViewer class="memo-content" :content="item.latest_remark.content" />
+                    </div>
+                  </div>
+                  <div class="memo-add">
+                    <input 
+                      v-model="newRemarks[item.id]" 
+                      :placeholder="$t('schedules.addMemoPlaceHolder')" 
+                      @keyup.enter="handlePostRemark(item.id)"
+                    />
+                    <button @click="handlePostRemark(item.id)" :disabled="postingRemark === item.id">
+                      {{ postingRemark === item.id ? '...' : '➔' }}
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </template>
+          </draggable>
         </table>
       </div>
 
@@ -179,6 +191,7 @@
             <div class="info-grid">
               <div class="info-item"><strong>{{ $t('tasks.project') }}:</strong> {{ item.project }}</div>
               <div class="info-item"><strong>{{ $t('tasks.assignee') }}:</strong> {{ item.assignee?.name || '-' }}</div>
+              <div class="info-item"><strong>{{ $t('tasks.level') }}:</strong> <span :class="['level-text', getLevelClass(item.level)]">{{ getLevelLabel(item.level) }}</span></div>
               <div class="info-item"><strong>{{ $t('tasks.expectedFinishDate') }}:</strong> {{ item.expected_finish_date || '-' }}</div>
             </div>
             <div class="memo-board">
@@ -238,7 +251,7 @@
             <tbody>
               <tr v-for="item in completedTasks" :key="item.id" @click="openDetails(item)" style="cursor: pointer;">
                 <td>{{ item.id }}</td>
-                <td>{{ item.level }}</td>
+                <td :class="getLevelClass(item.level)">{{ getLevelLabel(item.level) }}</td>
                 <td>
                   <span :class="['status-badge', item.status.replace(' ', '-')]">
                     {{ $t(`tasks.${item.status.replace(' ', '_')}`) }}
@@ -303,6 +316,7 @@
               <div class="info-grid">
                 <div class="info-item"><strong>{{ $t('tasks.project') }}:</strong> {{ item.project }}</div>
                 <div class="info-item"><strong>{{ $t('tasks.assignee') }}:</strong> {{ item.assignee?.name || '-' }}</div>
+                <div class="info-item"><strong>{{ $t('tasks.level') }}:</strong> <span :class="['level-text', getLevelClass(item.level)]">{{ getLevelLabel(item.level) }}</span></div>
                 <div class="info-item"><strong>{{ $t('tasks.reviewer') }}:</strong> {{ item.reviewer?.name || '-' }}</div>
               </div>
             </div>
@@ -375,6 +389,16 @@
             />
             <BaseInput v-model="form.item" :label="$t('tasks.item')" placeholder="E.g. 技術" :error="errors.item" />
             <BaseInput 
+              v-model="form.level" 
+              :label="$t('tasks.level')" 
+              type="select" 
+              :options="[
+                { label: $t('tasks.ordinary'), value: 1 },
+                { label: $t('tasks.important'), value: 2 },
+                { label: $t('tasks.priority'), value: 3 }
+              ]" 
+            />
+            <BaseInput 
               v-model="form.department" 
               :label="$t('tasks.department')" 
               type="select" 
@@ -440,7 +464,11 @@
           </div>
           <div class="detail-item">
               <label>{{ $t('tasks.level') }}</label>
-              <div class="value">{{ selectedTask?.level }}</div>
+              <div class="value">
+                <span :class="['level-badge', getLevelClass(selectedTask?.level || 1)]">
+                  {{ getLevelLabel(selectedTask?.level || 1) }}
+                </span>
+              </div>
           </div>
           <div class="detail-item">
             <label>{{ $t('tasks.project') }}</label>
@@ -682,6 +710,29 @@ definePageMeta({
 const { token, user } = useAuth() // Assume user is available from useAuth
 const { t } = useI18n()
 const toast = useToast()
+import draggable from 'vuedraggable'
+
+const handleReorder = async () => {
+  if (!tasks.value) return
+  
+  try {
+    const taskIds = tasks.value.map(t => t.id)
+    await $fetch(`${apiBase}/api/tasks/reorder`, {
+      method: 'POST',
+      body: { task_ids: taskIds },
+      headers: {
+        Authorization: `Bearer ${token.value}`,
+        Accept: 'application/json'
+      }
+    })
+    toast.success(t('tasks.reordered') || 'Tasks reordered successfully')
+    await refresh()
+  } catch (err: any) {
+    console.error('Failed to reorder tasks:', err)
+    toast.error('Failed to reorder tasks')
+    refresh() // Revert to server state if failed
+  }
+}
 const config = useRuntimeConfig()
 const apiBase = (config.public.apiBase as string) || ''
 const showCreateModal = ref(false)
@@ -805,13 +856,27 @@ const fetchParams = computed(() => {
   return params
 })
 
-const { data: tasks, pending, error, refresh } = await useFetch<Task[]>(`${apiBase}/api/tasks`, {
+const { data: tasksData, pending, error, refresh } = await useFetch<Task[]>(`${apiBase}/api/tasks`, {
   headers: {
     Authorization: `Bearer ${token.value}`,
     Accept: 'application/json'
   },
   query: fetchParams
 })
+
+// Use a local ref to manage tasks for draggable to ensure reactivity and persistence
+const tasks = ref<Task[]>([])
+watch(tasksData, (newVal) => {
+  if (newVal) {
+    tasks.value = [...newVal]
+  }
+}, { immediate: true })
+
+const canDrag = computed(() => !isCompletedMode.value && !searchQuery.value && sortField.value === 'id' && sortOrderRegular.value === 'desc')
+
+// draggableTasks is now no longer needed as we use tasks ref directly
+// But we keep the name if already used in template or just use tasks.value
+// Actually I'll keep the tasks ref as the source of truth for the table.
 
 const selectedTask = computed(() => {
   if (!currentTaskId.value) return null
@@ -906,6 +971,19 @@ const formatDate = (dateStr: string | null | undefined) => {
   } catch (e) {
     return dateStr
   }
+}
+
+const getLevelLabel = (level: number) => {
+  if (level === 1) return t('tasks.ordinary')
+  if (level === 2) return t('tasks.important')
+  if (level === 3) return t('tasks.priority')
+  return level
+}
+
+const getLevelClass = (level: number) => {
+  if (level === 2) return 'level-yellow'
+  if (level === 3) return 'level-red'
+  return ''
 }
 
 const openDetails = (task: Task) => {
@@ -1439,6 +1517,28 @@ const handleCreate = async () => {
   gap: 4px;
 }
 
+.drag-handle {
+  cursor: grab;
+  color: #9ca3af;
+  font-size: 1.2rem;
+  user-select: none;
+  text-align: center !important;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.sortable-ghost {
+  opacity: 0.5;
+  background: #f3f4f6 !important;
+}
+
+.dragging-disabled .drag-handle {
+  cursor: not-allowed;
+  opacity: 0.3;
+}
+
 .memo-item {
   background: #f3f4f6;
   padding: 4px 8px;
@@ -1855,5 +1955,41 @@ const handleCreate = async () => {
   outline: none;
   border-color: #667eea;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Level Colors */
+.task-table td.level-yellow {
+  background-color: #ffff00 !important; /* Pure yellow */
+  color: #000 !important;
+  font-weight: 600;
+}
+
+.task-table td.level-red {
+  background-color: #ff0000 !important; /* Pure red */
+  color: #fff !important;
+  font-weight: 600;
+}
+
+.level-text.level-yellow {
+  color: #b45309; /* Deep amber for text */
+  font-weight: bold;
+}
+.level-text.level-red {
+  color: #dc2626; /* Red for text */
+  font-weight: bold;
+}
+
+.level-badge {
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  font-weight: 600;
+}
+.level-badge.level-yellow {
+  background-color: #ffff00;
+  color: #000;
+}
+.level-badge.level-red {
+  background-color: #ff0000;
+  color: #fff;
 }
 </style>

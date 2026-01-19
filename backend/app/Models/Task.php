@@ -35,6 +35,7 @@ class Task extends Model
         'actual_finish_date',
         'output_url',
         'memo',
+        'sort_order',
         'review_status',
         'reviewed_by',
         'reviewed_at',
@@ -52,6 +53,7 @@ class Task extends Model
         'failed_at' => 'datetime',
         'points' => 'float',
         'level' => 'integer',
+        'sort_order' => 'integer',
         'user_id' => 'integer',
         'reviewed_by' => 'integer',
     ];

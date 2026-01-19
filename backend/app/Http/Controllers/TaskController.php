@@ -61,10 +61,15 @@ class TaskController extends Controller
             'actual_finish_date'
         ];
 
-        if (in_array($sortField, $allowedSortFields)) {
+        if ($sortField === 'id') {
+            $query->orderBy('sort_order', $sortOrder)
+                ->orderBy('id', $sortOrder);
+        } elseif (in_array($sortField, $allowedSortFields)) {
             $query->orderBy($sortField, $sortOrder);
         } else {
-            $query->orderBy('id', 'desc');
+            // Default fallback
+            $query->orderBy('sort_order', 'desc')
+                ->orderBy('id', 'desc');
         }
 
         return response()->json($query->get());
@@ -101,6 +106,9 @@ class TaskController extends Controller
         if (isset($validated['points'])) {
             $validated['points'] = round($validated['points'] * 2) / 2;
         }
+
+        $maxSortOrder = Task::max('sort_order') ?? 0;
+        $validated['sort_order'] = $maxSortOrder + 1;
 
         $task = Task::create($validated);
 
@@ -540,5 +548,23 @@ class TaskController extends Controller
         } catch (\Exception $e) {
             return null;
         }
+    }
+    public function reorder(Request $request)
+    {
+        $request->validate([
+            'task_ids' => 'required|array',
+            'task_ids.*' => 'exists:tasks,id',
+        ]);
+
+        $taskIds = $request->input('task_ids');
+        $count = count($taskIds);
+
+        foreach ($taskIds as $index => $id) {
+            // We want the first item in the list to have the highest sort_order 
+            // because we sort by sort_order desc
+            Task::where('id', $id)->update(['sort_order' => $count - $index]);
+        }
+
+        return response()->json(['message' => 'Tasks reordered successfully']);
     }
 }

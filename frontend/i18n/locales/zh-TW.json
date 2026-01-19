@@ -116,7 +116,7 @@
         "title": "任務",
         "addTask": "添加任務",
         "idx": "編號",
-        "level": "類別",
+        "level": "級別",
         "status": "狀態",
         "assignee": "執行人員",
         "relatedPersonnel": "相關人員",
@@ -136,7 +136,7 @@
         "creating": "建立中...",
         "ordinary": "一般",
         "important": "重要",
-        "priority": "最優先",
+        "priority": "優先",
         "idle": "閒置",
         "waiting_qa": "待測試",
         "miss": "未達成",
@@ -172,7 +172,7 @@
         "searchPlaceholder": "搜尋任務...",
         "sortBy": "排序方式",
         "sortById": "按編號",
-        "sortByLevel": "按類別",
+        "sortByLevel": "按級別",
         "sortByStatus": "按狀態",
         "sortByProject": "按專案",
         "sortByDepartment": "按部門",
@@ -197,7 +197,8 @@
         "selectFile": "選擇檔案",
         "revertToUnsubmitted": "退回未送審",
         "confirmRevert": "確定要將此任務退回未送審並改為執行中狀態嗎？",
-        "revertSuccess": "任務已成功退回"
+        "revertSuccess": "任務已成功退回",
+        "reordered": "任務排序已更新"
     },
     "profile": {
         "title": "個人設定",

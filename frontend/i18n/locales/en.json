@@ -116,7 +116,7 @@
         "title": "Tasks",
         "addTask": "Add Task",
         "idx": "IDX",
-        "level": "Category",
+        "level": "Level",
         "status": "Status",
         "assignee": "Assignee",
         "relatedPersonnel": "Related Personnel",
@@ -197,7 +197,8 @@
         "selectFile": "Select File",
         "revertToUnsubmitted": "Revert to Unsubmitted",
         "confirmRevert": "Are you sure you want to revert this task to unsubmitted and change its status to working?",
-        "revertSuccess": "Task reverted successfully"
+        "revertSuccess": "Task reverted successfully",
+        "reordered": "Tasks reordered successfully"
     },
     "profile": {
         "title": "Profile Settings",
