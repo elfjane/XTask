@@ -194,7 +194,10 @@
         "importSuccess": "成功匯入 {count} 筆任務",
         "importFailed": "匯入失敗: {message}",
         "uploading": "上傳中...",
-        "selectFile": "選擇檔案"
+        "selectFile": "選擇檔案",
+        "revertToUnsubmitted": "退回未送審",
+        "confirmRevert": "確定要將此任務退回未送審並改為執行中狀態嗎？",
+        "revertSuccess": "任務已成功退回"
     },
     "profile": {
         "title": "個人設定",

@@ -2,10 +2,13 @@
 
 All notable changes to the XTask project will be documented in this file.
 
-## [2026-01-19] - Completed Tasks Filter Optimization
+## [2026-01-19] - Completed Tasks Management Enhancement
+- **New Feature**: 
+  - Administrators and Auditors can now revert completed or failed tasks back to "Unsubmitted" and "Working" status from the Completed Tasks page.
+  - This allows for corrections when work needs further refinement after initial approval.
 - **Backend Improvements**:
+  - Reverted tasks now have their review metadata (timestamps and reviewer ID) cleared automatically.
   - Refined the "Completed Tasks" list to strictly exclude tasks that are "Under Review" (`submitted`).
-  - Tasks now only appear in the completed list if they are `approved` or `finished` without a pending review.
   - Applied the same logic to task statistics to ensure point calculations only include finalized work.
 
 ## [2026-01-14 17:15] - Task Status Quick Switch

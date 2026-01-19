@@ -187,6 +187,17 @@ class TaskController extends Controller
                     $validated['approved_at'] = null; // Clear approved timestamp if exists
                     $validated['status'] = 'failed';
                 }
+            } elseif ($newReviewStatus === 'unsubmitted' && $oldReviewStatus !== 'unsubmitted') {
+                // Return to unsubmitted: clear all review tracking info
+                $validated['reviewed_by'] = null;
+                $validated['reviewed_at'] = null;
+                $validated['approved_at'] = null;
+                $validated['failed_at'] = null;
+
+                // If the requester explicitly asked to return to uncompleted state
+                // (usually handled by the frontend sending status together)
+                // We don't automatically override status here unless requested, 
+                // but the user's intent is "return to uncompleted".
             }
         }
 

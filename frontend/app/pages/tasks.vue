@@ -655,6 +655,9 @@
         </template>
         <template v-else>
           <button v-if="!isEditingTasks" @click="showDetailsModal = false" class="btn-secondary">{{ $t('schedules.cancel') }}</button>
+          <button v-if="!isEditingTasks && (isAuditor || user?.role === 'admin')" @click="handleRevert" class="btn-danger" style="background: #f59e0b; color: white;">
+            {{ $t('tasks.revertToUnsubmitted') || '退回未送審' }}
+          </button>
           <button v-if="!isEditingTasks" @click="startEditingTask" class="btn-primary">{{ $t('schedules.edit') }}</button>
           
           <button v-if="isEditingTasks" @click="isEditingTasks = false" class="btn-secondary">{{ $t('schedules.cancel') }}</button>
@@ -807,8 +810,10 @@ const { data: tasks, pending, error, refresh } = await useFetch<Task[]>(`${apiBa
 })
 
 const selectedTask = computed(() => {
-  if (!currentTaskId.value || !tasks.value) return null
-  return tasks.value.find(t => t.id === currentTaskId.value) || null
+  if (!currentTaskId.value) return null
+  const regularTask = tasks.value?.find(t => t.id === currentTaskId.value)
+  if (regularTask) return regularTask
+  return completedTasks.value?.find(t => t.id === currentTaskId.value) || null
 })
 
 const { data: users } = await useFetch<any[]>(`${apiBase}/api/users`, {
@@ -963,9 +968,6 @@ const handleReview = async (action: 'approved' | 'failed') => {
   updatingTasks.value = true
   try {
     const payload:any = { review_status: action }
-    // If failed, also set status to failed (or matching logic)
-    // The backend logic says: if review_status=failed, status=failed.
-    // So sending review_status=failed is enough.
     
     await $fetch(`${apiBase}/api/tasks/${selectedTask.value.id}`, {
       method: 'PUT',
@@ -984,6 +986,41 @@ const handleReview = async (action: 'approved' | 'failed') => {
       console.error('Failed to review task:', err)
       toast.error('Failed to review task')
     }
+  } finally {
+    updatingTasks.value = false
+  }
+}
+
+const handleRevert = async () => {
+  if (!selectedTask.value) return
+  if (!confirm(t('tasks.confirmRevert') || 'Are you sure you want to revert this task to unsubmitted and in-progress status?')) return
+  
+  updatingTasks.value = true
+  try {
+    const payload = { 
+      review_status: 'unsubmitted',
+      status: 'working' // Return to working/in-progress
+    }
+    
+    await $fetch(`${apiBase}/api/tasks/${selectedTask.value.id}`, {
+      method: 'PUT',
+      body: payload,
+      headers: {
+        Authorization: `Bearer ${token.value}`,
+        Accept: 'application/json'
+      }
+    })
+    
+    // Refresh both lists to be sure
+    await refresh()
+    if (isCompletedMode.value) {
+      await fetchCompletedTasks()
+    }
+    showDetailsModal.value = false
+    toast.success(t('tasks.revertSuccess') || 'Task reverted successfully.')
+  } catch (err: any) {
+    console.error('Failed to revert task:', err)
+    toast.error(err.data?.message || 'Failed to revert task.')
   } finally {
     updatingTasks.value = false
   }

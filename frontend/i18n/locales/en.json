@@ -194,7 +194,10 @@
         "importSuccess": "Successfully imported {count} tasks",
         "importFailed": "Import failed: {message}",
         "uploading": "Uploading...",
-        "selectFile": "Select File"
+        "selectFile": "Select File",
+        "revertToUnsubmitted": "Revert to Unsubmitted",
+        "confirmRevert": "Are you sure you want to revert this task to unsubmitted and change its status to working?",
+        "revertSuccess": "Task reverted successfully"
     },
     "profile": {
         "title": "Profile Settings",
