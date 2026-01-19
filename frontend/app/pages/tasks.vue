@@ -132,7 +132,7 @@
                     </select>
                   </div>
                   <div v-else class="user-info">
-                    <img v-if="item.assignee" :src="item.assignee.photo_url || 'https://ui-avatars.com/api/?name=' + item.assignee.name" class="avatar" />
+                    <img v-if="item.assignee" :src="getAvatarUrl(item.assignee)" class="avatar" />
                     {{ item.assignee?.name || '-' }}
                   </div>
                 </td>
@@ -259,7 +259,7 @@
                 </td>
                 <td>
                   <div class="user-info">
-                    <img v-if="item.assignee" :src="item.assignee.photo_url || 'https://ui-avatars.com/api/?name=' + item.assignee.name" class="avatar" />
+                    <img v-if="item.assignee" :src="getAvatarUrl(item.assignee)" class="avatar" />
                     {{ item.assignee?.name || '-' }}
                   </div>
                 </td>
@@ -710,6 +710,7 @@ definePageMeta({
 const { token, user } = useAuth() // Assume user is available from useAuth
 const { t } = useI18n()
 const toast = useToast()
+const { getAvatarUrl } = useAvatar()
 import draggable from 'vuedraggable'
 
 const handleReorder = async () => {

@@ -22,6 +22,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('profile')->group(function () {
         Route::get('/', [ProfileController::class, 'show']);
         Route::put('/', [ProfileController::class, 'update']);
+        Route::post('/avatar', [ProfileController::class, 'uploadAvatar']);
     });
 
     Route::apiResource('schedules', ScheduleController::class)->only(['index', 'store', 'show', 'update']);

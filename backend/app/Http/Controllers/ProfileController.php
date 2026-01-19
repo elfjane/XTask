@@ -46,4 +46,33 @@ class ProfileController extends Controller
 
         return response()->json($user);
     }
+    public function uploadAvatar(Request $request)
+    {
+        $request->validate([
+            'avatar' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $user = $request->user();
+
+        if ($request->file('avatar')) {
+            // Delete old avatar if exists and is local
+            if ($user->photo_url && str_contains($user->photo_url, '/storage/avatars/')) {
+                $oldPath = str_replace('/storage/', 'public/', parse_url($user->photo_url, PHP_URL_PATH));
+                \Illuminate\Support\Facades\Storage::delete($oldPath);
+            }
+
+            $path = $request->file('avatar')->store('public/avatars');
+            $url = \Illuminate\Support\Facades\Storage::url($path);
+
+            $user->photo_url = $url;
+            $user->save();
+
+            return response()->json([
+                'message' => 'Avatar updated successfully',
+                'photo_url' => $url
+            ]);
+        }
+
+        return response()->json(['message' => 'No file uploaded'], 400);
+    }
 }

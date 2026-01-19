@@ -210,6 +210,10 @@
         "newPassword": "New Password",
         "confirmNewPassword": "Confirm New Password",
         "updatePassword": "Update Password",
+        "avatar": "Profile Picture",
+        "uploadAvatar": "Upload Picture",
+        "cropAvatar": "Crop Picture",
+        "avatarSuccess": "Profile picture updated successfully",
         "successMessage": "Profile updated successfully"
     }
 }

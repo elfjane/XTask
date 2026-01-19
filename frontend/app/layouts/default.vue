@@ -36,13 +36,13 @@
             <!-- User Menu -->
             <div class="user-menu-root" v-click-outside="closeDropdown">
               <button @click="toggleDropdown" class="avatar-trigger">
-                <img :src="user.photo_url || 'https://ui-avatars.com/api/?name=' + user.name" :alt="user.name" class="avatar-small" />
+                <img :src="getAvatarUrl(user)" :alt="user.name" class="avatar-small" />
               </button>
 
               <Transition name="dropdown">
                 <div v-if="isDropdownOpen" class="dropdown-menu">
                   <div class="dropdown-header">
-                    <img :src="user.photo_url || 'https://ui-avatars.com/api/?name=' + user.name" :alt="user.name" class="avatar-large" />
+                    <img :src="getAvatarUrl(user)" :alt="user.name" class="avatar-large" />
                     <div class="user-info">
                       <span class="name">{{ user.name }}</span>
                       <span class="role-title">{{ $t('common.roles.' + user.role) }}</span>
@@ -84,6 +84,7 @@
 <script setup lang="ts">
 const { user, logout, can } = useAuth()
 const { locale, locales, setLocale } = useI18n()
+const { getAvatarUrl } = useAvatar()
 
 // User Dropdown
 const isDropdownOpen = ref(false)

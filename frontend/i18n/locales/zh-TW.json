@@ -210,6 +210,10 @@
         "newPassword": "新密碼",
         "confirmNewPassword": "確認新密碼",
         "updatePassword": "更新密碼",
+        "avatar": "大頭照",
+        "uploadAvatar": "上傳大頭照",
+        "cropAvatar": "裁剪大頭照",
+        "avatarSuccess": "大頭照更新成功",
         "successMessage": "個人資料更新成功"
     }
 }
