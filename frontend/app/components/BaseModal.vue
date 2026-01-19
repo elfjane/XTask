@@ -39,73 +39,86 @@ defineOptions({
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(8px);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  padding: 20px; /* Leave space around modal */
+  padding: 20px;
 }
 
 .modal-content {
-  background: white;
-  border-radius: 16px;
+  background: var(--surface-primary);
+  border-radius: 20px;
   width: 90%;
   max-width: 500px;
-  max-height: calc(100% - 40px); /* Fill screen but leave padding */
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  max-height: calc(100% - 40px);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  border: 1px solid var(--border-color);
 }
 
 .modal-header {
-  padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid #f3f4f6;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-shrink: 0; /* Header won't shrink */
+  flex-shrink: 0;
 }
 
 .modal-header h3 {
   margin: 0;
   font-size: 1.25rem;
-  color: #111827;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.025em;
 }
 
 .close-btn {
-  background: none;
+  background: var(--bg-primary);
   border: none;
-  font-size: 1.5rem;
-  color: #9ca3af;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  color: var(--text-muted);
   cursor: pointer;
-  transition: color 0.2s;
+  transition: all 0.2s;
 }
 
 .close-btn:hover {
-  color: #374151;
+  background: #fee2e2;
+  color: var(--accent-red);
+  transform: rotate(90deg);
 }
 
 .modal-body {
   padding: 1.5rem;
   overflow-y: auto;
-  flex: 1; /* Take remaining space and scroll */
+  flex: 1;
+  color: var(--text-secondary);
+  line-height: 1.6;
 }
 
 .modal-footer {
   padding: 1.25rem 1.5rem;
-  background: #f9fafb;
-  border-top: 1px solid #f3f4f6;
+  background: var(--bg-primary);
+  border-top: 1px solid var(--border-color);
   display: flex;
   justify-content: flex-end;
   gap: 0.75rem;
-  flex-shrink: 0; /* Footer won't shrink */
+  flex-shrink: 0;
 }
 
 .fade-enter-active, .fade-leave-active {
-  transition: opacity 0.3s ease;
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .fade-enter-from, .fade-leave-to {

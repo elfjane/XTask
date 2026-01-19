@@ -15,23 +15,6 @@
         </div>
 
         <div class="navbar-right">
-          <!-- Language Switcher -->
-          <div class="language-switcher">
-            <ClientOnly>
-              <span class="lang-label">{{ $t('common.language') }}:</span>
-            </ClientOnly>
-            <button 
-              v-for="loc in locales" 
-              :key="loc.code"
-              @click="setLocale(loc.code)"
-              :class="['lang-btn', { active: locale === loc.code }]"
-              :title="loc.name"
-            >
-              <span class="lang-icon">{{ loc.icon }}</span>
-              <span class="lang-name">{{ loc.name }}</span>
-            </button>
-          </div>
-
           <template v-if="user">
             <!-- User Menu -->
             <div class="user-menu-root" v-click-outside="closeDropdown">
@@ -48,7 +31,37 @@
                       <span class="role-title">{{ $t('common.roles.' + user.role) }}</span>
                     </div>
                   </div>
+                  
                   <div class="dropdown-divider"></div>
+                  
+                  <!-- Preference Section -->
+                  <div class="dropdown-items section-title">{{ $t('common.preferences') }}</div>
+                  <div class="dropdown-items">
+                    <!-- Theme Toggle as Dropdown Item -->
+                    <button @click="toggleTheme" class="dropdown-item">
+                      <span class="icon">{{ isDark ? '☀️' : '🌙' }}</span>
+                      {{ isDark ? $t('common.lightMode') : $t('common.darkMode') }}
+                    </button>
+                    
+                    <!-- Language Selector in Dropdown -->
+                    <div class="dropdown-sub-items">
+                      <div class="dropdown-item disabled">
+                        <span class="icon">🌍</span> {{ $t('common.language') }} ➔
+                      </div>
+                      <button 
+                        v-for="loc in locales" 
+                        :key="loc.code"
+                        @click="setLocale(loc.code)"
+                        :class="['dropdown-item', 'sub', { active: locale === loc.code }]"
+                      >
+                        <span class="icon">{{ loc.icon }}</span>
+                        {{ loc.name }}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="dropdown-divider"></div>
+
                   <div class="dropdown-items">
                     <NuxtLink to="/profile" class="dropdown-item" @click="closeDropdown">
                       <span class="icon">👤</span> {{ $t('common.profile') }}
@@ -65,7 +78,20 @@
             </div>
           </template>
           <template v-else>
-            <NuxtLink to="/login" class="login-link">{{ $t('common.login') }}</NuxtLink>
+            <div class="navbar-guest-actions">
+              <!-- Quick Language for Guest -->
+              <div class="mini-lang-switcher">
+                <button 
+                  v-for="loc in locales" 
+                  :key="loc.code"
+                  @click="setLocale(loc.code)"
+                  :class="['mini-lang-btn', { active: locale === loc.code }]"
+                >
+                  {{ loc.icon }}
+                </button>
+              </div>
+              <NuxtLink to="/login" class="login-link">{{ $t('common.login') }}</NuxtLink>
+            </div>
           </template>
         </div>
       </div>
@@ -85,6 +111,7 @@
 const { user, logout, can } = useAuth()
 const { locale, locales, setLocale } = useI18n()
 const { getAvatarUrl } = useAvatar()
+const { isDark, toggleTheme } = useTheme()
 
 // User Dropdown
 const isDropdownOpen = ref(false)
@@ -119,9 +146,9 @@ const vClickOutside = {
 
 <style scoped>
 .navbar {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-color);
   padding: 0.75rem 0;
   position: sticky;
   top: 0;
@@ -165,16 +192,17 @@ const vClickOutside = {
 .brand {
   font-size: 1.5rem;
   font-weight: 800;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   text-decoration: none;
+  letter-spacing: -0.025em;
 }
 
 .nav-link {
   text-decoration: none;
-  color: #666;
+  color: var(--text-secondary);
   font-weight: 600;
   font-size: 1rem;
   transition: all 0.2s;
@@ -189,12 +217,12 @@ const vClickOutside = {
   left: 0;
   width: 0;
   height: 2px;
-  background: #764ba2;
+  background: var(--brand-primary);
   transition: width 0.3s;
 }
 
 .nav-link:hover, .nav-link.router-link-active {
-  color: #764ba2;
+  color: var(--brand-primary);
 }
 
 .nav-link.router-link-active:after {
@@ -203,71 +231,87 @@ const vClickOutside = {
 
 
 .login-link {
-  background: #764ba2;
+  background: var(--brand-primary);
   color: white !important;
   padding: 8px 20px;
-  border-radius: 8px;
+  border-radius: 10px;
   font-weight: 600;
+  box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.2);
 }
 
 /* Language Switcher */
-.language-switcher {
+.navbar-guest-actions {
   display: flex;
   align-items: center;
+  gap: 1.5rem;
+}
+
+.mini-lang-switcher {
+  display: flex;
   gap: 0.5rem;
-  margin-right: 1.5rem;
-  background: #f8faff;
+  background: var(--bg-secondary);
   padding: 4px;
   border-radius: 10px;
 }
 
-.lang-label {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #94a3b8;
-  margin: 0 0.5rem;
-  text-transform: uppercase;
-}
-
-.lang-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+.mini-lang-btn {
   background: transparent;
   border: none;
-  padding: 6px 12px;
-  border-radius: 8px;
   cursor: pointer;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #64748b;
+  padding: 4px 8px;
+  border-radius: 6px;
   transition: all 0.2s;
-}
-
-.lang-btn:hover {
-  background: rgba(255, 255, 255, 0.8);
-  color: #764ba2;
-}
-
-.lang-btn.active {
-  background: white;
-  color: #764ba2;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-}
-
-.lang-icon {
   font-size: 1.1rem;
 }
 
+.mini-lang-btn.active {
+  background: var(--surface-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.mini-lang-btn:hover:not(.active) {
+  background: rgba(0,0,0,0.05);
+}
+
 @media (max-width: 640px) {
-  .lang-name, .lang-label {
+  .navbar-center {
     display: none;
-  }
-  .language-switcher {
-    margin-right: 0.5rem;
   }
 }
 
+.section-title {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.75rem 1rem 0.25rem 1.25rem !important;
+}
+
+.dropdown-sub-items {
+  padding-left: 0.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdown-item.sub {
+  padding-left: 2.5rem;
+  font-size: 0.85rem;
+}
+
+.dropdown-item.disabled {
+  cursor: default;
+  color: var(--text-muted);
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.dropdown-item.active {
+  border: 1px solid var(--brand-primary);
+  background: var(--bg-primary);
+  color: var(--brand-primary);
+  box-shadow: var(--shadow-sm);
+}
 
 /* User Menu */
 .user-menu-root {
@@ -290,7 +334,7 @@ const vClickOutside = {
 
 .avatar-trigger:hover {
   transform: scale(1.05);
-  border-color: #764ba2;
+  border-color: var(--brand-primary);
 }
 
 .avatar-small {
@@ -298,7 +342,7 @@ const vClickOutside = {
   height: 40px;
   border-radius: 50%;
   object-fit: cover;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: var(--shadow-sm);
 }
 
 .dropdown-menu {
@@ -306,10 +350,10 @@ const vClickOutside = {
   top: calc(100% + 12px);
   right: 0;
   width: 260px;
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-  border: 1px solid rgba(0,0,0,0.05);
+  background: var(--surface-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-color);
   overflow: hidden;
   z-index: 1000;
 }
@@ -320,7 +364,7 @@ const vClickOutside = {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  background: linear-gradient(to bottom, #f8f9ff, white);
+  background: linear-gradient(to bottom, var(--bg-primary), white);
 }
 
 .avatar-large {
@@ -329,7 +373,7 @@ const vClickOutside = {
   border-radius: 50%;
   object-fit: cover;
   margin-bottom: 1rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: var(--shadow-md);
   border: 3px solid white;
 }
 
@@ -341,18 +385,18 @@ const vClickOutside = {
 .user-info .name {
   font-weight: 700;
   font-size: 1.1rem;
-  color: #111;
+  color: var(--text-primary);
 }
 
-.user-info .title {
+.user-info .role-title {
   font-size: 0.85rem;
-  color: #666;
+  color: var(--text-secondary);
   margin-top: 2px;
 }
 
 .dropdown-divider {
   height: 1px;
-  background: #eee;
+  background: var(--border-color);
 }
 
 .dropdown-items {
@@ -366,8 +410,8 @@ const vClickOutside = {
   padding: 10px 1rem;
   border: none;
   background: none;
-  border-radius: 8px;
-  color: #444;
+  border-radius: 10px;
+  color: var(--text-secondary);
   font-size: 0.95rem;
   font-weight: 500;
   cursor: pointer;
@@ -378,13 +422,13 @@ const vClickOutside = {
 }
 
 .dropdown-item:hover {
-  background: #f5f7ff;
-  color: #764ba2;
+  background: var(--bg-primary);
+  color: var(--brand-primary);
 }
 
 .dropdown-item.logout:hover {
-  background: #fff5f5;
-  color: #ff4d4f;
+  background: #fef2f2;
+  color: var(--accent-red);
 }
 
 .icon {

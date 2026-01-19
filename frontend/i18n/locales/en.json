@@ -23,7 +23,11 @@
             "executor": "Task Executor",
             "auditor": "Auditor"
         },
-        "unauthorizedAction": "You are not authorized to perform this action"
+        "unauthorizedAction": "You are not authorized to perform this action",
+        "preferences": "Preferences",
+        "lightMode": "Light Mode",
+        "darkMode": "Dark Mode",
+        "theme": "Theme"
     },
     "validation": {
         "required": "The {field} field is required.",

@@ -71,26 +71,28 @@ label {
   gap: 8px;
   font-size: 0.875rem;
   font-weight: 600;
-  color: #374151;
+  color: var(--text-secondary);
   margin-bottom: 0.5rem;
 }
 
 .required-badge {
   font-size: 0.7rem;
-  background-color: #fee2e2;
-  color: #ef4444;
+  background-color: #fef2f2;
+  color: var(--accent-red);
   padding: 1px 6px;
   border-radius: 4px;
-  font-weight: normal;
+  font-weight: 600;
+  border: 1px solid #fee2e2;
 }
 
 .markdown-badge {
   font-size: 0.7rem;
-  background-color: #e0e7ff;
-  color: #4338ca;
+  background-color: #eef2ff;
+  color: var(--brand-primary);
   padding: 1px 6px;
   border-radius: 4px;
-  font-weight: normal;
+  font-weight: 600;
+  border: 1px solid #e0e7ff;
 }
 
 .input-wrapper {
@@ -99,40 +101,48 @@ label {
 
 input, textarea, select {
   width: 100%;
-  padding: 0.625rem 0.875rem;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  font-size: 0.9rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   outline: none;
-  background: #fff;
+  background: var(--surface-primary);
+  color: var(--text-primary);
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--text-muted);
 }
 
 input:focus, textarea:focus, select:focus {
-  border-color: #6366f1;
+  border-color: var(--brand-primary);
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  background: white;
 }
 
 .is-required input:not(:focus):placeholder-shown,
 .is-required textarea:not(:focus):placeholder-shown,
 .is-required select:not(:focus):invalid {
-  background-color: #fffafb;
+  background-color: #fcfdfe;
 }
 
 input.error, textarea.error, select.error {
-  border-color: #ef4444;
-  background-color: #fff5f5;
+  border-color: var(--accent-red);
+  background-color: #fef2f2;
 }
 
 .error-msg {
   display: block;
   font-size: 0.75rem;
-  color: #ef4444;
+  color: var(--accent-red);
   margin-top: 0.25rem;
+  font-weight: 500;
 }
 
 textarea {
-  min-height: 100px;
+  min-height: 120px;
   resize: vertical;
+  line-height: 1.6;
 }
 </style>

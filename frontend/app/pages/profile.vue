@@ -336,43 +336,47 @@ const handleChangePassword = async () => {
 </script>
 
 <style scoped>
-.profile-page {
-  padding: 1rem 0;
+.page-container {
+  max-width: 1000px;
+  margin: 0 auto;
 }
 
 .page-header {
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
+  text-align: center;
 }
 
 .page-header h1 {
   font-size: 2rem;
   font-weight: 800;
-  color: #1a202c;
+  color: var(--text-primary);
+  letter-spacing: -0.025em;
 }
 
 .content-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 2rem;
 }
 
 .card {
-  background: white;
-  border-radius: 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  background: var(--surface-primary);
+  border-radius: 24px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-color);
   overflow: hidden;
 }
 
 .card-header {
-  background: #f8fafc;
-  padding: 1.5rem;
-  border-bottom: 1px solid #edf2f7;
+  background: linear-gradient(to right, var(--bg-primary), white);
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .card-header h2 {
   margin: 0;
   font-size: 1.25rem;
-  color: #2d3748;
+  color: var(--text-primary);
   font-weight: 700;
 }
 
@@ -388,18 +392,18 @@ const handleChangePassword = async () => {
 
 .avatar-container {
   position: relative;
-  width: 120px;
-  height: 120px;
+  width: 140px;
+  height: 140px;
 }
 
 .avatar-large {
-  width: 120px;
-  height: 120px;
+  width: 140px;
+  height: 140px;
   border-radius: 50%;
   object-fit: cover;
-  border: 4px solid #fff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
+  border: 4px solid white;
+  box-shadow: var(--shadow-md);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .avatar-overlay {
@@ -409,18 +413,19 @@ const handleChangePassword = async () => {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: all 0.3s ease;
   cursor: pointer;
-  font-size: 0.8rem;
-  font-weight: 600;
+  font-size: 0.85rem;
+  font-weight: 700;
   text-align: center;
-  padding: 10px;
+  padding: 20px;
 }
 
 .avatar-container:hover .avatar-overlay {
@@ -428,30 +433,32 @@ const handleChangePassword = async () => {
 }
 
 .avatar-container:hover .avatar-large {
-  transform: scale(1.02);
+  transform: scale(1.05);
 }
 
 .cropper-wrapper {
   width: 100%;
   height: 400px;
-  background: #000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.cropper {
-  width: 100%;
-  height: 100%;
+  background: #0f172a;
+  border-radius: 12px;
+  overflow: hidden;
 }
 
 .btn-secondary {
   padding: 0.8rem 1.5rem;
-  background: #f3f4f6;
-  border: 1px solid #d1d5db;
-  border-radius: 10px;
-  color: #4b5563;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  color: var(--text-secondary);
+  font-weight: 600;
   cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  background: white;
+  border-color: var(--brand-primary);
+  color: var(--brand-primary);
 }
 
 .form-group {
@@ -466,74 +473,72 @@ label {
   font-size: 0.9rem;
 }
 
-.form-control {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  border: 2px solid #e2e8f0;
-  border-radius: 10px;
-  font-size: 1rem;
-  transition: border-color 0.2s;
-  box-sizing: border-box;
-}
-
-.form-control:focus {
-  outline: none;
-  border-color: #667eea;
-}
-
 .form-actions {
   margin-top: 2rem;
 }
 
 .btn-primary {
   width: 100%;
-  padding: 0.8rem;
-  background: #667eea;
+  padding: 1rem;
+  background: var(--brand-primary);
   color: white;
   border: none;
-  border-radius: 10px;
-  font-weight: 600;
+  border-radius: 12px;
+  font-weight: 700;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s;
+  box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.2);
 }
 
 .btn-primary:hover {
-  background: #5a67d8;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3);
 }
 
 .btn-outline {
   width: 100%;
   padding: 0.8rem;
   background: transparent;
-  border: 2px solid #667eea;
-  color: #667eea;
-  border-radius: 10px;
-  font-weight: 600;
+  border: 2px solid var(--brand-primary);
+  color: var(--brand-primary);
+  border-radius: 12px;
+  font-weight: 700;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .btn-outline:hover {
-  background: #ebf4ff;
+  background: var(--bg-secondary);
 }
 
 .btn-primary:disabled, .btn-outline:disabled {
-  opacity: 0.7;
+  opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
 }
 
 .success-msg {
-  color: #38a169;
+  color: var(--accent-green);
+  background: #f0fdf4;
+  padding: 0.75rem;
+  border-radius: 10px;
+  border: 1px solid #dcfce7;
   text-align: center;
   margin-top: 1rem;
   font-size: 0.9rem;
+  font-weight: 600;
 }
 
 .error-msg {
-  color: #e53e3e;
+  color: var(--accent-red);
+  background: #fef2f2;
+  padding: 0.75rem;
+  border-radius: 10px;
+  border: 1px solid #fee2e2;
   text-align: center;
   margin-top: 1rem;
   font-size: 0.9rem;
+  font-weight: 600;
 }
 
 .language-options {
@@ -546,36 +551,54 @@ label {
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 1rem;
-  border: 2px solid #e2e8f0;
-  border-radius: 12px;
-  background: white;
+  padding: 1.25rem;
+  border: 2px solid var(--border-color);
+  border-radius: 16px;
+  background: var(--surface-primary);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   text-align: left;
 }
 
 .lang-btn:hover {
-  border-color: #667eea;
-  background: #f8fafc;
+  border-color: var(--brand-primary);
+  background: var(--bg-primary);
+  transform: translateX(4px);
 }
 
 .lang-btn.active {
-  border-color: #667eea;
-  background: #ebf4ff;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+  border-color: var(--brand-primary);
+  background: var(--bg-secondary);
+  box-shadow: var(--shadow-md);
 }
 
 .lang-btn .flag {
-  font-size: 1.5rem;
+  font-size: 1.75rem;
 }
 
 .lang-btn .name {
-  font-weight: 600;
-  color: #2d3748;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-size: 1rem;
 }
 
 .lang-btn.active .name {
-  color: #667eea;
+  color: var(--brand-primary);
+}
+
+/* Custom form-control for cases where BaseInput isn't used */
+.form-control {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--surface-primary);
+  transition: all 0.2s;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 </style>
