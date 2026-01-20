@@ -28,8 +28,17 @@ XTask/
 
 ### Docker 控制 (推薦)
 我們提供了便捷的腳本來切換環境：
-- **開發環境 (Dev)**: 執行 `manage_docker.bat dev` (Windows) 或 `docker-compose up -d --build`。支援 Hot Reload。
-- **生產環境 (Prod)**: 執行 `manage_docker.bat prod`。這會啟動「生產模式」的多階段編譯映像檔，將程式碼打包進容器中，安全性與效能更佳。
+- **開發環境 (Dev)**: 執行 `manage_docker.bat dev` (Windows) 或 `./manage_docker.sh dev` (Linux)。
+- **生產環境 (Prod)**: 執行 `manage_docker.bat prod` (Windows) 或 `./manage_docker.sh prod` (Linux)。
+
+**手動執行指令 (Linux):**
+```bash
+# 開發環境
+docker compose up -d --build
+
+# 生產環境
+docker compose -f docker-compose.prod.yml up -d --build
+```
 
 ## 自動化部署
 透過內建選單實現一鍵上傳至雲端伺服器：

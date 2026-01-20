@@ -17,3 +17,9 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+.config/
+.config/psysh
+node_modules/
+vendor/
+.git/
+
