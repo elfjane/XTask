@@ -71,7 +71,7 @@ if [ $? -ne 0 ]; then
 fi
 
 echo -e "${BLUE}=== [4/5] 遠端解壓與維護 (Remote Setup) ===${NC}"
-ssh -p "$SERVER_PORT" "$SERVER_USER@$SERVER_HOST" << EOF
+ssh -tt -p "$SERVER_PORT" "$SERVER_USER@$SERVER_HOST" << EOF
     echo "建立目錄: $REMOTE_PATH"
     mkdir -p "$REMOTE_PATH"
     
