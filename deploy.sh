@@ -79,27 +79,29 @@ ssh -tt -p "$SERVER_PORT" "$SERVER_USER@$SERVER_HOST" << EOF
     tar -xzf "/tmp/$ARCHIVE_NAME" -C "$REMOTE_PATH"
     rm "/tmp/$ARCHIVE_NAME"
     
-    # 後端維護
-    cd "$REMOTE_PATH/backend"
-    if [ -f "composer.json" ]; then
-        echo "執行 Composer Install..."
-        composer install --no-dev --optimize-autoloader --no-interaction
-        php artisan migrate --force
-        php artisan cache:clear
-        php artisan config:cache
-        php artisan route:cache
+    # 使用 Docker 進行部署維護
+    cd "$REMOTE_PATH"
+    if [ -f "docker-compose.prod.yml" ]; then
+        echo "正在啟動/更新 Docker 容器 (Production)..."
+        # 使用 sudo 如果需要的話，或是確保用戶在 docker 群組
+        docker compose -f docker-compose.prod.yml up -d --build
+        
+        echo "正在執行資料庫遷移 (Inside Container)..."
+        docker compose -f docker-compose.prod.yml exec -T backend php artisan migrate --force
+        
+        echo "正在清理並最佳化快取 (Inside Container)..."
+        docker compose -f docker-compose.prod.yml exec -T backend php artisan config:cache
+        docker compose -f docker-compose.prod.yml exec -T backend php artisan route:cache
+        docker compose -f docker-compose.prod.yml exec -T backend php artisan view:cache
+    else
+        echo "找不到 docker-compose.prod.yml，跳過 Docker 啟動。"
     fi
     
-    # 權限修正
+    # 權限修正 (針對掛載的 volumes 或 storage)
     echo "修正權限..."
     sudo chown -R www-data:www-data "$REMOTE_PATH"
     sudo chmod -R 775 "$REMOTE_PATH/backend/storage" "$REMOTE_PATH/backend/bootstrap/cache"
     
-    # 前端重啟 (範例：若使用 PM2 管理 Nuxt)
-    # if command -v pm2 &> /dev/null; then
-    #    pm2 restart xtask-frontend || pm2 start $REMOTE_PATH/frontend_output/server/index.mjs --name xtask-frontend
-    # fi
-
     echo "遠端執行完畢！"
 EOF
 
