@@ -132,7 +132,7 @@
                     </select>
                   </div>
                   <div v-else class="user-info">
-                    <img v-if="item.assignee" :src="getAvatarUrl(item.assignee)" class="avatar" />
+                    <img v-if="item.assignee" :src="getAvatarUrl(item.assignee)" class="avatar" width="28" height="28" />
                     {{ item.assignee?.name || '-' }}
                   </div>
                 </td>
@@ -259,7 +259,7 @@
                 </td>
                 <td>
                   <div class="user-info">
-                    <img v-if="item.assignee" :src="getAvatarUrl(item.assignee)" class="avatar" />
+                    <img v-if="item.assignee" :src="getAvatarUrl(item.assignee)" class="avatar" width="28" height="28" />
                     {{ item.assignee?.name || '-' }}
                   </div>
                 </td>

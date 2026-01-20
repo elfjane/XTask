@@ -74,6 +74,37 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Global Avatar Styles to prevent flash on refresh */
+.avatar-small {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.avatar-large {
+  /* This covers both the dropdown (72px) and profile (140px) 
+     as they will be overridden by scoped styles, but provides a sensible default */
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.avatar-cell {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;

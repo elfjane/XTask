@@ -16,7 +16,9 @@
               <img 
                 :src="avatarUrl" 
                 :alt="form.name" 
-                class="avatar-large" 
+                class="avatar-large"
+                width="140"
+                height="140"
               />
               <div class="avatar-overlay" @click="triggerFileInput">
                 <span>{{ $t('profile.uploadAvatar') }}</span>

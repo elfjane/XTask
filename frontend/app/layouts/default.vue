@@ -19,13 +19,13 @@
             <!-- User Menu -->
             <div class="user-menu-root" v-click-outside="closeDropdown">
               <button @click="toggleDropdown" class="avatar-trigger">
-                <img :src="getAvatarUrl(user)" :alt="user.name" class="avatar-small" />
+                <img :src="getAvatarUrl(user)" :alt="user.name" class="avatar-small" width="40" height="40" />
               </button>
 
               <Transition name="dropdown">
                 <div v-if="isDropdownOpen" class="dropdown-menu">
                   <div class="dropdown-header">
-                    <img :src="getAvatarUrl(user)" :alt="user.name" class="avatar-large" />
+                    <img :src="getAvatarUrl(user)" :alt="user.name" class="avatar-large" width="72" height="72" />
                     <div class="user-info">
                       <span class="name">{{ user.name }}</span>
                       <span class="role-title">{{ $t('common.roles.' + user.role) }}</span>

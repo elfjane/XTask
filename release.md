@@ -2,6 +2,10 @@
 
 All notable changes to the XTask project will be documented in this file.
 
+## [2026-01-20] - Fix UI Visual Glitch
+- **UI/UX Optimization**:
+  - Fixed the "Flash of Large Image" issue during page refresh (F5). Added `width` and `height` attributes to all avatar `<img>` tags and implemented global CSS fallbacks to ensure avatars maintain their intended size immediately upon rendering, even before complete CSS loading or Vue hydration.
+
 ## [2026-01-19] - Completed Tasks Management Enhancement
 - **UI/UX Optimization**:
   - Renamed "Category" to "Level" (級別) across the task management module for better clarity.

@@ -36,7 +36,7 @@
             <td>{{ user.name }}</td>
             <td>{{ user.employee_id || '-' }}</td>
             <td>
-              <img :src="user.photo_url || 'https://ui-avatars.com/api/?name=' + user.name" class="avatar-cell" />
+              <img :src="user.photo_url || 'https://ui-avatars.com/api/?name=' + user.name" class="avatar-cell" width="32" height="32" />
             </td>
             <td>{{ user.email }}</td>
             <td>
