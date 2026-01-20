@@ -92,8 +92,8 @@ ssh -p "$SERVER_PORT" "$SERVER_USER@$SERVER_HOST" << EOF
     
     # 權限修正
     echo "修正權限..."
-    chown -R www-data:www-data "$REMOTE_PATH"
-    chmod -R 775 "$REMOTE_PATH/backend/storage" "$REMOTE_PATH/backend/bootstrap/cache"
+    sudo chown -R www-data:www-data "$REMOTE_PATH"
+    sudo chmod -R 775 "$REMOTE_PATH/backend/storage" "$REMOTE_PATH/backend/bootstrap/cache"
     
     # 前端重啟 (範例：若使用 PM2 管理 Nuxt)
     # if command -v pm2 &> /dev/null; then
