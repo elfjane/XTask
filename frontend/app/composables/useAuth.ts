@@ -102,6 +102,10 @@ export const useAuth = () => {
                 return ['manager', 'task_user'].includes(role)
             case 'add-task':
                 return ['manager', 'task_user', 'executor'].includes(role)
+            case 'review-tasks':
+                return ['admin', 'manager', 'auditor'].includes(role)
+            case 'view-stats':
+                return ['admin', 'manager', 'auditor'].includes(role)
             case 'view-admin':
                 return ['admin', 'manager', 'auditor'].includes(role)
             case 'view-users':

@@ -2,35 +2,29 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\Request;
-use App\Models\User;
-
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
     /**
-     * Get the authenticated user.
+     * Get the authenticated user with relations.
      */
     public function show(Request $request)
     {
-        return response()->json($request->user());
+        return response()->json($request->user()->load(['department']));
     }
 
     /**
      * Update the authenticated user profile.
      */
-    public function update(Request $request)
+    public function update(ProfileUpdateRequest $request)
     {
         $user = $request->user();
-
-        $validated = $request->validate([
-            'name' => 'sometimes|string|max:255',
-            'email' => 'sometimes|email|unique:users,email,' . $user->id,
-            'current_password' => 'required_with:password',
-            'password' => 'sometimes|min:8|confirmed',
-        ]);
+        $validated = $request->validated();
 
         if ($request->has('password')) {
             if (!Hash::check($request->current_password, $user->password)) {
@@ -38,14 +32,17 @@ class ProfileController extends Controller
                     'current_password' => ['The provided password does not match your current password.'],
                 ]);
             }
-            $user->password = Hash::make($request->password);
+            $validated['password'] = Hash::make($request->password);
         }
 
-        $user->fill($request->only(['name', 'email', 'title', 'department', 'photo_url']));
-        $user->save();
+        $user->update($validated);
 
-        return response()->json($user);
+        return response()->json($user->load(['department']));
     }
+
+    /**
+     * Upload and update user avatar.
+     */
     public function uploadAvatar(Request $request)
     {
         $request->validate([
@@ -58,14 +55,13 @@ class ProfileController extends Controller
             // Delete old avatar if exists and is local
             if ($user->photo_url && str_contains($user->photo_url, '/storage/avatars/')) {
                 $oldPath = str_replace('/storage/', 'public/', parse_url($user->photo_url, PHP_URL_PATH));
-                \Illuminate\Support\Facades\Storage::delete($oldPath);
+                Storage::delete($oldPath);
             }
 
             $path = $request->file('avatar')->store('public/avatars');
-            $url = \Illuminate\Support\Facades\Storage::url($path);
+            $url = Storage::url($path);
 
-            $user->photo_url = $url;
-            $user->save();
+            $user->update(['photo_url' => $url]);
 
             return response()->json([
                 'message' => 'Avatar updated successfully',

@@ -41,7 +41,14 @@
       </div>
     </div>
 
-    <div v-if="pending" class="loading">{{ $t('login.loggingIn') ? $t('login.loggingIn') : 'Loading...' }}</div>
+    <div v-if="pending" class="loading-state">
+      <div class="desktop-view">
+        <SkeletonLoader v-for="i in 8" :key="i" type="table-row" style="margin-bottom: 8px" />
+      </div>
+      <div class="mobile-view">
+        <SkeletonLoader v-for="i in 3" :key="i" type="card" style="margin-bottom: 16px" />
+      </div>
+    </div>
     <div v-else-if="error" class="error">{{ error.message }}</div>
     
     <div v-else class="content-wrapper">
@@ -98,12 +105,13 @@
                       </option>
                     </select>
                   </div>
-                  <span v-else 
-                    :class="['status-badge', item.status.replace(' ', '-'), 'clickable']"
-                    @click.stop="startEditingStatus(item)"
-                  >
-                    {{ $t(`tasks.${item.status.replace(' ', '_')}`) }}
-                  </span>
+                  <StatusBadge 
+                    v-else 
+                    :status="item.status" 
+                    type="task" 
+                    clickable 
+                    @click="startEditingStatus(item)" 
+                  />
                 </td>
                 <td class="user-cell clickable" @click="startEditingAssignee(item)">
                   <div v-if="editingAssigneeId === item.id" class="edit-select-wrapper" @click.stop>
@@ -171,7 +179,7 @@
         <div v-for="item in tasks" :key="item.id" class="card">
           <div class="card-header">
             <span class="idx">#{{ item.id }}</span>
-            <span :class="['status', item.status.replace(' ', '-')]">{{ $t(`tasks.${item.status.replace(' ', '_')}`) }}</span>
+            <StatusBadge :status="item.status" type="task" />
           </div>
           <div class="card-body">
             <h2 class="work-title clickable" @click="openDetails(item)">{{ item.work }}</h2>
@@ -240,9 +248,7 @@
                 <td>{{ item.id }}</td>
                 <td :class="getLevelClass(item.level)">{{ getLevelLabel(item.level) }}</td>
                 <td>
-                  <span :class="['status-badge', item.status.replace(' ', '-')]">
-                    {{ $t(`tasks.${item.status.replace(' ', '_')}`) }}
-                  </span>
+                  <StatusBadge :status="item.status" type="task" />
                 </td>
                 <td>
                   <div class="user-info">
@@ -279,9 +285,7 @@
                   <span v-if="!item.memo && !item.latest_remark">-</span>
                 </td>
                 <td>
-                  <span v-if="item.review_status && item.review_status !== 'unsubmitted'" :class="['status-badge', item.review_status]">
-                    {{ $t(`tasks.reviewStatus_${item.review_status}`) }}
-                  </span>
+                  <StatusBadge v-if="item.review_status && item.review_status !== 'unsubmitted'" :status="item.review_status" type="review" />
                   <span v-else>-</span>
                 </td>
                 <td>{{ item.reviewer?.name || '-' }}</td>
@@ -296,7 +300,7 @@
           <div v-for="item in completedTasks" :key="item.id" class="card" @click="openDetails(item)">
             <div class="card-header">
               <span class="idx">#{{ item.id }}</span>
-              <span :class="['status', item.status.replace(' ', '-')]">{{ $t(`tasks.${item.status.replace(' ', '_')}`) }}</span>
+              <StatusBadge :status="item.status" type="task" />
             </div>
             <div class="card-body">
               <h2 class="work-title">{{ item.work }}</h2>
@@ -754,6 +758,7 @@ onMounted(() => {
     isReviewMode.value = true
   } else if (mode === 'completed') {
     isCompletedMode.value = true
+    fetchCompletedTasks()
   }
 })
 
@@ -762,6 +767,10 @@ watch(() => route.query.mode, (newMode) => {
   isReviewMode.value = newMode === 'review'
   isCompletedMode.value = newMode === 'completed'
   
+  if (isCompletedMode.value) {
+    fetchCompletedTasks()
+  }
+
   // Reset to normal mode if no query param
   if (!newMode) {
     isReviewMode.value = false
@@ -1302,8 +1311,12 @@ const goToPage = async (page: number) => {
   }
 }
 
+let searchTimeout: any = null
 const handleSearch = () => {
-  refresh()
+  if (searchTimeout) clearTimeout(searchTimeout)
+  searchTimeout = setTimeout(() => {
+    refresh()
+  }, 300)
 }
 
 const handleSortChange = () => {

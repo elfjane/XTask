@@ -28,7 +28,7 @@
         </div>
         <NuxtLink 
           to="/tasks" 
-          class="menu-item"
+          :class="['menu-item', { 'active': isTaskRouteActive(null) }]"
           @click="handleNavigation"
         >
           <span class="menu-item-icon">📝</span>
@@ -37,7 +37,7 @@
         <NuxtLink 
           v-if="can('review-tasks')"
           to="/tasks?mode=review" 
-          class="menu-item"
+          :class="['menu-item', { 'active': isTaskRouteActive('review') }]"
           @click="handleNavigation"
         >
           <span class="menu-item-icon">👁️</span>
@@ -45,7 +45,7 @@
         </NuxtLink>
         <NuxtLink 
           to="/tasks?mode=completed" 
-          class="menu-item"
+          :class="['menu-item', { 'active': isTaskRouteActive('completed') }]"
           @click="handleNavigation"
         >
           <span class="menu-item-icon">✔️</span>
@@ -86,6 +86,11 @@ const handleNavigation = () => {
   if (props.isMobile) {
     closeSidebar()
   }
+}
+const isTaskRouteActive = (mode: string | null) => {
+  if (route.path !== '/tasks') return false
+  const currentMode = route.query.mode || null
+  return currentMode === mode
 }
 </script>
 
@@ -166,7 +171,8 @@ const handleNavigation = () => {
   color: var(--brand-primary);
 }
 
-.menu-item.router-link-active {
+.menu-item.router-link-active,
+.menu-item.active {
   background: var(--bg-secondary);
   color: var(--brand-primary);
   border-left-color: var(--brand-primary);

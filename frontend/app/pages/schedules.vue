@@ -5,7 +5,14 @@
       <button @click="showCreateModal = true" class="btn-primary">{{ $t('schedules.addSchedule') }}</button>
     </div>
 
-    <div v-if="pending" class="loading">{{ $t('common.loggingIn') ? $t('login.loggingIn') : 'Loading...' }}</div>
+    <div v-if="pending" class="loading-state">
+      <div class="desktop-view">
+        <SkeletonLoader v-for="i in 5" :key="i" type="table-row" style="margin-bottom: 8px" />
+      </div>
+      <div class="mobile-view">
+        <SkeletonLoader v-for="i in 3" :key="i" type="card" style="margin-bottom: 16px" />
+      </div>
+    </div>
     <div v-else-if="error" class="error">{{ error.message }}</div>
     
     <div v-else class="content-wrapper">

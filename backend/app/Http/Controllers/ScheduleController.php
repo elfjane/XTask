@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Schedule;
+use App\Http\Requests\ScheduleStoreRequest;
+use App\Http\Requests\ScheduleUpdateRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class ScheduleController extends Controller
 {
@@ -12,7 +15,7 @@ class ScheduleController extends Controller
      */
     public function index()
     {
-        \Illuminate\Support\Facades\Gate::authorize('viewAny', Schedule::class);
+        Gate::authorize('viewAny', Schedule::class);
         return response()->json(Schedule::with([
             'memos' => function ($query) {
                 $query->orderBy('created_at', 'asc');
@@ -23,22 +26,12 @@ class ScheduleController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(ScheduleStoreRequest $request)
     {
-        $validated = $request->validate([
-            'project' => 'required|string',
-            'title' => 'required|string',
-            'status' => 'nullable|string|in:working,finish,in_progress,fail',
-            'confirm' => 'required|string|in:Tentatively,Confirmed',
-            'deadline' => 'nullable|date',
-            'scheduled_start' => 'nullable|date',
-            'scheduled_end' => 'nullable|date',
-            'memo' => 'nullable|string',
-        ]);
+        Gate::authorize('create', Schedule::class);
 
+        $validated = $request->validated();
         $validated['status'] = $validated['status'] ?? 'in_progress';
-
-        \Illuminate\Support\Facades\Gate::authorize('create', Schedule::class);
 
         $schedule = Schedule::create($validated);
 
@@ -50,7 +43,7 @@ class ScheduleController extends Controller
      */
     public function show(Schedule $schedule)
     {
-        \Illuminate\Support\Facades\Gate::authorize('view', $schedule);
+        Gate::authorize('view', $schedule);
         return response()->json($schedule->load([
             'memos' => function ($query) {
                 $query->orderBy('created_at', 'asc');
@@ -61,24 +54,11 @@ class ScheduleController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Schedule $schedule)
+    public function update(ScheduleUpdateRequest $request, Schedule $schedule)
     {
-        $validated = $request->validate([
-            'project' => 'sometimes|string',
-            'title' => 'sometimes|string',
-            'status' => 'sometimes|string|in:working,finish,in_progress,fail',
-            'confirm' => 'sometimes|string|in:Tentatively,Confirmed',
-            'deadline' => 'nullable|date',
-            'scheduled_start' => 'nullable|date',
-            'scheduled_end' => 'nullable|date',
-            'actual_start' => 'nullable|date',
-            'actual_finish' => 'nullable|date',
-            'memo' => 'nullable|string',
-        ]);
+        Gate::authorize('update', $schedule);
 
-        \Illuminate\Support\Facades\Gate::authorize('update', $schedule);
-
-        $schedule->update($validated);
+        $schedule->update($request->validated());
 
         return response()->json($schedule);
     }
