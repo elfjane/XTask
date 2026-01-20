@@ -2,9 +2,18 @@
 
 All notable changes to the XTask project will be documented in this file.
 
-## [2026-01-20] - Fix UI Visual Glitch
-- **UI/UX Optimization**:
-  - Fixed the "Flash of Large Image" issue during page refresh (F5). Added `width` and `height` attributes to all avatar `<img>` tags and implemented global CSS fallbacks to ensure avatars maintain their intended size immediately upon rendering, even before complete CSS loading or Vue hydration.
+## [2026-01-20] - Architecture Optimization & Automated Deployment
+- **Automated Deployment**:
+  - Introduced `deploy.sh` and `deploy.bat` scripts for one-click deployment. Handles frontend building (Nuxt), rsync/package creation, SSH upload, remote extraction, and post-deploy maintenance (Composer, Migration, Cache).
+- **Performance & UX Optimization**:
+  - **Loading States**: Added `SkeletonLoader` component. Replaced static loading text with animated skeleton screens in Task and Schedule lists for improved perceived performance.
+  - **Search Debouncing**: Implemented 300ms debouncing for list searches to reduce redundant API calls and server load.
+  - **Standardized UI Components**: Created the `StatusBadge` component to unify status rendering across all views, including robust Dark Mode support.
+- **Backend Refactoring**:
+  - **Code Decoupling**: Extracted Excel import logic into a dedicated `TaskImportService`, following SRP for better maintainability.
+  - **Validation Enhancement**: Implemented `FormRequests` for all major endpoints to ensure cleaner controllers and robust data validation.
+- **UI Visual Glitches**:
+  - Fixed the "Flash of Large Image" issue during page refresh (F5) by adding explicit dimensions and global CSS fallbacks for all avatars.
 
 ## [2026-01-19] - Completed Tasks Management Enhancement
 - **UI/UX Optimization**:
