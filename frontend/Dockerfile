@@ -1,18 +1,24 @@
-FROM node:24.12-alpine
+FROM node:24.12-alpine AS base
 
 WORKDIR /app
 
-# Install dependencies first (for better caching)
+# --- Development Stage ---
+FROM base AS development
 COPY package*.json ./
 RUN npm install
-
-# Copy project files
 COPY . .
-
-# Build the application
-# RUN npm run build
-
 EXPOSE 3111
+CMD ["npm", "run", "dev"]
 
-# For development
-CMD ["npm", "run", "dev", "--", "-o"]
+# --- Production Builder Stage ---
+FROM base AS builder
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build
+
+# --- Production Stage ---
+FROM base AS production
+COPY --from=builder /app/.output ./.output
+EXPOSE 3111
+CMD ["node", ".output/server/index.mjs"]

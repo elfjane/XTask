@@ -22,30 +22,31 @@ XTask/
 
 ## Getting Started
 
-### Frontend
-1. Navigate to `/frontend`
-2. Run `npm install`
-3. Run `npm run dev`
-
-### Backend
-1. Navigate to `/backend`
-2. Run `composer install`
-3. Run `php artisan migrate`
-4. Run `php artisan serve --port=8111`
+### Local Development
+- **Frontend**: Navigate to `/frontend`, run `npm install` then `npm run dev`.
+- **Backend**: Navigate to `/backend`, run `composer install`, `php artisan migrate`, then `php artisan serve --port=8111`.
 
 ### Docker (Recommended)
-1. Run `docker-compose up -d` in the root directory.
-2. Backend will be available at `http://localhost:8111` (via Nginx).
-3. Frontend will be available at `http://localhost:3111`.
+We provide a convenient script to manage your Docker environments:
+- **Development**: Run `manage_docker.bat dev` (Windows) or `docker-compose up -d --build`.
+- **Production Simulation**: Run `manage_docker.bat prod`. This uses multi-stage builds to package the code inside images and removes source code volume mounts for security.
 
-## Features
-- **User Registration**: Configurable registration system with environment variable toggle.
-- **Schedules**: Responsive view (Table for PC, Cards for Mobile) with an integrated **Message Board** for collaborator remarks. Supports **detailed view and editing** by clicking on schedule titles.
-- **Task Points Statistics**: Interactive charts and matrix tables to track team performance and monthly contributions.
-- **Markdown Support**: Full Markdown support for memos, remarks, and output links with automatic URL-to-link conversion.
-- **Excel Task Import**: Batch import tasks with automatic extraction of embedded hyperlinks from Excel cells into Markdown links.
-- **Responsive Design**: Fully functional across desktop, tablet, and mobile devices. Includes an **Approval Workflow** where finished tasks are submitted for Auditor review. The **Completed Tasks** list automatically filters out pending reviews to ensure data clarity. Supports **detailed view and editing** for all task and schedule fields.
-- **Multi-language Support**: i18n integrated for English and Traditional Chinese.
+## Deployment
+Automate your production deployment with our built-in scripts:
+1.  Configure your server details in `deploy.sh`.
+2.  Run `deploy.sh` (Linux/Mac) or `deploy.bat` (Windows).
+- **Process**: Builds Frontend -> Packages Files -> SSH Upload -> Remote Extraction -> Runs Post-deploy hooks (Migration, Cache clean, etc.).
+
+## Features & Optimizations
+- **Performance**: 
+    - **Skeleton Loaders**: Animated loading states for a smoother perceived experience.
+    - **Search Debouncing**: Optimized list filtering to reduce API overhead.
+    - **Multi-stage Docker**: Optimized production images for faster deployment and smaller footprint.
+- **Task Management**: Drag-and-drop reordering, priority levels (with color coding), and detailed edit modals.
+- **Approval Workflow**: Integrated review system for task quality assurance.
+- **Excel Integration**: Batch import tasks with automatic Markdown link conversion for embedded URLs.
+- **Markdown Support**: Rich text rendering across all memos and remarks.
+- **Multi-language**: Built-in support for English and Traditional Chinese (i18n).
 
 ## Environment Configuration
 

@@ -2,7 +2,7 @@ services:
   # Database
   db:
     image: mysql:8.0
-    container_name: xtask-db
+    container_name: xtask-db-prod
     restart: unless-stopped
     environment:
       MYSQL_DATABASE: ${DB_DATABASE:-xtask}
@@ -12,19 +12,16 @@ services:
     ports:
       - "3311:3306"
     volumes:
-      - xtask-db-data:/var/lib/mysql
+      - xtask-prod-db-data:/var/lib/mysql
 
-  # Backend (PHP-FPM)
+  # Backend (Production)
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-      target: ${APP_ENV:-development}
-    container_name: xtask-backend
+      target: production
+    container_name: xtask-backend-prod
     restart: unless-stopped
-    working_dir: /var/www
-    volumes:
-      - ./backend:/var/www
     environment:
       - DB_CONNECTION=mysql
       - DB_HOST=db
@@ -32,42 +29,39 @@ services:
       - DB_DATABASE=${DB_DATABASE:-xtask}
       - DB_USERNAME=${DB_USERNAME:-xtask}
       - DB_PASSWORD=${DB_PASSWORD:-password}
-      - APP_ENV=${APP_ENV:-development}
+      - APP_ENV=production
+      - APP_DEBUG=false
     depends_on:
       - db
 
-  # Nginx (Server for Backend)
+  # Nginx (Production)
   nginx:
     image: nginx:alpine
-    container_name: xtask-nginx
+    container_name: xtask-nginx-prod
     restart: unless-stopped
     ports:
       - "8111:80"
     volumes:
-      - ./backend:/var/www
       - ./backend/.docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - backend
 
-  # Frontend (Nuxt)
+  # Frontend (Production)
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-      target: ${APP_ENV:-development}
-    container_name: xtask-frontend
+      target: production
+    container_name: xtask-frontend-prod
     restart: unless-stopped
     ports:
       - "3111:3111"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
     environment:
       - NUXT_API_PROXY_TARGET=http://nginx
-      - NODE_ENV=${APP_ENV:-development}
+      - NODE_ENV=production
     depends_on:
       - backend
       - nginx
 
 volumes:
-  xtask-db-data:
+  xtask-prod-db-data:
