@@ -29,6 +29,14 @@
         "darkMode": "Dark Mode",
         "theme": "Theme"
     },
+    "sidebar": {
+        "schedules": "Schedules",
+        "tasks": "Tasks",
+        "taskList": "Task List",
+        "tasksUnderReview": "Tasks Under Review",
+        "completedTasks": "Completed Tasks",
+        "taskStatistics": "Task Statistics"
+    },
     "validation": {
         "required": "The {field} field is required.",
         "required_badge": "Required",

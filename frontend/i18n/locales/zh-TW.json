@@ -29,6 +29,14 @@
         "darkMode": "深色模式",
         "theme": "佈景主題"
     },
+    "sidebar": {
+        "schedules": "排程",
+        "tasks": "任務",
+        "taskList": "任務列表",
+        "tasksUnderReview": "任務送審中",
+        "completedTasks": "任務已完成",
+        "taskStatistics": "任務統計"
+    },
     "validation": {
         "required": "{field} 為必填項目",
         "required_badge": "必填",

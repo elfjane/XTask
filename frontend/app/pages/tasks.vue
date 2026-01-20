@@ -3,19 +3,6 @@
     <div class="header">
       <h1>{{ $t('tasks.title') }}</h1>
       <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-        <button 
-          @click="isReviewMode = !isReviewMode" 
-          :class="isReviewMode ? 'btn-secondary' : 'btn-primary'" 
-        >
-          {{ isReviewMode ? $t('tasks.exitReview') : $t('tasks.reviewTasks') }}
-        </button>
-        <button 
-          @click="toggleCompletedMode" 
-          :class="isCompletedMode ? 'btn-secondary' : 'btn-primary'" 
-        >
-          {{ isCompletedMode ? $t('tasks.exitCompleted') : $t('tasks.completedTasks') }}
-        </button>
-        
         <!-- Search box -->
         <input 
           v-model="searchQuery" 
@@ -756,6 +743,31 @@ const editingStatusId = ref<number | null>(null)
 const currentTaskId = ref<number | null>(null)
 const completedTasks = ref<Task[]>([])
 const completedPagination = ref<any>(null)
+
+// Initialize mode from route query parameter
+const route = useRoute()
+const router = useRouter()
+
+onMounted(() => {
+  const mode = route.query.mode as string
+  if (mode === 'review') {
+    isReviewMode.value = true
+  } else if (mode === 'completed') {
+    isCompletedMode.value = true
+  }
+})
+
+// Watch for route changes to update mode
+watch(() => route.query.mode, (newMode) => {
+  isReviewMode.value = newMode === 'review'
+  isCompletedMode.value = newMode === 'completed'
+  
+  // Reset to normal mode if no query param
+  if (!newMode) {
+    isReviewMode.value = false
+    isCompletedMode.value = false
+  }
+})
 
 const form = reactive({
   level: 1,

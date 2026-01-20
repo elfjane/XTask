@@ -3,15 +3,11 @@
     <nav class="navbar">
       <div class="container">
         <div class="navbar-left">
+          <!-- Mobile Menu Toggle -->
+          <button v-if="user" @click="toggleMobileSidebar" class="mobile-menu-btn">
+            ☰
+          </button>
           <NuxtLink to="/" class="brand">XTask</NuxtLink>
-        </div>
-
-        <div class="navbar-center">
-          <template v-if="user">
-            <NuxtLink to="/schedules" class="nav-link">{{ $t('common.schedules') }}</NuxtLink>
-            <NuxtLink to="/tasks" class="nav-link">{{ $t('common.tasks') }}</NuxtLink>
-            <NuxtLink v-if="user.role === 'admin'" to="/stats" class="nav-link">{{ $t('tasks.statistics') }}</NuxtLink>
-          </template>
         </div>
 
         <div class="navbar-right">
@@ -97,7 +93,26 @@
       </div>
     </nav>
     
-    <main class="container main-content">
+    <!-- Sidebar + Content Layout (Authenticated Users Only) -->
+    <div v-if="user" class="app-container">
+      <!-- Mobile Sidebar Overlay -->
+      <div v-if="isMobileSidebarOpen" class="sidebar-overlay" @click="closeMobileSidebar"></div>
+      
+      <!-- Sidebar Component -->
+      <Sidebar 
+        :isOpen="isMobileSidebarOpen" 
+        :isMobile="isMobile"
+        @close="closeMobileSidebar"
+      />
+      
+      <!-- Main Content -->
+      <main class="main-content">
+        <slot />
+      </main>
+    </div>
+    
+    <!-- Guest View (No Sidebar) -->
+    <main v-else class="container main-content">
       <slot />
     </main>
     
@@ -122,6 +137,30 @@ const closeDropdown = () => {
   isDropdownOpen.value = false
 }
 
+// Mobile Sidebar
+const isMobileSidebarOpen = ref(false)
+const isMobile = ref(false)
+
+const toggleMobileSidebar = () => {
+  isMobileSidebarOpen.value = !isMobileSidebarOpen.value
+}
+
+const closeMobileSidebar = () => {
+  isMobileSidebarOpen.value = false
+}
+
+// Detect mobile viewport
+onMounted(() => {
+  const checkMobile = () => {
+    isMobile.value = window.innerWidth < 1024
+    if (!isMobile.value) {
+      isMobileSidebarOpen.value = false
+    }
+  }
+  checkMobile()
+  window.addEventListener('resize', checkMobile)
+  onUnmounted(() => window.removeEventListener('resize', checkMobile))
+})
 
 const handleLogout = async () => {
   closeDropdown()
@@ -174,12 +213,7 @@ const vClickOutside = {
 .navbar-left {
   display: flex;
   align-items: center;
-}
-
-.navbar-center {
-  display: flex;
-  align-items: center;
-  gap: 2.5rem;
+  gap: 1rem;
 }
 
 .navbar-right {
@@ -187,6 +221,29 @@ const vClickOutside = {
   align-items: center;
   justify-content: flex-end;
   gap: 1.5rem;
+}
+
+/* Mobile Menu Button */
+.mobile-menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text-primary);
+  padding: 0.5rem;
+  line-height: 1;
+  transition: all 0.2s;
+}
+
+.mobile-menu-btn:hover {
+  color: var(--brand-primary);
+}
+
+@media (max-width: 1024px) {
+  .mobile-menu-btn {
+    display: block;
+  }
 }
 
 .brand {
@@ -199,36 +256,6 @@ const vClickOutside = {
   text-decoration: none;
   letter-spacing: -0.025em;
 }
-
-.nav-link {
-  text-decoration: none;
-  color: var(--text-secondary);
-  font-weight: 600;
-  font-size: 1rem;
-  transition: all 0.2s;
-  padding: 0.5rem 0;
-  position: relative;
-}
-
-.nav-link:after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background: var(--brand-primary);
-  transition: width 0.3s;
-}
-
-.nav-link:hover, .nav-link.router-link-active {
-  color: var(--brand-primary);
-}
-
-.nav-link.router-link-active:after {
-  width: 100%;
-}
-
 
 .login-link {
   background: var(--brand-primary);
@@ -273,9 +300,46 @@ const vClickOutside = {
   background: rgba(0,0,0,0.05);
 }
 
-@media (max-width: 640px) {
-  .navbar-center {
-    display: none;
+/* App Container with Sidebar */
+.app-container {
+  display: flex;
+  min-height: calc(100vh - 60px);
+  position: relative;
+}
+
+/* Main Content Area */
+.main-content {
+  flex: 1;
+  padding: 2rem;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+/* For guest users without sidebar */
+.container.main-content {
+  padding-top: 2rem;
+  padding-bottom: 4rem;
+}
+
+/* Sidebar Overlay for Mobile */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+@media (max-width: 1024px) {
+  .sidebar-overlay {
+    display: block;
+  }
+  
+  .main-content {
+    padding: 1.5rem 1rem;
   }
 }
 
