@@ -14,6 +14,8 @@ All notable changes to the XTask project will be documented in this file.
   - **Validation Enhancement**: Implemented `FormRequests` for all major endpoints to ensure cleaner controllers and robust data validation.
 - **UI Visual Glitches**:
   - Fixed the "Flash of Large Image" issue during page refresh (F5) by adding explicit dimensions and global CSS fallbacks for all avatars.
+- **Dependency Update**:
+  - Upgraded `vue-i18n` to v11.x, resolving the deprecation warnings for versions v9 and v10.
 
 ## [2026-01-19] - Completed Tasks Management Enhancement
 - **UI/UX Optimization**:
