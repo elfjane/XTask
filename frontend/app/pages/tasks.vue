@@ -105,13 +105,20 @@
                       </option>
                     </select>
                   </div>
-                  <StatusBadge 
-                    v-else 
-                    :status="item.status" 
-                    type="task" 
-                    clickable 
-                    @click="startEditingStatus(item)" 
-                  />
+                  <div v-else class="status-cell">
+                    <StatusBadge 
+                      :status="item.status" 
+                      type="task" 
+                      clickable 
+                      @click="startEditingStatus(item)" 
+                    />
+                    <StatusBadge 
+                      v-if="item.status === 'finished' && item.review_status === 'submitted'"
+                      status="submitted" 
+                      type="review" 
+                      style="margin-left: 4px;"
+                    />
+                  </div>
                 </td>
                 <td class="user-cell clickable" @click="startEditingAssignee(item)">
                   <div v-if="editingAssigneeId === item.id" class="edit-select-wrapper" @click.stop>
@@ -179,7 +186,15 @@
         <div v-for="item in tasks" :key="item.id" class="card">
           <div class="card-header">
             <span class="idx">#{{ item.id }}</span>
-            <StatusBadge :status="item.status" type="task" />
+            <div class="status-badges">
+              <StatusBadge :status="item.status" type="task" />
+              <StatusBadge 
+                v-if="item.status === 'finished' && item.review_status === 'submitted'"
+                status="submitted" 
+                type="review" 
+                style="margin-left: 4px;"
+              />
+            </div>
           </div>
           <div class="card-body">
             <h2 class="work-title clickable" @click="openDetails(item)">{{ item.work }}</h2>
@@ -1967,6 +1982,19 @@ const handleCreate = async () => {
   background-color: #fef2f2;
   color: #dc2626;
   border: 1px solid #fee2e2;
+}
+
+/* Status cell styling */
+.status-cell {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.status-badges {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .error-box {
