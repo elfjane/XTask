@@ -13,6 +13,8 @@ services:
       - "3311:3306"
     volumes:
       - xtask-prod-db-data:/var/lib/mysql
+    networks:
+      - xtask-network
 
   # Backend (Production)
   backend:
@@ -35,6 +37,8 @@ services:
       - APP_URL=${APP_URL:-https://xtask.elfjane.com}
     depends_on:
       - db
+    networks:
+      - xtask-network
 
   # Nginx (Production)
   nginx:
@@ -45,9 +49,11 @@ services:
       - "8111:80"
     volumes:
       - ./backend/.docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
-      - ./backend/public:/var/www/public
+      - ./backend:/var/www
     depends_on:
       - backend
+    networks:
+      - xtask-network
 
   # Frontend (Production)
   frontend:
@@ -66,6 +72,12 @@ services:
     depends_on:
       - backend
       - nginx
+    networks:
+      - xtask-network
+
+networks:
+  xtask-network:
+    driver: bridge
 
 volumes:
   xtask-prod-db-data:

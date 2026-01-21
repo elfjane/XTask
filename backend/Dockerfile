@@ -1,4 +1,4 @@
-FROM php:8.4-fpm AS base
+FROM php:8.3-fpm AS base
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -30,7 +30,8 @@ CMD ["php-fpm"]
 
 # --- Production Stage ---
 FROM base AS production
-COPY --chown=www-data:www-data . /var/www
-RUN composer install --no-dev --optimize-autoloader --no-interaction
-USER www-data
+COPY . /var/www
+RUN composer install --no-dev --optimize-autoloader --no-interaction \
+    && chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache \
+    && chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 CMD ["php-fpm"]
