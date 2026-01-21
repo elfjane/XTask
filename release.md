@@ -2,6 +2,14 @@
 
 All notable changes to the XTask project will be documented in this file.
 
+## [2026-01-21] - Task Status & Review Enhancement
+- **Frontend Enhancements**:
+  - **Under Review Badge**: Tasks that are `finished` and have `review_status` set to `submitted` now display an additional "Under Review" badge next to the "Finished" status badge in both desktop and mobile views. This provides immediate visual feedback that a completed task is awaiting review.
+- **Backend Improvements**:
+  - **Auto-set Start Date**: When a task's status is changed to `'working'` and the `start_date` field is empty, it will now automatically be set to the current date. This ensures better tracking of when work actually began.
+  - Updated OpenAPI specification to document this automatic behavior.
+  - Added comprehensive unit tests to verify the auto-set logic and ensure existing dates are not overridden.
+
 ## [2026-01-20] - Architecture Optimization & Automated Deployment
 - **Automated Deployment**:
   - Introduced `deploy.sh` and `deploy.bat` scripts for one-click deployment. Handles frontend building (Nuxt), rsync/package creation, SSH upload, remote extraction, and post-deploy maintenance (Composer, Migration, Cache).

@@ -96,4 +96,48 @@ class TaskApiTest extends TestCase
             'user_id' => $newUser->id,
         ]);
     }
+
+    public function test_start_date_auto_set_when_status_changes_to_working()
+    {
+        $user = User::factory()->create(['role' => 'admin']);
+        $task = Task::factory()->create([
+            'user_id' => $user->id,
+            'status' => 'in progress',
+            'start_date' => null
+        ]);
+
+        $this->assertNull($task->fresh()->start_date);
+
+        $response = $this->actingAs($user, 'sanctum')
+            ->putJson("/api/tasks/{$task->id}", [
+                'status' => 'working',
+            ]);
+
+        $response->assertStatus(200);
+
+        $updatedTask = $task->fresh();
+        $this->assertNotNull($updatedTask->start_date);
+        $this->assertEquals(now()->format('Y-m-d'), $updatedTask->start_date->format('Y-m-d'));
+    }
+
+    public function test_start_date_not_overridden_when_already_set()
+    {
+        $user = User::factory()->create(['role' => 'admin']);
+        $originalDate = '2026-01-10';
+        $task = Task::factory()->create([
+            'user_id' => $user->id,
+            'status' => 'in progress',
+            'start_date' => $originalDate
+        ]);
+
+        $response = $this->actingAs($user, 'sanctum')
+            ->putJson("/api/tasks/{$task->id}", [
+                'status' => 'working',
+            ]);
+
+        $response->assertStatus(200);
+
+        $updatedTask = $task->fresh();
+        $this->assertEquals($originalDate, $updatedTask->start_date->format('Y-m-d'));
+    }
 }

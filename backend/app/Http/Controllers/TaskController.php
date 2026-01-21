@@ -132,6 +132,11 @@ class TaskController extends Controller
             $currentStatus = $task->status;
             $newStatus = $validated['status'];
 
+            // Auto-set start_date when changing to 'working' if it's empty
+            if ($newStatus === 'working' && empty($task->start_date) && !isset($validated['start_date'])) {
+                $validated['start_date'] = now()->format('Y-m-d');
+            }
+
             if ($newStatus === 'finished' && $currentStatus !== 'finished' && $task->review_status !== 'approved') {
                 $validated['review_status'] = 'submitted';
             } elseif ($newStatus !== 'finished' && $currentStatus === 'finished' && $task->review_status === 'submitted') {
