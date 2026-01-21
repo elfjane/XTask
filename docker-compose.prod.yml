@@ -55,7 +55,7 @@ services:
     container_name: xtask-frontend-prod
     restart: unless-stopped
     ports:
-      - "3111:3111"
+      - "3111:3000"
     environment:
       - NUXT_API_PROXY_TARGET=http://nginx
       - NODE_ENV=production
