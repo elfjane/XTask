@@ -48,8 +48,10 @@ services:
     ports:
       - "8111:80"
     volumes:
-      - ./backend/.docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./backend/.docker/nginx/default.conf.template:/etc/nginx/templates/default.conf.template:ro
       - ./backend:/var/www
+    environment:
+      - BACKEND_HOST=xtask-backend-prod
     depends_on:
       - backend
     networks:
