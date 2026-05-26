@@ -32,10 +32,19 @@
           <option value="actual_finish_date">{{ $t('tasks.sortByActualFinish') }}</option>
         </select>
         
-        <select v-if="!isCompletedMode" v-model="sortOrderRegular" @change="handleSortChange" class="sort-select-mini">
-          <option value="desc">↓</option>
-          <option value="asc">↑</option>
-        </select>
+        <button 
+          v-if="!isCompletedMode" 
+          @click="toggleSortOrder" 
+          class="sort-toggle-btn"
+          :title="sortOrderRegular === 'desc' ? $t('tasks.sortDesc') : $t('tasks.sortAsc')"
+        >
+          <svg v-if="sortOrderRegular === 'desc'" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 5v14M19 12l-7 7-7-7"/>
+          </svg>
+          <svg v-else xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 19V5M5 12l7-7 7 7"/>
+          </svg>
+        </button>
         
         <button @click="showCreateModal = true" class="btn-primary" v-if="!isReviewMode && !isCompletedMode">{{ $t('tasks.addTask') }}</button>
       </div>
@@ -150,13 +159,27 @@
                 <td>{{ formatDate(item.actual_finish_date) }}</td>
                 <td class="output-url-cell">
                   <div v-if="item.output_url">
-                    <MarkdownViewer :content="item.output_url" />
+                    <DraggableMarkdownViewer 
+                      :content="item.output_url" 
+                      :draggable="item.review_status !== 'approved' && !isReviewMode && !isCompletedMode"
+                      :task-id="item.id"
+                      field="output_url"
+                      @update="(content) => handleUpdateTaskField(item, 'output_url', content)"
+                      @cross-field-update="(payload) => handleCrossFieldUpdate(item, 'output_url', payload)"
+                    />
                   </div>
                   <span v-else>-</span>
                 </td>
                 <td class="memo-cell">
                   <div v-if="item.memo" class="main-memo">
-                    <MarkdownViewer :content="item.memo" />
+                    <DraggableMarkdownViewer 
+                      :content="item.memo" 
+                      :draggable="item.review_status !== 'approved' && !isReviewMode && !isCompletedMode"
+                      :task-id="item.id"
+                      field="memo"
+                      @update="(content) => handleUpdateTaskField(item, 'memo', content)"
+                      @cross-field-update="(payload) => handleCrossFieldUpdate(item, 'memo', payload)"
+                    />
                   </div>
                   <div class="memo-list" v-if="item.latest_remark">
                     <div class="memo-item">
@@ -505,10 +528,24 @@
             <div class="value">{{ selectedTask?.points }}</div>
           </div>
         </div>
-
+        
         <div class="detail-item full-width">
             <label>{{ $t('tasks.work') }}</label>
             <div class="value work-content">{{ selectedTask?.work }}</div>
+        </div>
+
+        <div class="detail-item full-width">
+            <label>{{ $t('tasks.outputUrl') }}</label>
+            <div class="value">
+                <MarkdownViewer :content="selectedTask?.output_url || '-'" />
+            </div>
+        </div>
+        
+        <div class="detail-item full-width">
+          <label>{{ $t('tasks.memo') }} ({{ $t('common.management') }})</label>
+          <div class="value">
+            <MarkdownViewer :content="selectedTask?.memo || '-'" />
+          </div>
         </div>
 
         <div class="form-grid">
@@ -558,13 +595,6 @@
               <label>{{ $t('tasks.failedAt') || '失敗時間' }}</label>
               <div class="value">{{ formatDateTime(selectedTask.failed_at) }}</div>
             </div>
-          </div>
-        </div>
-        
-        <div class="detail-item">
-          <label>{{ $t('tasks.memo') }} ({{ $t('common.management') }})</label>
-          <div class="value">
-            <MarkdownViewer :content="selectedTask?.memo || '-'" />
           </div>
         </div>
 
@@ -650,11 +680,6 @@
                step="0.5" 
                min="0" 
              />
-          </div>
-        </div>
-
-        <div class="form-section">
-          <div class="form-grid">
             <BaseInput v-model="taskEditForm.release_date" :label="$t('tasks.releaseDate')" type="date" />
             <BaseInput v-model="taskEditForm.start_date" :label="$t('tasks.startDate')" type="date" />
             <BaseInput v-model="taskEditForm.expected_finish_date" :label="$t('tasks.expectedFinishDate')" type="date" />
@@ -1023,6 +1048,11 @@ const getLevelClass = (level: number) => {
   return ''
 }
 
+// Toggle sort order between asc and desc
+const toggleSortOrder = () => {
+  sortOrderRegular.value = sortOrderRegular.value === 'desc' ? 'asc' : 'desc'
+}
+
 const openDetails = (task: Task) => {
   currentTaskId.value = task.id
   isEditingTasks.value = false
@@ -1261,6 +1291,93 @@ const updateAssignee = async (task: Task, newUserId: string) => {
   }
 }
 
+const handleUpdateTaskField = async (task: Task, field: string, content: string) => {
+  // If content hasn't changed, do nothing
+  if (content === task[field as keyof Task]) return
+
+  try {
+    const updatedTask = await $fetch<Task>(`${apiBase}/api/tasks/${task.id}`, {
+      method: 'PUT',
+      body: { [field]: content },
+      headers: {
+        Authorization: `Bearer ${token.value}`,
+        Accept: 'application/json'
+      }
+    })
+    // Update local state
+    Object.assign(task, updatedTask)
+  } catch (err: any) {
+    if (err.status === 403) {
+      toast.error(t('common.unauthorizedAction'))
+    } else {
+      console.error(`Failed to update ${field}:`, err)
+      toast.error(`Failed to update ${field}.`)
+    }
+  }
+}
+
+// Helper to parse markdown for removal consistent with DraggableMarkdownViewer
+const removeMarkdownItem = (content: string, indexToRemove: number) => {
+  if (!content) return ''
+  
+  const items: any[] = []
+  const lines = content.split('\n')
+  const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g
+  
+  lines.forEach(line => {
+    if (!line.trim()) return
+    const matches = Array.from(line.matchAll(linkRegex))
+    if (matches.length > 0) {
+      // Parse each link in the line
+      matches.forEach(match => {
+        items.push({ type: 'link', raw: match[0] })
+      })
+    } else {
+      // It's plain text or other markdown
+      items.push({ type: 'text', raw: line })
+    }
+  })
+
+  if (indexToRemove >= 0 && indexToRemove < items.length) {
+    items.splice(indexToRemove, 1)
+  }
+  
+  return items.map(item => item.raw).join('\n')
+}
+
+const handleCrossFieldUpdate = async (task: Task, toField: string, { fromField, fromIndex, newContent }: any) => {
+  // 1. Calculate new content for source field (remove item)
+  const sourceContent = task[fromField as keyof Task] as string
+  const newSourceContent = removeMarkdownItem(sourceContent, fromIndex)
+
+  try {
+    const payload = {
+      [toField]: newContent,
+      [fromField]: newSourceContent
+    }
+
+    const updatedTask = await $fetch<Task>(`${apiBase}/api/tasks/${task.id}`, {
+      method: 'PUT',
+      body: payload,
+      headers: {
+        Authorization: `Bearer ${token.value}`,
+        Accept: 'application/json'
+      }
+    })
+    
+    // Update local state
+    Object.assign(task, updatedTask)
+  } catch (err: any) {
+    if (err.status === 403) {
+      toast.error(t('common.unauthorizedAction'))
+    } else {
+      console.error('Failed to update cross-field drag:', err)
+      toast.error('Failed to move item between fields.')
+    }
+  }
+}
+
+
 const toggleCompletedMode = () => {
   isCompletedMode.value = !isCompletedMode.value
   if (isCompletedMode.value) {
@@ -1436,7 +1553,7 @@ const handleCreate = async () => {
 
 <style scoped>
 .page {
-  padding: 1rem 1.5rem;
+  padding: 0 1.5rem 1rem 1.5rem;
   margin: 0 auto;
 }
 
@@ -1461,6 +1578,13 @@ const handleCreate = async () => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--text-primary);
 }
 
 .btn-primary {
@@ -1860,6 +1984,10 @@ const handleCreate = async () => {
   }
 }
 
+.full-width {
+  grid-column: 1 / -1;
+}
+
 .review-info-section {
   margin: 2rem 0;
   padding: 1.5rem;
@@ -1943,6 +2071,59 @@ const handleCreate = async () => {
 .search-input:focus, .sort-select:focus {
   border-color: var(--brand-primary);
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.sort-toggle-btn {
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background: var(--surface-primary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.sort-toggle-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--brand-primary);
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+
+.sort-toggle-btn:hover {
+  border-color: var(--brand-primary);
+  color: var(--brand-primary);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+}
+
+.sort-toggle-btn:hover::before {
+  opacity: 0.05;
+}
+
+.sort-toggle-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(99, 102, 241, 0.1);
+}
+
+.sort-toggle-btn svg {
+  position: relative;
+  z-index: 1;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sort-toggle-btn:hover svg {
+  transform: scale(1.1);
 }
 
 /* Soft Level Colors */

@@ -2,9 +2,25 @@
 
 All notable changes to the XTask project will be documented in this file.
 
+## [2026-01-22] - Task List UI Enhancement
+- **Frontend Improvements**:
+  - **Sort Toggle Button Refinement**: Replaced the plain up/down arrow dropdown with a modern icon toggle button in the task list.
+    - Features SVG up/down arrow icons instead of plain text symbols
+    - Added smooth hover animations (scale, shadow, color transitions)
+    - Provides visual feedback on click
+    - Displays tooltip showing current sort direction (ascending/descending)
+    - One-click toggle between ascending and descending order for improved user experience
+  - **i18n Fix**: Fixed untranslated "completed" status in task status dropdown by adding missing translation keys to both English and Traditional Chinese locale files.
+  - **Layout Optimization**: Reduced the top padding of headers across all main pages (Tasks, Schedules, Profile) on desktop view to eliminate excessive whitespace and ensure consistent visual styling.
+
 ## [2026-01-21] - Task Status & Review Enhancement
 - **Frontend Enhancements**:
   - **Under Review Badge**: Tasks that are `finished` and have `review_status` set to `submitted` now display an additional "Under Review" badge next to the "Finished" status badge in both desktop and mobile views. This provides immediate visual feedback that a completed task is awaiting review.
+  - **Drag-and-Drop Organization**: Added support for dragging and dropping Markdown links (e.g., Google Docs, Asana links) directly within the task list.
+  - **Cross-Field Dragging**: Users can now drag links between the "Remarks" (Memo) field and the "Output/URL" field. This allows for easy reorganization of task references and deliverables.
+  - **Task Details Layout**: Optimized the layout of the Task Details modal. The "Work", "Output URL", and "Memo" (Management) sections are now grouped together and placed before the metadata (Dates, Review Info) for better visibility and workflow efficiency.
+  - **Edit Form Layout Fix**: Fixed the layout issue in the Task Edit modal where "Work", "Output URL", and "Memo" fields were not spanning the full width of the form.
+  - **Task Edit Spacing Consistency**: Merged the Date selection fields (Release Date, Start Date, etc.) into the main form grid in the Task Edit modal. This ensures that the spacing and alignment of date fields are perfectly consistent with other form fields like Department and Status.
 - **Backend Improvements**:
   - **Auto-set Start Date**: When a task's status is changed to `'working'` and the `start_date` field is empty, it will now automatically be set to the current date. This ensures better tracking of when work actually began.
   - Updated OpenAPI specification to document this automatic behavior.

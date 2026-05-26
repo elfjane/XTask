@@ -521,7 +521,7 @@ const calculateDays = (start: string, end: string) => {
 <style scoped>
 /* Base Page Style */
 .page {
-  padding: 1rem;
+  padding: 0 1.5rem 1rem 1.5rem;
   margin: 0 auto;
   transition: max-width 0.3s ease;
 }
@@ -531,6 +531,13 @@ const calculateDays = (start: string, end: string) => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--text-primary);
 }
 
 .btn-primary {

@@ -156,6 +156,7 @@
         "working": "Working",
         "in_progress": "In Progress",
         "finished": "Finished",
+        "completed": "Completed",
         "details": "Task Details",
         "editTask": "Edit Task",
         "remarks": "Remarks",

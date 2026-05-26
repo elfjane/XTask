@@ -156,6 +156,7 @@
         "working": "執行中",
         "in_progress": "未執行",
         "finished": "已完成",
+        "completed": "已完成",
         "details": "任務詳情",
         "editTask": "編輯任務",
         "remarks": "備注",
